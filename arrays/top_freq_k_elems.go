@@ -25,6 +25,7 @@ Constraints:
 */
 
 func topKFrequent(nums []int, k int) []int {
+	// Get frequencies of nums and group them
 	freqs := map[int]int{}
 	for _, n := range nums {
 		freqs[n]++
@@ -35,6 +36,7 @@ func topKFrequent(nums []int, k int) []int {
 		groupFreqs[freq] = append(groupFreqs[freq], n)
 	}
 
+	// Largest possible frequency is size of array. Check from n...0 to add group freq numbers to res.
 	var res []int
 	for i := len(nums); i >= 0 && len(res) < k; i-- {
 		if group, ok := groupFreqs[i]; ok {
