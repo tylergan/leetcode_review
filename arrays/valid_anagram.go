@@ -32,8 +32,8 @@ func isAnagram(s string, t string) bool {
 
 	sHash, tHash := make([]int, 26), make([]int, 26)
 	for i := 0; i < len(s); i++ {
-		sHash[int(s[i])-int('a')] += 1
-		tHash[int(t[i])-int('a')] += 1
+		sHash[int(s[i])-int('a')]++
+		tHash[int(t[i])-int('a')]++
 	}
 
 	return slices.Equal(sHash, tHash)
