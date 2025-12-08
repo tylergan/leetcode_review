@@ -6,7 +6,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 ### Arrays
 
-📄 **[View Cheat Sheet](https://tylergan.github.io/LeetcodeReview/arrays/cheatsheet.html)** - Quick reference guide for arrays problems
+📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/arrays/cheatsheet.html)** - Quick reference guide for arrays problems
 
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|

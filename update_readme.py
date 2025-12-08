@@ -19,7 +19,7 @@ from typing import List, Dict, Tuple
 # If you prefer local file paths, set USE_GITHUB_PAGES to False.
 # ============================================================================
 GITHUB_USERNAME = "tylergan"  # Change this to your GitHub username
-GITHUB_REPO = "LeetcodeReview"  # Change this to your repo name
+GITHUB_REPO = "leetcode_review"  # Change this to your repo name
 USE_GITHUB_PAGES = True  # Set to False to use local paths
 
 
