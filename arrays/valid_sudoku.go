@@ -54,50 +54,38 @@ board[i][j] is a digit 1-9 or '.'.
 func isValidSudoku(board [][]byte) bool {
 	seen := map[string]map[byte]bool{}
 
-	for i := 0; i < len(board); i++ {
-		row := fmt.Sprintf("row-%d", i)
-		if _, ok := seen[row]; !ok {
-			seen[row] = map[byte]bool{}
+	getOrCreateSet := func(key string) map[byte]bool {
+		if _, ok := seen[key]; !ok {
+			seen[key] = map[byte]bool{}
 		}
+		return seen[key]
+	}
 
-		rowSet, _ := seen[row]
+	hasDup := func(key string, value byte) bool {
+		set := getOrCreateSet(key)
+		if _, ok := set[value]; ok {
+			return true
+		}
+		set[value] = true
+		return false
+	}
+
+	for i := 0; i < len(board); i++ {
 		for j := 0; j < len(board); j++ {
 			currCell := board[i][j]
 			if currCell == '.' {
 				continue
 			}
 
-			// Check if in row already
-			if _, ok := rowSet[currCell]; ok {
-				return false
-			}
-			rowSet[currCell] = true
-			seen[row] = rowSet
+			rowKey := fmt.Sprintf("row-%d", i)
+			colKey := fmt.Sprintf("col-%d", j)
+			blockKey := fmt.Sprintf("block-%d", int(i/3)*3+j/3) // each time we go down, each row contains 3 blocks that we skip, so multiply row by 3
 
-			// Check in col already
-			col := fmt.Sprintf("col-%d", j)
-			if _, ok := seen[col]; !ok {
-				seen[col] = map[byte]bool{}
-			}
-			colSet, _ := seen[col]
-			if _, ok := colSet[currCell]; ok {
+			if hasDup(rowKey, currCell) ||
+				hasDup(colKey, currCell) ||
+				hasDup(blockKey, currCell) {
 				return false
 			}
-			colSet[currCell] = true
-			seen[col] = colSet
-
-			// Check if in 3x3 block already
-			blockNumber := int(i/3)*3 + j/3 // each time we go down, each row contains 3 blocks that we skip, so multiply row by 3
-			currBlock := fmt.Sprintf("block-%d", blockNumber)
-			if _, ok := seen[currBlock]; !ok {
-				seen[currBlock] = map[byte]bool{}
-			}
-			blockSet := seen[currBlock]
-			if _, ok := blockSet[currCell]; ok {
-				return false
-			}
-			blockSet[currCell] = true
-			seen[currBlock] = blockSet
 		}
 	}
 
