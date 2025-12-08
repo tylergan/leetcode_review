@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LeetCode Arrays Cheat Sheet</title>
+    <style>
+        @page { size: A4; margin: 0.3cm 0.3cm 0.3cm 0.3cm; }
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 7pt;
+            line-height: 1.2;
+            color: #000;
+            background: #fff;
+        margin: 0;
+            padding: 0;
+        }
+        .container {
+            column-count: 3;
+            column-gap: 0.25cm;
+            width: 100%;
+        }
+        .box {
+            border: 1px solid #444;
+            padding: 2px 4px;
+            margin-bottom: 4px;
+            break-inside: avoid;
+            background-color: #fff;
+        }
+        h2 {
+            font-size: 8pt;
+            font-weight: bold;
+            background-color: #eee;
+            padding: 2px;
+            margin: 0 0 2px 0;
+            border-bottom: 1px solid #000;
+            text-transform: uppercase;
+        }
+        h3 {
+            font-size: 7.5pt;
+            font-weight: bold;
+            margin: 2px 0 1px 0;
+            text-decoration: underline;
+            color: #004085;
+        }
+        p { margin: 0 0 2px 0; text-align: left; }
+        ul { padding-left: 10px; margin: 0; }
+        li { margin: 0; }
+        .code-box {
+            font-family: "Courier New", monospace;
+            background-color: #f4f4f4;
+            border-left: 2px solid #333;
+            padding: 1px 2px;
+            margin: 1px 0;
+            font-size: 6.5pt;
+            white-space: pre-wrap;
+        }
+        .tag {
+            font-weight: bold;
+            color: #d63384;
+            font-size: 6.5pt;
+        }
+        .complexity {
+            font-weight: bold;
+            font-size: 6.5pt;
+            color: #007bff;
+            float: right;
+        }
+        .warn { color: #b00; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 1. Contains Duplicate -->
+    <div class="box">
+        <h2>Contains Duplicate</h2>
+        <span class="complexity">O(n) Time / O(n) Space</span>
+        <p><b>Goal:</b> Check if any value appears at least twice.</p>
+        <h3>Technique: Hash Set</h3>
+        <p><b>Why Hash Set?</b> Problem asks "have we seen this before?" Hash set provides O(1) lookup and insertion, perfect for membership queries. Alternative (sorting) is O(n log n).</p>
+        <p><b>Key Insight:</b> Trading space for time. We memorize what we've seen to avoid re-scanning.</p>
+        <div class="code-box">if _, ok := seen[n]; ok { return true }
+seen[n] = true</div>
+    </div>
+
+    <!-- 2. Valid Anagram -->
+    <div class="box">
+        <h2>Valid Anagram</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Check if strings `s` and `t` have exact same char counts.</p>
+        <h3>Technique: Frequency Array</h3>
+        <p><b>Why Frequency Counting?</b> Anagrams = same letters, different order. Order doesn't matter, only frequency. Sorting works but is O(n log n). Counting is O(n).</p>
+        <p><b>Key Insight:</b> Fixed alphabet size (26) means O(1) space. Increment for first string, decrement for second. If all zeros, they're anagrams.</p>
+        <div class="code-box">counts := [26]int{}
+for c in s: counts[c-'a']++
+for c in t: counts[c-'a']--
+// All must be 0</div>
+        <p class="tag">Unicode?</p> Use a generic HashMap `map[rune]int`.
+    </div>
+
+    <!-- 3. Two Sum -->
+    <div class="box">
+        <h2>Two Sum</h2>
+        <span class="complexity">O(n) Time / O(n) Space</span>
+        <p><b>Goal:</b> Find indices of two numbers adding to `target`.</p>
+        <h3>Technique: Complement Map</h3>
+        <p><b>Why Complement?</b> Brute force is O(n²) checking all pairs. Instead of "what pairs sum to target?", ask "have I seen the complement (target - current)?"</p>
+        <p><b>Key Insight:</b> For each number, we instantly know what value would complete the pair. Hash map gives O(1) lookup. Store as we go to avoid using same element twice.</p>
+        <div class="code-box">m := map[int]int{} // val -> index
+for i, n := range nums:
+  diff := target - n
+  if idx, ok := m[diff]; ok: return {idx, i}
+  m[n] = i</div>
+        <p class="warn">Trap:</p> Don't use same element twice. Map check handles this (looks back).
+    </div>
+
+    <!-- 4. Group Anagrams -->
+    <div class="box">
+        <h2>Group Anagrams</h2>
+        <span class="complexity">O(n * k) Time</span>
+        <p><b>Goal:</b> Group strings that are anagrams.</p>
+        <h3>Technique: Hash by Count</h3>
+        <p><b>Why Character Count Key?</b> Need a way to identify anagrams. Sorting each string works (O(n·k log k)) but counting is faster (O(n·k)). Same character frequencies = same key.</p>
+        <p><b>Key Insight:</b> Use character frequency as the "signature" of an anagram group. All anagrams share the same signature. Group by this signature using a map.</p>
+        <div class="code-box">key := [26]int{} // filled with char counts
+map[key] = append(map[key], s)</div>
+        <p>In Go, arrays `[26]int` are comparable keys. In other langs, convert array to string "1#0#2...".</p>
+    </div>
+
+    <!-- 5. Top K Frequent Elements -->
+    <div class="box">
+        <h2>Top K Frequent Elements</h2>
+        <span class="complexity">O(n) Time</span>
+        <p><b>Goal:</b> Find `k` most common numbers.</p>
+        <h3>Technique: Bucket Sort</h3>
+        <p><b>Why Bucket Sort?</b> Need to rank by frequency. Heap is O(n log k). But frequency range is limited: 1 to n. This bounded range allows bucket sort in O(n).</p>
+        <p><b>Key Insight:</b> Index = frequency, Value = numbers with that frequency. Walk backwards from highest frequency. Exploits the constraint that frequencies are bounded.</p>
+        <ol>
+            <li>Count freq of each num: `map[num]count`.</li>
+            <li>Invert to buckets: `buckets[count] = [list of nums]`.</li>
+            <li>Iterate buckets `n` down to `1`, collect `k` results.</li>
+        </ol>
+        <div class="code-box">buckets := make([][]int, len(nums)+1)</div>
+    </div>
+
+    <!-- 6. Encode and Decode Strings -->
+    <div class="box">
+        <h2>Encode & Decode Strings</h2>
+        <span class="complexity">O(n) Time</span>
+        <p><b>Goal:</b> Serialize list of strings to one string.</p>
+        <h3>Technique: Length Prefixing</h3>
+        <p><b>Why Length Prefix?</b> Simple delimiters (`,`, `|`) break if strings contain them. Escaping gets complex. Length prefix is unambiguous: tells you exactly how many chars to read.</p>
+        <p><b>Key Insight:</b> Encode metadata (length) separate from data (string). Decoder knows where one string ends and next begins, regardless of content. Handles any character, even delimiter itself.</p>
+        <div class="code-box">Enc: "4#neet4#code" (len#str)
+Dec: Read digits until '#', parse len, read slice.</div>
+        <p class="tag">Stateless:</p> No global state needed, handles any char.
+    </div>
+
+    <!-- 7. Product of Array Except Self -->
+    <div class="box">
+        <h2>Product Except Self</h2>
+        <span class="complexity">O(n) Time / O(1) Extra Space</span>
+        <p><b>Goal:</b> Output[i] = product of all except nums[i]. No division.</p>
+        <h3>Technique: Prefix & Suffix</h3>
+        <p><b>Why Prefix/Suffix?</b> Division trick (total product / nums[i]) fails with zeros. Instead, decompose: product except i = (product before i) × (product after i).</p>
+        <p><b>Key Insight:</b> Build answer in two passes. First pass: accumulate products from left. Second pass: multiply by products from right. Clever use of output array avoids extra space.</p>
+        <ol>
+            <li>Pass 1 (L->R): `res[i]` = `res[i-1] * nums[i-1]`. (Prefix)</li>
+            <li>Pass 2 (R->L): Maintain `postfix` var. `res[i] *= postfix`. Update `postfix *= nums[i]`.</li>
+        </ol>
+        <div class="code-box">res[0]=1
+for i=1..n: res[i] = res[i-1]*nums[i-1]
+post=1
+for i=n-1..0: res[i]*=post; post*=nums[i]</div>
+    </div>
+
+    <!-- 8. Valid Sudoku -->
+    <div class="box">
+        <h2>Valid Sudoku</h2>
+        <span class="complexity">O(1) Time (Fixed 9x9)</span>
+        <p><b>Goal:</b> Check duplicates in Row, Col, 3x3 Box.</p>
+        <h3>Technique: Composite Keys</h3>
+        <p><b>Why Composite Keys?</b> Need to track 27 constraints (9 rows, 9 cols, 9 boxes). Could use 27 sets, but encoding position+value into single key is cleaner.</p>
+        <p><b>Key Insight:</b> Each cell participates in 3 constraints. Encode each as unique string: "r5:3" = "3 in row 5", "c2:3" = "3 in col 2", "b4:3" = "3 in box 4". One set tracks all.</p>
+        <div class="code-box">seen.add("r" + row + val)
+seen.add("c" + col + val)
+seen.add("b" + (r/3)*3+(c/3) + val)</div>
+        <p><b>Box Index:</b> `(row / 3) * 3 + (col / 3)` maps (0..8, 0..8) to 0..8.</p>
+    </div>
+
+    <!-- 9. Longest Consecutive Sequence -->
+    <div class="box">
+        <h2>Longest Consecutive Seq</h2>
+        <span class="complexity">O(n) Time</span>
+        <p><b>Goal:</b> Length of longest seq (1, 2, 3, 4) in unsorted array.</p>
+        <h3>Technique: Start-of-Sequence Check</h3>
+        <p><b>Why Start-of-Sequence?</b> Sorting finds sequences easily but is O(n log n). Hash set gives O(1) lookups. Key: only count from sequence starts to avoid redundant work.</p>
+        <p><b>Key Insight:</b> If (n-1) exists, n is NOT a sequence start—skip it. Only when (n-1) missing, n begins a sequence. Walk forward counting n+1, n+2... Each element visited at most twice: once in outer loop, once in inner loop. Still O(n)!</p>
+        <ol>
+            <li>Put all nums in Set.</li>
+            <li>Iterate nums. If `(n-1)` in Set, <b>SKIP</b> (it's not start).</li>
+            <li>If `(n-1)` NOT in Set, it IS start. Loop `n+1`, `n+2`... while in Set. Count length.</li>
+        </ol>
+        <div class="code-box">if !set.has(n-1):
+  curr = n
+  while set.has(curr+1): curr++</div>
+    </div>
+
+</div>
+
+</body>
+</html>
