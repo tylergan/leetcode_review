@@ -24,6 +24,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
+| 3Sum | Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]]... | [3Sum.go](two_pointers/3Sum.go) | [✓](two_pointers/3Sum_test.go) |
 | Two Integer Sum 2 | Given an array of integers numbers that is sorted in non-decreasing order. | [two_integer_sum_2.go](two_pointers/two_integer_sum_2.go) | [✓](two_pointers/two_integer_sum_2_test.go) |
 | Valid Palindrome | Given a string s, return true if it is a palindrome, otherwise return false. | [valid_palindrome.go](two_pointers/valid_palindrome.go) | [✓](two_pointers/valid_palindrome_test.go) |
 
