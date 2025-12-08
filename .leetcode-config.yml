@@ -1,0 +1,19 @@
+# LeetCode Review Configuration
+# Customize how the README generator works
+
+# Folders to ignore when scanning for problem categories
+# Add any folder names here that should NOT be treated as problem categories
+ignore_folders:
+  - .git
+  - .github
+  - scripts
+  - docs
+  - node_modules
+  - venv
+  - __pycache__
+
+# GitHub Pages Configuration
+github_pages:
+  enabled: true
+  username: tylergan
+  repository: leetcode_review

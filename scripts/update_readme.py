@@ -6,21 +6,61 @@ Scans directories for problem files and creates organized documentation.
 
 import os
 import re
+import yaml
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Set
 
-# ============================================================================
-# GitHub Pages Configuration
-# ============================================================================
-# If you have GitHub Pages enabled, set USE_GITHUB_PAGES to True and update
-# your GitHub username and repository name below. The cheatsheet link will
-# use the GitHub Pages URL (https://username.github.io/repo/...).
-#
-# If you prefer local file paths, set USE_GITHUB_PAGES to False.
-# ============================================================================
-GITHUB_USERNAME = "tylergan"  # Change this to your GitHub username
-GITHUB_REPO = "leetcode_review"  # Change this to your repo name
-USE_GITHUB_PAGES = True  # Set to False to use local paths
+
+def load_config(base_path: Path) -> Dict:
+    """Load configuration from .leetcode-config.yml"""
+    config_path = base_path / '.leetcode-config.yml'
+
+    # Default configuration
+    default_config = {
+        'ignore_folders': ['.git', '.github', 'scripts', 'docs', 'node_modules', 'venv', '__pycache__'],
+        'github_pages': {
+            'enabled': True,
+            'username': 'tylergan',
+            'repository': 'leetcode_review'
+        }
+    }
+
+    if not config_path.exists():
+        print(f"⚠️  No config file found at {config_path}, using defaults")
+        return default_config
+
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+            return config if config else default_config
+    except Exception as e:
+        print(f"⚠️  Error loading config: {e}, using defaults")
+        return default_config
+
+
+def get_categories(base_path: Path, ignore_folders: Set[str]) -> List[str]:
+    """Auto-detect problem categories by scanning directories."""
+    categories = []
+
+    for item in sorted(base_path.iterdir()):
+        # Only consider directories
+        if not item.is_dir():
+            continue
+
+        # Skip hidden folders and ignored folders
+        if item.name.startswith('.') or item.name in ignore_folders:
+            continue
+
+        # Check if directory contains any .go files (excluding tests)
+        has_problems = any(
+            f.suffix == '.go' and not f.name.endswith('_test.go')
+            for f in item.glob('*.go')
+        )
+
+        if has_problems:
+            categories.append(item.name)
+
+    return categories
 
 
 def extract_problem_info(file_path: Path) -> Dict[str, str]:
@@ -73,7 +113,7 @@ def scan_directory(dir_path: Path) -> List[Tuple[str, Path, Dict]]:
     return problems
 
 
-def generate_readme(base_path: Path) -> str:
+def generate_readme(base_path: Path, config: Dict) -> str:
     """Generate complete README content."""
     readme_lines = [
         "# LeetCode Review",
@@ -84,8 +124,19 @@ def generate_readme(base_path: Path) -> str:
         ""
     ]
 
-    # Scan each category directory
-    categories = ['arrays']  # Add more categories as needed
+    # Get configuration
+    ignore_folders = set(config.get('ignore_folders', []))
+    github_pages = config.get('github_pages', {})
+    use_github_pages = github_pages.get('enabled', False)
+    github_username = github_pages.get('username', '')
+    github_repo = github_pages.get('repository', '')
+
+    # Auto-detect categories
+    categories = get_categories(base_path, ignore_folders)
+
+    if not categories:
+        readme_lines.append("_No problem categories found yet. Add your first problem to get started!_")
+        readme_lines.append("")
 
     for category in categories:
         category_path = base_path / category
@@ -99,8 +150,8 @@ def generate_readme(base_path: Path) -> str:
         # Check if cheatsheet exists
         cheatsheet_path = category_path / 'cheatsheet.html'
         if cheatsheet_path.exists():
-            if USE_GITHUB_PAGES:
-                cheatsheet_url = f"https://{GITHUB_USERNAME}.github.io/{GITHUB_REPO}/{category}/cheatsheet.html"
+            if use_github_pages and github_username and github_repo:
+                cheatsheet_url = f"https://{github_username}.github.io/{github_repo}/{category}/cheatsheet.html"
             else:
                 cheatsheet_url = f"{category}/cheatsheet.html"
             readme_lines.append(f"📄 **[View Cheat Sheet]({cheatsheet_url})** - Quick reference guide for {category} problems")
@@ -155,6 +206,7 @@ def generate_readme(base_path: Path) -> str:
         "## 🎯 Pre-commit Hook",
         "",
         "This repository includes a pre-commit hook that:",
+        "- Updates this README automatically",
         "- Formats Go code with `go fmt`",
         "- Runs all tests before allowing commits",
         "",
@@ -170,18 +222,24 @@ def generate_readme(base_path: Path) -> str:
         ""
     ])
 
-    if USE_GITHUB_PAGES:
+    if use_github_pages:
         readme_lines.append(f"Cheat sheets are hosted on GitHub Pages. Click the links above to view them online!")
     else:
         readme_lines.append("View the cheat sheets by opening the HTML files in your browser.")
 
     readme_lines.extend([
         "",
+        "## ⚙️ Configuration",
+        "",
+        "Customize the README generator by editing `.leetcode-config.yml`:",
+        "- Add folders to ignore when scanning for categories",
+        "- Configure GitHub Pages settings",
+        "",
         "## 🔄 Updating This README",
         "",
-        "This README is automatically generated. To update it, run:",
+        "This README is automatically generated. To update it manually, run:",
         "```bash",
-        "python3 update_readme.py",
+        "python3 scripts/update_readme.py",
         "```",
         ""
     ])
@@ -191,19 +249,29 @@ def generate_readme(base_path: Path) -> str:
 
 def main():
     """Main entry point."""
-    # Get the base directory (where the script is located)
+    # Get the base directory (parent of scripts folder where the script is located)
     script_dir = Path(__file__).parent
+    base_path = script_dir.parent
+
+    # Load configuration
+    config = load_config(base_path)
 
     # Generate README content
-    readme_content = generate_readme(script_dir)
+    readme_content = generate_readme(base_path, config)
 
     # Write to README.md
-    readme_path = script_dir / 'README.md'
+    readme_path = base_path / 'README.md'
     with open(readme_path, 'w', encoding='utf-8') as f:
         f.write(readme_content)
 
     print(f"✓ README.md updated successfully!")
     print(f"  Location: {readme_path}")
+
+    # Show detected categories
+    ignore_folders = set(config.get('ignore_folders', []))
+    categories = get_categories(base_path, ignore_folders)
+    if categories:
+        print(f"  Categories: {', '.join(categories)}")
 
 
 if __name__ == '__main__':

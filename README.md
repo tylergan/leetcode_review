@@ -40,6 +40,7 @@ go test ./arrays -run TestTwoSum
 ## 🎯 Pre-commit Hook
 
 This repository includes a pre-commit hook that:
+- Updates this README automatically
 - Formats Go code with `go fmt`
 - Runs all tests before allowing commits
 
@@ -55,9 +56,15 @@ Each category includes a comprehensive cheat sheet with:
 
 Cheat sheets are hosted on GitHub Pages. Click the links above to view them online!
 
+## ⚙️ Configuration
+
+Customize the README generator by editing `.leetcode-config.yml`:
+- Add folders to ignore when scanning for categories
+- Configure GitHub Pages settings
+
 ## 🔄 Updating This README
 
-This README is automatically generated. To update it, run:
+This README is automatically generated. To update it manually, run:
 ```bash
-python3 update_readme.py
+python3 scripts/update_readme.py
 ```
