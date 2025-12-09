@@ -26,6 +26,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 |---------|-------------|----------|-------|
 | 3Sum | Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]]... | [3Sum.go](two_pointers/3Sum.go) | [✓](two_pointers/3Sum_test.go) |
 | Container With Most Water | You are given an integer array heights where heights[i] represents the height of... | [container_with_most_water.go](two_pointers/container_with_most_water.go) | [✓](two_pointers/container_with_most_water_test.go) |
+| Trapping Rain Water | You are given an array of non-negative integers height which represent an elevat... | [trapping_rain_water.go](two_pointers/trapping_rain_water.go) | [✓](two_pointers/trapping_rain_water_test.go) |
 | Two Integer Sum 2 | Given an array of integers numbers that is sorted in non-decreasing order. | [two_integer_sum_2.go](two_pointers/two_integer_sum_2.go) | [✓](two_pointers/two_integer_sum_2_test.go) |
 | Valid Palindrome | Given a string s, return true if it is a palindrome, otherwise return false. | [valid_palindrome.go](two_pointers/valid_palindrome.go) | [✓](two_pointers/valid_palindrome_test.go) |
 
