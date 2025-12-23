@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LeetCode Two Pointers Cheat Sheet</title>
+    <style>
+        @page { size: A4; margin: 0.3cm 0.3cm 0.3cm 0.3cm; }
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 7pt;
+            line-height: 1.2;
+            color: #000;
+            background: #fff;
+        margin: 0;
+            padding: 0;
+        }
+        .container {
+            column-count: 3;
+            column-gap: 0.25cm;
+            width: 100%;
+        }
+        .box {
+            border: 1px solid #444;
+            padding: 2px 4px;
+            margin-bottom: 4px;
+            break-inside: avoid;
+            background-color: #fff;
+        }
+        h2 {
+            font-size: 8pt;
+            font-weight: bold;
+            background-color: #eee;
+            padding: 2px;
+            margin: 0 0 2px 0;
+            border-bottom: 1px solid #000;
+            text-transform: uppercase;
+        }
+        h3 {
+            font-size: 7.5pt;
+            font-weight: bold;
+            margin: 2px 0 1px 0;
+            text-decoration: underline;
+            color: #004085;
+        }
+        p { margin: 0 0 2px 0; text-align: left; }
+        ul { padding-left: 10px; margin: 0; }
+        li { margin: 0; }
+        .code-box {
+            font-family: "Courier New", monospace;
+            background-color: #f4f4f4;
+            border-left: 2px solid #333;
+            padding: 1px 2px;
+            margin: 1px 0;
+            font-size: 6.5pt;
+            white-space: pre-wrap;
+        }
+        .tag {
+            font-weight: bold;
+            color: #d63384;
+            font-size: 6.5pt;
+        }
+        .complexity {
+            font-weight: bold;
+            font-size: 6.5pt;
+            color: #007bff;
+            float: right;
+        }
+        .warn { color: #b00; font-weight: bold; }
+        .intro-box {
+            background-color: #fff3cd;
+            border: 2px solid #856404;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Introduction -->
+    <div class="intro-box">
+        <h2>When to Use Two Pointers?</h2>
+        <p><b>Core Idea:</b> Maintain two positions in data structure and move them based on conditions. Avoids nested loops (O(n²) → O(n)).</p>
+        <h3>Pattern Recognition:</h3>
+        <ul>
+            <li><b>Sorted Array:</b> Use opposing/convergent pointers from ends</li>
+            <li><b>Palindrome/Symmetry:</b> Compare from both ends moving inward</li>
+            <li><b>Optimization Problems:</b> Greedy choice about which pointer to move</li>
+            <li><b>Space Constraint O(1):</b> Can't use hash map, use pointers instead</li>
+            <li><b>Find Pairs/Triplets:</b> Fix element(s), use two pointers for rest</li>
+        </ul>
+        <h3>Movement Strategies:</h3>
+        <p><b>Convergent:</b> Start at both ends (i=0, j=n-1), move inward based on condition.</p>
+        <p><b>Same Direction:</b> Both move left-to-right at different speeds (sliding window).</p>
+        <p><b>Why It Works:</b> Each pointer moves at most n times = O(n) total. Compare this to brute force checking all pairs = O(n²).</p>
+    </div>
+
+    <!-- 1. Valid Palindrome -->
+    <div class="box">
+        <h2>Valid Palindrome</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Check if string is palindrome (ignoring non-alphanumeric, case-insensitive).</p>
+        <h3>Technique: Convergent Two Pointers</h3>
+        <p><b>Why Two Pointers?</b> Palindrome = symmetric. Compare first with last, second with second-last, etc. Two pointers naturally express this symmetry. Alternative (reverse string) uses O(n) space; this uses O(1).</p>
+        <p><b>Key Insight:</b> Skip invalid characters while maintaining pointer positions. Inner loops advance past non-alphanumeric before comparing. Only move to next comparison when both pointers point to valid chars.</p>
+        <div class="code-box">i, j := 0, len(s)-1
+for i < j:
+  while i<j && !isAlphaNum(s[i]): i++
+  while i<j && !isAlphaNum(s[j]): j--
+  if toLower(s[i]) != toLower(s[j]): return false
+  i++; j--</div>
+        <p class="warn">Trap:</p> Check `i < j` in skip loops to avoid index errors.
+    </div>
+
+    <!-- 2. Two Integer Sum II -->
+    <div class="box">
+        <h2>Two Integer Sum II</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Find two numbers in <b>sorted</b> array that sum to target.</p>
+        <h3>Technique: Convergent Search</h3>
+        <p><b>Why Two Pointers?</b> Array is sorted—this is the key! If sum too small, need bigger number (move left pointer right). If sum too large, need smaller number (move right pointer left). Hash map works but uses O(n) space; problem demands O(1).</p>
+        <p><b>Key Insight:</b> Sorted array gives direction. Each comparison eliminates one possibility. Pointers always converge because we're monotonically narrowing search space. Can't miss the answer.</p>
+        <div class="code-box">l, r := 0, len(nums)-1
+while l < r:
+  sum := nums[l] + nums[r]
+  if sum < target: l++
+  else if sum > target: r--
+  else: return [l+1, r+1]  // 1-indexed</div>
+        <p class="tag">Sorted Required:</p> Won't work on unsorted array. Sort first if needed.
+    </div>
+
+    <!-- 3. 3Sum -->
+    <div class="box">
+        <h2>3Sum</h2>
+        <span class="complexity">O(n²) Time / O(1) Space</span>
+        <p><b>Goal:</b> Find all unique triplets that sum to zero.</p>
+        <h3>Technique: Fixed + Two Pointers</h3>
+        <p><b>Why This Approach?</b> Brute force is O(n³) checking all triplets. Instead, fix first element, then use two pointers for remaining two (O(n) for each fixed element = O(n²) total). Must sort first to enable two pointer technique and skip duplicates efficiently.</p>
+        <p><b>Key Insight:</b> After sorting, fix `i`, search for `j,k` where `nums[i]+nums[j]+nums[k]=0`. This reduces 3Sum to many 2Sum problems. Dedup by skipping consecutive equal values at all three positions.</p>
+        <ol>
+            <li>Sort array O(n log n).</li>
+            <li>For each `i`: set `j=i+1`, `k=n-1`.</li>
+            <li>Use two pointers: if sum<0, j++; if sum>0, k--; if sum=0, save & skip dupes.</li>
+            <li>Skip duplicates: while `nums[i]==nums[i-1]` continue.</li>
+        </ol>
+        <div class="code-box">sort(nums)
+for i in 0..n:
+  if i>0 && nums[i]==nums[i-1]: continue
+  j, k := i+1, n-1
+  while j < k:
+    sum := nums[i]+nums[j]+nums[k]
+    if sum<0: j++
+    else if sum>0: k--
+    else:
+      res.add([nums[i],nums[j],nums[k]])
+      j++; while j<k && nums[j]==nums[j-1]: j++
+      k--; while j<k && nums[k]==nums[k+1]: k--</div>
+        <p class="warn">Dedup Critical:</p> Must skip duplicates at all 3 positions to avoid duplicate triplets.
+    </div>
+
+    <!-- 4. Container With Most Water -->
+    <div class="box">
+        <h2>Container With Most Water</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Find two bars that form container with max water area.</p>
+        <h3>Technique: Greedy Two Pointers</h3>
+        <p><b>Why Greedy Works?</b> Area = min(h[i], h[j]) × (j - i). Start with max width (i=0, j=n-1). To improve area, we need taller bars. Moving the taller pointer only decreases width without potential height gain. Moving shorter pointer might find taller bar. This greedy choice is optimal.</p>
+        <p><b>Key Insight:</b> We never miss optimal solution. When we move shorter pointer, we're abandoning all pairs with current pointer (proven to be suboptimal due to width decrease). Each step eliminates possibilities that can't be better.</p>
+        <div class="code-box">i, j := 0, n-1
+maxArea := 0
+while i < j:
+  area := min(h[i], h[j]) * (j - i)
+  maxArea = max(maxArea, area)
+  if h[i] < h[j]: i++
+  else: j--</div>
+        <p><b>Proof Sketch:</b> If h[i]<h[j], any pair (i,k) where k<j has area ≤ min(h[i],h[k])×(k-i) < h[i]×(j-i) ≤ current area. Safe to skip.</p>
+    </div>
+
+    <!-- 5. Trapping Rain Water -->
+    <div class="box">
+        <h2>Trapping Rain Water</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Calculate water trapped between elevation bars.</p>
+        <h3>Technique: Two Pointers + Max Tracking</h3>
+        <p><b>Why This Works?</b> Water at position i = min(leftMax, rightMax) - h[i]. Brute force: for each position, scan left and right for max (O(n²)). Precompute arrays: O(n) time but O(n) space. Two pointers: track maxes while moving, O(1) space!</p>
+        <p><b>Key Insight:</b> Water level determined by shorter wall. If leftMax < rightMax, we KNOW water at left pointer is limited by leftMax (rightMax is guaranteed higher). Process left side. Vice versa for right. Only need to track which side is limiting factor.</p>
+        <div class="code-box">l, r := 0, n-1
+leftMax, rightMax := h[l], h[r]
+water := 0
+while l < r:
+  if leftMax < rightMax:
+    l++
+    leftMax = max(leftMax, h[l])
+    water += leftMax - h[l]
+  else:
+    r--
+    rightMax = max(rightMax, h[r])
+    water += rightMax - h[r]</div>
+        <p><b>Subtle Point:</b> We don't need exact max on both sides, just need to know which side is limiting. The smaller of leftMax/rightMax determines water level.</p>
+    </div>
+
+    <!-- Pattern Summary -->
+    <div class="intro-box">
+        <h2>Two Pointer Patterns Summary</h2>
+        <h3>1. Convergent (Opposite Ends):</h3>
+        <p><b>Use When:</b> Sorted array, palindrome check, optimization with width×height.</p>
+        <p><b>Examples:</b> Two Sum II, Valid Palindrome, Container With Most Water.</p>
+        <p><b>Template:</b> `l=0, r=n-1; while l<r: move l or r based on condition`</p>
+
+        <h3>2. Fixed + Two Pointers:</h3>
+        <p><b>Use When:</b> Finding k-tuples (triplets, quadruplets) that satisfy condition.</p>
+        <p><b>Examples:</b> 3Sum, 4Sum.</p>
+        <p><b>Template:</b> `for i: {l=i+1, r=n-1; two pointer search}`</p>
+
+        <h3>3. Greedy Pointer Movement:</h3>
+        <p><b>Use When:</b> Optimization problem where one pointer choice is clearly better.</p>
+        <p><b>Examples:</b> Container With Most Water (move shorter bar).</p>
+        <p><b>Key:</b> Prove moving one pointer can't miss optimal solution.</p>
+
+        <h3>4. State Tracking Pointers:</h3>
+        <p><b>Use When:</b> Need to maintain running state (max, min, sum) while traversing.</p>
+        <p><b>Examples:</b> Trapping Rain Water (track leftMax/rightMax).</p>
+        <p><b>Key:</b> Update state variables as pointers move.</p>
+
+        <p class="tag">Common Thread:</p> All avoid O(n²) by intelligently eliminating impossible solutions as pointers move. Each pointer moves at most n times = O(n) total operations.
+    </div>
+
+</div>
+
+</body>
+</html>
