@@ -29,6 +29,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Longest Substr Wo Repeating Chars | Given a string s, find the length of the longest substring without duplicate cha... | [longest_substr_wo_repeating_chars.go](sliding_window/longest_substr_wo_repeating_chars.go) | [✓](sliding_window/longest_substr_wo_repeating_chars_test.go) |
 | Minimim Window Substring | Given two strings s and t, return the shortest substring of s such that every ch... | [minimim_window_substring.go](sliding_window/minimim_window_substring.go) | [✓](sliding_window/minimim_window_substring_test.go) |
 | Permutation In String | You are given two strings s1 and s2. | [permutation_in_string.go](sliding_window/permutation_in_string.go) | [✓](sliding_window/permutation_in_string_test.go) |
+| Sliding Window Maximum | You are given an array of integers nums and an integer k. There is a sliding win... | [sliding_window_maximum.go](sliding_window/sliding_window_maximum.go) | [✓](sliding_window/sliding_window_maximum_test.go) |
 
 ### Two_Pointers
 
