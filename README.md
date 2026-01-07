@@ -37,6 +37,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
+| Eval Rpn | You are given an array of strings tokens that represents a valid arithmetic expr... | [eval_RPN.go](stack/eval_RPN.go) | [✓](stack/eval_RPN_test.go) |
 | Minimum Stack | Design a stack class that supports the push, pop, top, and getMin operations. | [minimum_stack.go](stack/minimum_stack.go) | [✓](stack/minimum_stack_test.go) |
 | Valid Parantheses | You are given a string s consisting of the following characters: '(', ')', '{', ... | [valid_parantheses.go](stack/valid_parantheses.go) | [✓](stack/valid_parantheses_test.go) |
 
