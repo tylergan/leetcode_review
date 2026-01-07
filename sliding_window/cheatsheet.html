@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LeetCode Sliding Window Cheat Sheet</title>
+    <style>
+        @page { size: A4; margin: 0.3cm 0.3cm 0.3cm 0.3cm; }
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 7pt;
+            line-height: 1.2;
+            color: #000;
+            background: #fff;
+        margin: 0;
+            padding: 0;
+        }
+        .container {
+            column-count: 3;
+            column-gap: 0.25cm;
+            width: 100%;
+        }
+        .box {
+            border: 1px solid #444;
+            padding: 2px 4px;
+            margin-bottom: 4px;
+            break-inside: avoid;
+            background-color: #fff;
+        }
+        h2 {
+            font-size: 8pt;
+            font-weight: bold;
+            background-color: #eee;
+            padding: 2px;
+            margin: 0 0 2px 0;
+            border-bottom: 1px solid #000;
+            text-transform: uppercase;
+        }
+        h3 {
+            font-size: 7.5pt;
+            font-weight: bold;
+            margin: 2px 0 1px 0;
+            text-decoration: underline;
+            color: #004085;
+        }
+        p { margin: 0 0 2px 0; text-align: left; }
+        ul { padding-left: 10px; margin: 0; }
+        li { margin: 0; }
+        .code-box {
+            font-family: "Courier New", monospace;
+            background-color: #f4f4f4;
+            border-left: 2px solid #333;
+            padding: 1px 2px;
+            margin: 1px 0;
+            font-size: 6.5pt;
+            white-space: pre-wrap;
+        }
+        .tag {
+            font-weight: bold;
+            color: #d63384;
+            font-size: 6.5pt;
+        }
+        .complexity {
+            font-weight: bold;
+            font-size: 6.5pt;
+            color: #007bff;
+            float: right;
+        }
+        .warn { color: #b00; font-weight: bold; }
+        .intro-box {
+            background-color: #fff3cd;
+            border: 2px solid #856404;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Introduction -->
+    <div class="intro-box">
+        <h2>When to Use Sliding Window?</h2>
+        <p><b>Core Idea:</b> Maintain a window (subarray/substring) and expand/shrink it based on conditions. Avoids recomputing from scratch (O(n²) → O(n)).</p>
+        <h3>Pattern Recognition:</h3>
+        <ul>
+            <li><b>Contiguous Subarray/Substring:</b> "Find longest/shortest substring/subarray..."</li>
+            <li><b>Window Constraints:</b> "...with at most k distinct", "...containing all chars"</li>
+            <li><b>Optimization:</b> "Maximum/minimum sum/length/count in window"</li>
+            <li><b>Fixed Size Window:</b> "Window of size k", "every k elements"</li>
+        </ul>
+        <h3>Window Types:</h3>
+        <p><b>Variable Size:</b> Expand right, shrink left when constraint violated. Track max/min length.</p>
+        <p><b>Fixed Size:</b> Slide window of size k, add new element, remove old element.</p>
+        <h3>Template:</h3>
+        <div class="code-box">i := 0  // left pointer
+for j := 0; j < n; j++:  // right pointer
+  // expand: add nums[j] to window
+  for window_invalid:
+    // shrink: remove nums[i] from window
+    i++
+  // update result</div>
+    </div>
+
+    <!-- 1. Best Time to Buy and Sell Stock -->
+    <div class="box">
+        <h2>Best Time to Buy/Sell Stock</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Find max profit from buying low and selling high (buy before sell).</p>
+        <h3>Technique: Track Minimum</h3>
+        <p><b>Why Sliding Window?</b> For each sell day, we need the minimum buy price before it. Instead of scanning left each time (O(n²)), track running minimum as we go. Window is implicitly [minBuy...currentDay].</p>
+        <p><b>Key Insight:</b> At each position, we have two choices: (1) sell at current price (profit = price - minBuy), or (2) update minBuy if current is lower. No need to track window explicitly.</p>
+        <div class="code-box">buy := prices[0]
+maxProfit := 0
+for _, sell := range prices[1:]:
+  maxProfit = max(maxProfit, sell - buy)
+  if sell < buy:
+    buy = sell  // found better buy point</div>
+        <p class="tag">Simplest Pattern:</p> Track single state (minimum/maximum) as window expands.
+    </div>
+
+    <!-- 2. Longest Substring Without Repeating Characters -->
+    <div class="box">
+        <h2>Longest Substring Without Repeating Chars</h2>
+        <span class="complexity">O(n) Time / O(min(n,m)) Space</span>
+        <p><b>Goal:</b> Find length of longest substring with all unique characters.</p>
+        <h3>Technique: Variable Window + Set</h3>
+        <p><b>Why Sliding Window?</b> Brute force checks all substrings O(n²). With sliding window: expand right adding chars, shrink left when duplicate found. Each char processed at most twice (add once, remove once) = O(n).</p>
+        <p><b>Key Insight:</b> Use set to track chars in current window. When new char already exists, shrink from left until it's removed. Window always contains unique chars.</p>
+        <div class="code-box">inSubstr := map[rune]bool{}
+i := 0
+res := 0
+for j, char := range s:
+  for i < j && inSubstr[char]:
+    delete(inSubstr, rune(s[i]))
+    i++
+  inSubstr[char] = true
+  res = max(res, j - i + 1)</div>
+        <p class="warn">Trap:</p> Shrink loop must delete chars until duplicate removed, not just once.
+    </div>
+
+    <!-- 3. Longest Repeating Character Replacement -->
+    <div class="box">
+        <h2>Longest Repeating Char Replacement</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> With at most k replacements, find longest substring of same character.</p>
+        <h3>Technique: Variable Window + Frequency</h3>
+        <p><b>Why Sliding Window?</b> Window is valid if: (window_length - max_freq) ≤ k. The chars NOT matching the most frequent char are what we'd replace. Expand right, shrink left when replacements exceed k.</p>
+        <p><b>Key Insight:</b> Track frequency of each char in window. Chars to replace = windowLen - maxFreq. If this exceeds k, shrink window. maxFreq can be stale (not decremented) because we only care about finding longer valid windows.</p>
+        <div class="code-box">count := [26]int{}
+maxFreq := 0
+i := 0
+res := 0
+for j := 0; j < len(s); j++:
+  count[s[j]-'A']++
+  maxFreq = max(maxFreq, count[s[j]-'A'])
+  for (j - i + 1) - maxFreq > k:
+    count[s[i]-'A']--
+    i++
+  res = max(res, j - i + 1)</div>
+        <p class="tag">Key Formula:</p> replacements_needed = window_length - max_frequency
+    </div>
+
+    <!-- 4. Permutation in String -->
+    <div class="box">
+        <h2>Permutation in String</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Check if s2 contains any permutation of s1 as substring.</p>
+        <h3>Technique: Fixed Window + Frequency Match</h3>
+        <p><b>Why Sliding Window?</b> Permutation = same character counts in different order. Use fixed window of size len(s1). Slide through s2, comparing frequency arrays. If they match, permutation found.</p>
+        <p><b>Key Insight:</b> Window size is fixed (len(s1)). Maintain frequency count of current window. Slide by adding new char, removing old char. Compare arrays in O(26) = O(1).</p>
+        <div class="code-box">var count1, count2 [26]int
+// Initialize first window
+for i := 0; i < len(s1); i++:
+  count1[s1[i]-'a']++
+  count2[s2[i]-'a']++
+if count1 == count2: return true
+// Slide the window
+for i := len(s1); i < len(s2); i++:
+  count2[s2[i]-'a']++        // add right
+  count2[s2[i-len(s1)]-'a']-- // remove left
+  if count1 == count2: return true</div>
+        <p class="warn">Fixed Window:</p> Size never changes. Only slide, don't expand/shrink.
+    </div>
+
+    <!-- 5. Minimum Window Substring -->
+    <div class="box">
+        <h2>Minimum Window Substring</h2>
+        <span class="complexity">O(n) Time / O(m) Space</span>
+        <p><b>Goal:</b> Find shortest substring of s containing all chars of t.</p>
+        <h3>Technique: Variable Window + Count Match</h3>
+        <p><b>Why Sliding Window?</b> Expand right until window contains all chars of t. Then shrink left to find minimum. Track "letters complete" to know when all t chars are satisfied.</p>
+        <p><b>Key Insight:</b> Track two things: (1) frequency of each t char needed, (2) how many distinct chars have reached required count. When lettersComplete == len(tCount), window is valid. Shrink to find minimum.</p>
+        <div class="code-box">tCount := map[rune]int{}  // required counts
+for _, c := range t: tCount[c]++
+lettersComplete := 0
+currCount := map[rune]int{}
+i := 0
+for j := 0; j < len(s); j++:
+  // Expand: add s[j]
+  if tFreq, ok := tCount[s[j]]; ok:
+    currCount[s[j]]++
+    if currCount[s[j]] == tFreq:
+      lettersComplete++
+  // Shrink while valid
+  for lettersComplete == len(tCount):
+    update result if smaller
+    // remove s[i]
+    if tFreq, ok := tCount[s[i]]; ok:
+      currCount[s[i]]--
+      if currCount[s[i]] < tFreq:
+        lettersComplete--
+    i++</div>
+        <p class="tag">Two Counts:</p> Track both required frequency and "satisfied" count.
+    </div>
+
+    <!-- 6. Sliding Window Maximum -->
+    <div class="box">
+        <h2>Sliding Window Maximum</h2>
+        <span class="complexity">O(n) Time / O(k) Space</span>
+        <p><b>Goal:</b> Return max element in each window of size k.</p>
+        <h3>Technique: Fixed Window + Monotonic Deque</h3>
+        <p><b>Why Deque?</b> Naive approach: for each window, find max = O(nk). Deque maintains indices in decreasing order of values. Front is always the max. When new element comes, remove all smaller from back (they can never be max).</p>
+        <p><b>Key Insight:</b> Deque stores potential maximums. When sliding: (1) remove front if out of window, (2) remove all back elements smaller than new (they're useless), (3) add new to back. Front is current max.</p>
+        <div class="code-box">deque := []int{}  // stores indices
+i, j := 0, 0
+for j < len(nums):
+  // Remove smaller elements from back
+  for len(deque) > 0 && nums[deque[len(deque)-1]] < nums[j]:
+    deque = deque[:len(deque)-1]
+  deque = append(deque, j)
+  // Remove front if out of window
+  if i > deque[0]:
+    deque = deque[1:]
+  // Record max when window is full
+  if j + 1 >= k:
+    output = append(output, nums[deque[0]])
+    i++
+  j++</div>
+        <p class="warn">Store Indices:</p> Store indices in deque, not values, to check window bounds.
+    </div>
+
+    <!-- Pattern Summary -->
+    <div class="intro-box">
+        <h2>Sliding Window Patterns Summary</h2>
+        <h3>1. Variable Window (Expand/Shrink):</h3>
+        <p><b>Use When:</b> Find longest/shortest subarray satisfying condition.</p>
+        <p><b>Examples:</b> Longest Substring Without Repeating, Minimum Window Substring.</p>
+        <p><b>Template:</b> Expand j, shrink i when invalid, track result at each step.</p>
+
+        <h3>2. Fixed Window (Slide):</h3>
+        <p><b>Use When:</b> Window size is given (size k), or determined by input (permutation).</p>
+        <p><b>Examples:</b> Permutation in String, Sliding Window Maximum.</p>
+        <p><b>Template:</b> Initialize window, then slide: add right, remove left.</p>
+
+        <h3>3. Track State (Min/Max/Frequency):</h3>
+        <p><b>Use When:</b> Need running min/max or character frequencies.</p>
+        <p><b>Examples:</b> Best Time Buy/Sell (min), Char Replacement (maxFreq).</p>
+        <p><b>Key:</b> Update state incrementally, don't recompute from scratch.</p>
+
+        <h3>4. Monotonic Deque:</h3>
+        <p><b>Use When:</b> Need min/max in sliding window efficiently.</p>
+        <p><b>Examples:</b> Sliding Window Maximum.</p>
+        <p><b>Key:</b> Maintain decreasing (for max) or increasing (for min) order.</p>
+
+        <p class="tag">Common Thread:</p> All avoid O(n²) by maintaining window state incrementally. Expand/shrink or slide the window, updating state in O(1) per step.
+    </div>
+
+</div>
+
+</body>
+</html>
