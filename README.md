@@ -33,6 +33,13 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Permutation In String | You are given two strings s1 and s2. | [permutation_in_string.go](sliding_window/permutation_in_string.go) | [✓](sliding_window/permutation_in_string_test.go) |
 | Sliding Window Maximum | You are given an array of integers nums and an integer k. There is a sliding win... | [sliding_window_maximum.go](sliding_window/sliding_window_maximum.go) | [✓](sliding_window/sliding_window_maximum_test.go) |
 
+### Stack
+
+| Problem | Description | Solution | Tests |
+|---------|-------------|----------|-------|
+| Minimum Stack | Design a stack class that supports the push, pop, top, and getMin operations. | [minimum_stack.go](stack/minimum_stack.go) | [✓](stack/minimum_stack_test.go) |
+| Valid Parantheses | You are given a string s consisting of the following characters: '(', ')', '{', ... | [valid_parantheses.go](stack/valid_parantheses.go) | [✓](stack/valid_parantheses_test.go) |
+
 ### Two_Pointers
 
 📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/two_pointers/cheatsheet.html)** - Quick reference guide for two_pointers problems
