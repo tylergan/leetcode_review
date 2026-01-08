@@ -40,6 +40,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Car Fleet | There are n cars traveling to the same destination on a one-lane highway. | [car_fleet.go](stack/car_fleet.go) | [✓](stack/car_fleet_test.go) |
 | Daily Temperatures | You are given an array of integers temperatures where temperatures[i] represents... | [daily_temperatures.go](stack/daily_temperatures.go) | [✓](stack/daily_temperatures_test.go) |
 | Eval Rpn | You are given an array of strings tokens that represents a valid arithmetic expr... | [eval_RPN.go](stack/eval_RPN.go) | [✓](stack/eval_RPN_test.go) |
+| Largest Rectangle | You are given an array of integers heights where heights[i] represents the heigh... | [largest_rectangle.go](stack/largest_rectangle.go) | [✓](stack/largest_rectangle_test.go) |
 | Minimum Stack | Design a stack class that supports the push, pop, top, and getMin operations. | [minimum_stack.go](stack/minimum_stack.go) | [✓](stack/minimum_stack_test.go) |
 | Valid Parantheses | You are given a string s consisting of the following characters: '(', ')', '{', ... | [valid_parantheses.go](stack/valid_parantheses.go) | [✓](stack/valid_parantheses_test.go) |
 
