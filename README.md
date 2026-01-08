@@ -25,7 +25,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
 | Binary Search | You are given an array of distinct integers nums, sorted in ascending order, and... | [binary_search.go](binary_search/binary_search.go) | [✓](binary_search/binary_search_test.go) |
-| Koko Eating Bananas |  | [koko_eating_bananas.go](binary_search/koko_eating_bananas.go) | ❌ |
+| Koko Eating Bananas | You are given an integer array piles where piles[i] is the number of bananas in ... | [koko_eating_bananas.go](binary_search/koko_eating_bananas.go) | [✓](binary_search/koko_eating_bananas_test.go) |
 | Search 2D Matrix | You are given an m x n 2-D integer array matrix and an integer target. | [search_2d_matrix.go](binary_search/search_2d_matrix.go) | [✓](binary_search/search_2d_matrix_test.go) |
 
 ### Sliding_Window
