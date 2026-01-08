@@ -20,6 +20,12 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Valid Anagram | Given two strings s and t, return true if the two strings are anagrams of each o... | [valid_anagram.go](arrays/valid_anagram.go) | [✓](arrays/valid_anagram_test.go) |
 | Valid Sudoku | You are given a 9 x 9 Sudoku board. A Sudoku board is valid if the following rul... | [valid_sudoku.go](arrays/valid_sudoku.go) | [✓](arrays/valid_sudoku_test.go) |
 
+### Binary_Search
+
+| Problem | Description | Solution | Tests |
+|---------|-------------|----------|-------|
+| Binary Search | You are given an array of distinct integers nums, sorted in ascending order, and... | [binary_search.go](binary_search/binary_search.go) | [✓](binary_search/binary_search_test.go) |
+
 ### Sliding_Window
 
 📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/sliding_window/cheatsheet.html)** - Quick reference guide for sliding_window problems
