@@ -233,6 +233,39 @@ return maxArea</div>
         <p class="tag">Next Smaller Element:</p> Mono increasing stack. Pop when you find something smaller.
     </div>
 
+    <!-- 7. Trapping Rain Water -->
+    <div class="box">
+        <h2>Trapping Rain Water</h2>
+        <span class="complexity">O(n) Time / O(n) Space</span>
+        <p><b>Goal:</b> Calculate total water trapped between bars after rain.</p>
+        <h3>Technique: Monotonic Decreasing Stack</h3>
+        <p><b>Why Stack?</b> Water is trapped between two walls with a lower region between them. We can't know the right wall until we see it. Stack holds bars waiting for a taller bar to appear (their right boundary).</p>
+        <p><b>Key Insight:</b> Unlike prefix-max approach (column by column), stack calculates water <b>layer by layer horizontally</b>. Each pop handles one horizontal layer of water between two walls.</p>
+        <h3>The Three-Element Boundary Pattern:</h3>
+        <p>When we pop from stack, we have access to three critical elements:</p>
+        <ul>
+            <li><b>Current index i</b> = Right boundary (the taller bar that triggered the pop)</li>
+            <li><b>Popped element</b> = Bottom/floor (the element of interest - lowest point)</li>
+            <li><b>New stack top</b> = Left boundary (next element after pop)</li>
+        </ul>
+        <p><b>Why This Works:</b> The monotonic decreasing property guarantees that after popping the bottom, the new top is taller (or equal). Combined with the current bar being taller than bottom, we have a valid "container" with walls on both sides.</p>
+        <div class="code-box">var stack []int  // indices, mono decreasing by height
+res := 0
+for i := 0; i < len(height); i++:
+  for len(stack)>0 && height[i] >= height[stack[top]]:
+    bottomIdx := stack[top]       // Element of interest
+    stack = stack[:len-1]         // Pop bottom
+    if len(stack) > 0:            // Need left wall
+      leftIdx := stack[top]       // Left boundary
+      h := min(height[leftIdx], height[i]) - height[bottomIdx]
+      w := i - leftIdx - 1        // Width between walls
+      res += h * w
+  stack = append(stack, i)
+return res</div>
+        <p class="tag">Layer-by-Layer:</p> Each pop calculates one horizontal water layer. The same "pool" may generate multiple pops as we fill it layer by layer from bottom up.
+        <p class="warn">Must Have Left Wall:</p> After popping bottom, if stack is empty there's no left wall - no water can be trapped. Always check stack not empty before calculating.
+    </div>
+
     <!-- Pattern Summary -->
     <div class="intro-box">
         <h2>Stack Patterns Summary</h2>
@@ -285,6 +318,14 @@ for i := range arr:
   push(i)</div>
         <p><b>Store Indices:</b> Almost always store indices, not values. Need index to calculate distances and access original values.</p>
         <p><b>Leftover Items:</b> Elements remaining on stack have no next greater/smaller. Handle based on problem (often default to 0 or n).</p>
+        <h3>The Three-Element Boundary Pattern:</h3>
+        <p>For problems needing <b>both</b> left and right boundaries (rectangles, water):</p>
+        <ul>
+            <li><b>Current i</b> = Right boundary (triggered the violation)</li>
+            <li><b>Popped element</b> = Element of interest (calculate its contribution)</li>
+            <li><b>New stack top</b> = Left boundary (guaranteed by monotonic property)</li>
+        </ul>
+        <p><b>Why It Works:</b> Monotonic property ensures the element below the popped one is always a valid boundary - it's the nearest element in that direction satisfying the condition (smaller for increasing, larger for decreasing).</p>
     </div>
 
 </div>
