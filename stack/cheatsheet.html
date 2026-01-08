@@ -262,6 +262,18 @@ for i := 0; i < len(height); i++:
       res += h * w
   stack = append(stack, i)
 return res</div>
+        <h3>Column vs Layer Mental Model:</h3>
+        <p><b>Array approach (prefix/suffix):</b> For each column, calculate vertical water height = min(leftMax, rightMax) - height.</p>
+        <p><b>Stack approach:</b> Fill water horizontally between two walls, layer by layer from bottom up. Same rightBound triggers multiple pops, each pop adds one layer on top of the previous.</p>
+        <h3>Concrete Trace - [5, 2, 1, 3]:</h3>
+        <div class="code-box">Stack builds: [5, 2, 1]
+When i=3 (rightBound=3) arrives:
+  Pop #1: bottom=1, left=2, right=3
+    h=min(2,3)-1=1, w=1 → Layer 1 (height 1→2)
+  Pop #2: bottom=2, left=5, right=3 (SAME rightBound!)
+    h=min(5,3)-2=1, w=2 → Layer 2 (height 2→3)
+  Stop: 3 < 5 (rightBound < stack top)</div>
+        <p><b>Key:</b> Within one rightBound's pop loop, successive pops add layers vertically. Each pop has a taller leftBound, filling a wider region. Stops when rightBound becomes the limiting wall.</p>
         <p class="tag">Layer-by-Layer:</p> Each pop calculates one horizontal water layer. The same "pool" may generate multiple pops as we fill it layer by layer from bottom up.
         <p class="warn">Must Have Left Wall:</p> After popping bottom, if stack is empty there's no left wall - no water can be trapped. Always check stack not empty before calculating.
     </div>
