@@ -35,6 +35,8 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 ### Stack
 
+📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/stack/cheatsheet.html)** - Quick reference guide for stack problems
+
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
 | Car Fleet | There are n cars traveling to the same destination on a one-lane highway. | [car_fleet.go](stack/car_fleet.go) | [✓](stack/car_fleet_test.go) |
