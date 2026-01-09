@@ -45,3 +45,22 @@ func findMin(nums []int) int {
 	}
 	return nums[l]
 }
+
+func findMinOther(nums []int) int {
+	res := nums[0]
+	l, r := 0, len(nums)-1
+	for l <= r {
+		if nums[l] < nums[r] { // once both in lower sorted half, it is finished. l could be lowest
+			res = min(res, nums[l])
+			break
+		}
+		m := (l + r) / 2
+		if nums[m] < nums[r] { // otherwise, if the m and r are in sorted half, m could be the lowest
+			res = min(res, nums[m])
+			r = m - 1
+		} else {
+			l = m + 1
+		}
+	}
+	return res
+}
