@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LeetCode Binary Search Cheat Sheet</title>
+    <style>
+        @page { size: A4; margin: 0.3cm 0.3cm 0.3cm 0.3cm; }
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 7pt;
+            line-height: 1.2;
+            color: #000;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            column-count: 3;
+            column-gap: 0.25cm;
+            width: 100%;
+        }
+        .box {
+            border: 1px solid #444;
+            padding: 2px 4px;
+            margin-bottom: 4px;
+            break-inside: avoid;
+            background-color: #fff;
+        }
+        h2 {
+            font-size: 8pt;
+            font-weight: bold;
+            background-color: #eee;
+            padding: 2px;
+            margin: 0 0 2px 0;
+            border-bottom: 1px solid #000;
+            text-transform: uppercase;
+        }
+        h3 {
+            font-size: 7.5pt;
+            font-weight: bold;
+            margin: 2px 0 1px 0;
+            text-decoration: underline;
+            color: #004085;
+        }
+        p { margin: 0 0 2px 0; text-align: left; }
+        ul { padding-left: 10px; margin: 0; }
+        li { margin: 0; }
+        .code-box {
+            font-family: "Courier New", monospace;
+            background-color: #f4f4f4;
+            border-left: 2px solid #333;
+            padding: 1px 2px;
+            margin: 1px 0;
+            font-size: 6.5pt;
+            white-space: pre-wrap;
+        }
+        .tag {
+            font-weight: bold;
+            color: #d63384;
+            font-size: 6.5pt;
+        }
+        .complexity {
+            font-weight: bold;
+            font-size: 6.5pt;
+            color: #007bff;
+            float: right;
+        }
+        .warn { color: #b00; font-weight: bold; }
+        .intro-box {
+            background-color: #fff3cd;
+            border: 2px solid #856404;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+        .highlight-box {
+            background-color: #e7f3ff;
+            border: 2px solid #0056b3;
+            padding: 4px;
+            margin: 2px 0;
+            break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Introduction -->
+    <div class="intro-box">
+        <h2>When to Use Binary Search?</h2>
+        <p><b>Core Idea:</b> Eliminate half the search space each iteration by comparing mid to target or checking a predicate.</p>
+        <h3>Pattern Recognition:</h3>
+        <ul>
+            <li><b>Array Search:</b> Sorted array, find target or insertion point</li>
+            <li><b>Binary Search on Answer:</b> "Minimize/maximize k such that P(k) is true" - search answer space</li>
+            <li><b>Rotated Arrays:</b> Sorted then rotated, identify which half is sorted</li>
+            <li><b>2D Matrix:</b> Treat as flattened sorted array or binary search rows then columns</li>
+            <li><b>Partition Problems:</b> Split arrays to satisfy constraints (median, k-th element)</li>
+        </ul>
+        <h3>Time Complexity:</h3>
+        <p>O(log n) for search space of size n. Reduces n → n/2 → n/4 → ... → 1</p>
+    </div>
+
+    <!-- 1. Binary Search (Basic) -->
+    <div class="box">
+        <h2>Binary Search (Basic)</h2>
+        <span class="complexity">O(log n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Find target in sorted array, return index or -1.</p>
+        <h3>Technique: Classic Binary Search</h3>
+        <p><b>Why Binary Search?</b> Array is sorted. Compare mid with target to eliminate half.</p>
+        <p><b>Key Insight:</b> If nums[mid] < target, eliminate left half (target must be right). If nums[mid] > target, eliminate right half.</p>
+        <div class="code-box">l, r := 0, len(nums)-1
+for l <= r:
+  mid := (l + r) / 2
+  if nums[mid] == target:
+    return mid
+  else if nums[mid] < target:
+    l = mid + 1  // eliminate left half
+  else:
+    r = mid - 1  // eliminate right half
+return -1</div>
+        <p class="warn">Loop Condition:</p> Use l <= r to ensure mid is checked when l == r.
+    </div>
+
+    <!-- 2. Search 2D Matrix -->
+    <div class="box">
+        <h2>Search 2D Matrix</h2>
+        <span class="complexity">O(log m + log n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Search sorted 2D matrix where each row is sorted and first element of each row > last element of previous row.</p>
+        <h3>Technique: Binary Search Row, Then Column</h3>
+        <p><b>Why Binary Search?</b> Matrix properties guarantee each row is sorted independently. Can binary search to find correct row, then binary search within that row.</p>
+        <p><b>Key Insight:</b> Check if row[0] <= target <= row[n-1] to identify correct row. Then standard binary search within row.</p>
+        <div class="code-box">for each row:
+  if row[0] <= target && target <= row[last]:
+    l, r := 0, len(row)-1
+    while l <= r:
+      mid := (l + r) / 2
+      if row[mid] == target: return true
+      else if row[mid] < target: l = mid + 1
+      else: r = mid - 1
+return false</div>
+        <p class="tag">Alternative:</p> Treat as flattened 1D array. Convert 1D index to 2D: row = idx / cols, col = idx % cols.
+    </div>
+
+    <!-- 3. Koko Eating Bananas -->
+    <div class="box">
+        <h2>Koko Eating Bananas</h2>
+        <span class="complexity">O(n log m) Time / O(1) Space</span>
+        <p><b>Goal:</b> Find minimum eating speed k to finish all banana piles within h hours.</p>
+        <h3>Technique: Binary Search on Answer</h3>
+        <p><b>Why Binary Search?</b> We're not searching an array - we're searching the answer space [1, max(piles)]. Define predicate P(k) = "can finish in h hours at speed k". P(k) is monotonic: if P(k) true, then P(k+1) also true.</p>
+        <p><b>Key Insight:</b> Search for minimum k where P(k) is true. This is finding the boundary where false → true. When P(mid) is true, search left for smaller k. When false, search right for larger k.</p>
+        <div class="code-box">l, r := 1, max(piles)
+for l <= r:
+  k := (l + r) / 2
+  totalTime := 0
+  for pile in piles:
+    totalTime += ceil(pile / k)
+  if totalTime <= h:  // P(k) is true
+    r = k - 1  // search for smaller k
+  else:
+    l = k + 1  // need larger k
+return l  // first k where P(k) is true</div>
+        <p class="tag">Binary Search on Answer:</p> When optimizing "minimize k such that P(k) is true", search answer space [min, max] instead of array indices.
+        <p class="warn">Return Value:</p> Return l (not r) - l converges to first valid answer where P(k) flips from false to true.
+    </div>
+
+    <!-- 4. Find Minimum in Rotated Sorted Array -->
+    <div class="box">
+        <h2>Find Minimum in Rotated Sorted Array</h2>
+        <span class="complexity">O(log n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Find minimum element in sorted array that has been rotated.</p>
+        <h3>Technique: Compare Mid with Right Boundary</h3>
+        <p><b>Why Binary Search?</b> Rotated sorted array has two sorted segments. Minimum is at the start of the lower segment. Compare nums[mid] with nums[r] to determine which segment mid is in.</p>
+        <p><b>Key Insight:</b> If nums[mid] < nums[r], mid is in the lower sorted segment, so minimum is in [l, mid]. If nums[mid] >= nums[r], mid is in upper segment, minimum is in [mid+1, r].</p>
+        <div class="code-box">l, r := 0, len(nums)-1
+for l < r:  // note: l < r, not l <= r
+  mid := (l + r) / 2
+  if nums[mid] < nums[r]:
+    r = mid  // mid could be minimum, keep it
+  else:
+    l = mid + 1  // mid not minimum, eliminate it
+return nums[l]</div>
+        <p class="tag">Why Compare with Right?</p> Comparing with nums[r] tells us if we're in the rotated portion. If nums[mid] > nums[r], there's a rotation between mid and r.
+        <p class="warn">Loop Condition:</p> Use l < r (not l <= r) since we're finding minimum index, not searching for target.
+    </div>
+
+    <!-- 5. Time-Based Key-Value Store -->
+    <div class="box">
+        <h2>Time-Based Key-Value Store</h2>
+        <span class="complexity">O(log n) per Get / O(1) Space</span>
+        <p><b>Goal:</b> Store values with timestamps and retrieve most recent value ≤ query timestamp.</p>
+        <h3>Technique: Binary Search for Last Valid Timestamp</h3>
+        <p><b>Why Binary Search?</b> Timestamps are strictly increasing. Want largest timestamp ≤ query. This is "find last occurrence" variant of binary search.</p>
+        <p><b>Key Insight:</b> When data[mid].timestamp <= query, it's valid - save it and search right for potentially larger valid timestamp. When > query, search left.</p>
+        <div class="code-box">type Data struct { Timestamp int; Value string }
+type TimeMap struct { Store map[string][]Data }
+
+func Get(key, timestamp):
+  data := Store[key]
+  ans := ""
+  l, r := 0, len(data)-1
+  for l <= r:
+    mid := (l + r) / 2
+    if data[mid].Timestamp <= timestamp:
+      ans = data[mid].Value  // valid, save it
+      l = mid + 1  // search right for larger valid
+    else:
+      r = mid - 1  // too large, search left
+  return ans</div>
+        <p class="tag">Finding Last Valid:</p> When condition is true, move l = mid+1 (search right). When false, move r = mid-1. Return the saved answer, not l or r.
+    </div>
+
+    <!-- Pattern Summary -->
+    <div class="intro-box">
+        <h2>Binary Search Patterns</h2>
+        <h3>1. Classic Search (Find Exact Match):</h3>
+        <p><b>Use When:</b> Searching for target in sorted array.</p>
+        <p><b>Template:</b> if nums[mid] == target return mid, else adjust l/r.</p>
+
+        <h3>2. Binary Search on Answer:</h3>
+        <p><b>Use When:</b> Optimizing "minimize/maximize k such that P(k) is true".</p>
+        <p><b>Template:</b> Define predicate P(k), search [min_k, max_k] for boundary.</p>
+
+        <h3>3. Rotated Array:</h3>
+        <p><b>Use When:</b> Sorted array has been rotated.</p>
+        <p><b>Template:</b> Compare mid with boundary to identify which segment.</p>
+
+        <h3>4. Finding First/Last Occurrence:</h3>
+        <p><b>First:</b> When condition true, move r = mid-1, return l.</p>
+        <p><b>Last:</b> When condition true, move l = mid+1, return saved answer.</p>
+    </div>
+
+    <!-- 6. Median of Two Sorted Arrays - MAIN FOCUS -->
+    <div class="highlight-box">
+        <h2>Median of Two Sorted Arrays</h2>
+        <span class="complexity">O(log(min(m,n))) Time / O(1) Space</span>
+        <p><b>Goal:</b> Find median of two sorted arrays without merging them.</p>
+        <h3>Why This is Hard:</h3>
+        <p>Can't merge arrays (O(n) time). Must use binary search, but not searching for a value - searching for the correct <b>partition</b> of both arrays that creates a valid left/right split where all left elements < all right elements.</p>
+    </div>
+
+    <div class="box">
+        <h2>Median Problem: Core Concept</h2>
+        <h3>The Partition Approach:</h3>
+        <p>Median means creating a symmetrical split where left half = right half in size (or left has 1 more if odd total).</p>
+        <p><b>Key Insight:</b> We need to decide how many elements from each array go into the left partition. If total is 10, we need 5 on left. Maybe 3 from arr1, 2 from arr2. Or 2 from arr1, 3 from arr2. There's exactly ONE valid configuration.</p>
+        <h3>Example - [1,3,4,7,10,12] and [2,3,6,15]:</h3>
+        <p>Total = 10 (even), need 5 on left, 5 on right.</p>
+        <div class="code-box">Try: 3 from arr1, 2 from arr2
+Left:  [1,3,4] from arr1, [2,3] from arr2
+Right: [7,10,12] from arr1, [6,15] from arr2
+
+Check symmetry:
+- arr1 left max (4) <= arr2 right min (6) ✓
+- arr2 left max (3) <= arr1 right min (7) ✓
+Valid! Median = (max(4,3) + min(7,6))/2 = (4+6)/2 = 5</div>
+        <p class="tag">Symmetry Check:</p> Cross-compare maximums of left with minimums of right. If both cross-checks pass, all left < all right.</p>
+    </div>
+
+    <div class="box">
+        <h2>Median Problem: Why Binary Search?</h2>
+        <h3>Searching the Partition Space:</h3>
+        <p>Instead of searching array values, we search "how many elements from arr1 go to left partition". Range: [0, len(arr1)].</p>
+        <p><b>Always search on the smaller array</b> for better time complexity: O(log(min(m,n))).</p>
+        <h3>Elimination Conditions:</h3>
+        <p>When partition is invalid (symmetry broken), we know which direction to search:</p>
+        <ul>
+            <li><b>If arr1_left_max > arr2_right_min:</b> arr1 contributes too much to left, reduce i (move right boundary left)</li>
+            <li><b>If arr2_left_max > arr1_right_min:</b> arr1 contributes too little to left, increase i (move left boundary right)</li>
+        </ul>
+    </div>
+
+    <div class="box">
+        <h2>Median Problem: The Algorithm</h2>
+        <h3>Setup:</h3>
+        <div class="code-box">n1, n2 := len(nums1), len(nums2)
+if n2 < n1:
+  swap(nums1, nums2)  // always search smaller
+n := n1 + n2
+left_size := (n + 1) / 2  // works for both even/odd
+
+l, r := 0, n1  // search how many from nums1</div>
+        <h3>Binary Search Loop:</h3>
+        <div class="code-box">for l <= r:
+  i := (l + r) / 2  // take i elements from nums1
+  j := left_size - i  // take rest from nums2
+
+  // Get boundary values with sentinel checks
+  aLeft := nums1[i-1] if i > 0 else -∞
+  aRight := nums1[i] if i < n1 else +∞
+  bLeft := nums2[j-1] if j > 0 else -∞
+  bRight := nums2[j] if j < n2 else +∞
+
+  // Check symmetry
+  if aLeft <= bRight && bLeft <= aRight:
+    // Valid partition found!
+    if n % 2 == 1:
+      return max(aLeft, bLeft)  // odd: left has 1 more
+    else:
+      return (max(aLeft,bLeft) + min(aRight,bRight)) / 2.0
+  else if aLeft > bRight:
+    r = i - 1  // too many from nums1
+  else:
+    l = i + 1  // too few from nums1</div>
+    </div>
+
+    <div class="box">
+        <h2>Median Problem: Detailed Trace</h2>
+        <h3>Example: nums1=[7,12,14,15], nums2=[1,2,3,4,9,11]</h3>
+        <p>n1=4, n2=6, total=10 (even), left_size=5</p>
+        <div class="code-box">Iteration 1: l=0, r=4, i=2
+Take 2 from nums1: [7,12] | [14,15]
+Take 3 from nums2: [1,2,3] | [4,9,11]
+aLeft=12, aRight=14, bLeft=3, bRight=4
+Check: 12 <= 4? NO
+Symmetry broken! 12 > 4, too many from nums1
+r = i-1 = 1
+
+Iteration 2: l=0, r=1, i=0
+Take 0 from nums1: [] | [7,12,14,15]
+Take 5 from nums2: [1,2,3,4,9] | [11]
+aLeft=-∞, aRight=7, bLeft=9, bRight=11
+Check: -∞ <= 11? YES, 9 <= 7? NO
+Symmetry broken! 9 > 7, too few from nums1
+l = i+1 = 1
+
+Iteration 3: l=1, r=1, i=1
+Take 1 from nums1: [7] | [12,14,15]
+Take 4 from nums2: [1,2,3,4] | [9,11]
+aLeft=7, aRight=12, bLeft=4, bRight=9
+Check: 7 <= 9? YES, 4 <= 12? YES
+Valid! Even total, so:
+median = (max(7,4) + min(12,9)) / 2.0
+       = (7 + 9) / 2.0 = 8.0</div>
+    </div>
+
+    <div class="box">
+        <h2>Median Problem: Key Formulas</h2>
+        <h3>Left Partition Size:</h3>
+        <div class="code-box">left_size = (n1 + n2 + 1) / 2</div>
+        <p><b>Why +1?</b> Works for both even and odd totals. If total=10, gives 5. If total=11, gives 6 (left has 1 more).</p>
+
+        <h3>Median Calculation:</h3>
+        <p><b>Odd total (left has 1 extra):</b></p>
+        <div class="code-box">median = max(aLeft, bLeft)</div>
+        <p>The maximum of the left partition is the middle element.</p>
+
+        <p><b>Even total (equal split):</b></p>
+        <div class="code-box">median = (max(aLeft, bLeft) + min(aRight, bRight)) / 2.0</div>
+        <p>Average of largest left element and smallest right element.</p>
+
+        <h3>Sentinel Values:</h3>
+        <p>When i=0 (no elements from arr1 on left), aLeft = -∞ so it doesn't affect max().</p>
+        <p>When i=n1 (all elements from arr1 on left), aRight = +∞ so it doesn't affect min().</p>
+    </div>
+
+    <div class="box">
+        <h2>Median Problem: Why Left Partition?</h2>
+        <h3>The Symmetry Principle:</h3>
+        <p>If we know the correct left partition, we automatically know the right partition (everything else).</p>
+        <p>By using (n1+n2+1)/2, we ensure:</p>
+        <ul>
+            <li>Even total: left and right have equal size</li>
+            <li>Odd total: left has exactly 1 more element</li>
+        </ul>
+        <p>This formula handles both cases uniformly in the binary search loop.</p>
+        <h3>Cross-Comparison Insight:</h3>
+        <p>We don't need to check aLeft <= aRight or bLeft <= bRight because arrays are already sorted internally.</p>
+        <p>We ONLY check the <b>cross boundaries</b>: aLeft <= bRight and bLeft <= aRight. These are the "walls" between our partition.</p>
+    </div>
+
+    <div class="intro-box">
+        <h2>Median Problem: Common Pitfalls</h2>
+        <p class="warn">1. Not searching on smaller array:</p> Time complexity becomes O(log(max(m,n))) instead of O(log(min(m,n))).
+
+        <p class="warn">2. Wrong partition size formula:</p> Using n/2 instead of (n+1)/2 breaks odd case.
+
+        <p class="warn">3. Forgetting sentinels:</p> When i=0 or j=0, arrays have no left element. When i=n1 or j=n2, no right element. Must use -∞/+∞.
+
+        <p class="warn">4. Wrong elimination logic:</p> If aLeft > bRight, must reduce i (fewer from arr1). If bLeft > aRight, must increase i (more from arr1).
+
+        <p class="warn">5. Integer division for median:</p> For even totals, remember to divide by 2.0 (float) not 2 (int) to get correct decimal result.
+    </div>
+
+</div>
+
+</body>
+</html>

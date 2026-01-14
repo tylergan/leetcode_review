@@ -22,6 +22,8 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 ### Binary_Search
 
+📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/binary_search/cheatsheet.html)** - Quick reference guide for binary_search problems
+
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
 | Binary Search | You are given an array of distinct integers nums, sorted in ascending order, and... | [binary_search.go](binary_search/binary_search.go) | [✓](binary_search/binary_search_test.go) |
