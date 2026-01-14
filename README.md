@@ -28,6 +28,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Finding Min Rotated Sorted | You are given an array of length n which was originally sorted in ascending orde... | [finding_min_rotated_sorted.go](binary_search/finding_min_rotated_sorted.go) | [✓](binary_search/finding_min_rotated_sorted_test.go) |
 | Koko Eating Bananas | You are given an integer array piles where piles[i] is the number of bananas in ... | [koko_eating_bananas.go](binary_search/koko_eating_bananas.go) | [✓](binary_search/koko_eating_bananas_test.go) |
 | Search 2D Matrix | You are given an m x n 2-D integer array matrix and an integer target. | [search_2d_matrix.go](binary_search/search_2d_matrix.go) | [✓](binary_search/search_2d_matrix_test.go) |
+| Time Based Kv Store | Implement a time-based key-value data structure that supports: | [time_based_kv_store.go](binary_search/time_based_kv_store.go) | [✓](binary_search/time_based_kv_store_test.go) |
 
 ### Sliding_Window
 
