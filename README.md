@@ -33,6 +33,13 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Search 2D Matrix | You are given an m x n 2-D integer array matrix and an integer target. | [search_2d_matrix.go](binary_search/search_2d_matrix.go) | [✓](binary_search/search_2d_matrix_test.go) |
 | Time Based Kv Store | Implement a time-based key-value data structure that supports: | [time_based_kv_store.go](binary_search/time_based_kv_store.go) | [✓](binary_search/time_based_kv_store_test.go) |
 
+### Linked_List
+
+| Problem | Description | Solution | Tests |
+|---------|-------------|----------|-------|
+| Reverse Ll | Given the beginning of a singly linked list head, reverse the list, and return t... | [reverse_ll.go](linked_list/reverse_ll.go) | [✓](linked_list/reverse_ll_test.go) |
+| Utils |  | [utils.go](linked_list/utils.go) | ❌ |
+
 ### Sliding_Window
 
 📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/sliding_window/cheatsheet.html)** - Quick reference guide for sliding_window problems
