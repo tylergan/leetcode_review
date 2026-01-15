@@ -37,8 +37,8 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
+| Merge Two Sorted Ll | You are given the heads of two sorted linked lists list1 and list2. | [merge_two_sorted_ll.go](linked_list/merge_two_sorted_ll.go) | [✓](linked_list/merge_two_sorted_ll_test.go) |
 | Reverse Ll | Given the beginning of a singly linked list head, reverse the list, and return t... | [reverse_ll.go](linked_list/reverse_ll.go) | [✓](linked_list/reverse_ll_test.go) |
-| Utils |  | [utils.go](linked_list/utils.go) | ❌ |
 
 ### Sliding_Window
 

@@ -51,9 +51,9 @@ def get_categories(base_path: Path, ignore_folders: Set[str]) -> List[str]:
         if item.name.startswith('.') or item.name in ignore_folders:
             continue
 
-        # Check if directory contains any .go files (excluding tests)
+        # Check if directory contains any .go files (excluding tests and test helpers)
         has_problems = any(
-            f.suffix == '.go' and not f.name.endswith('_test.go')
+            f.suffix == '.go' and 'test' not in f.name.lower()
             for f in item.glob('*.go')
         )
 
@@ -102,8 +102,8 @@ def scan_directory(dir_path: Path) -> List[Tuple[str, Path, Dict]]:
     problems = []
 
     for file_path in sorted(dir_path.glob('*.go')):
-        # Skip test files
-        if file_path.name.endswith('_test.go'):
+        # Skip test files and test helpers
+        if 'test' in file_path.name.lower():
             continue
 
         info = extract_problem_info(file_path)
