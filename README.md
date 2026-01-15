@@ -37,6 +37,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
+| Cycle Detection | Given the beginning of a linked list head, return true if there is a cycle in th... | [cycle_detection.go](linked_list/cycle_detection.go) | [✓](linked_list/cycle_detection_test.go) |
 | Merge Two Sorted Ll | You are given the heads of two sorted linked lists list1 and list2. | [merge_two_sorted_ll.go](linked_list/merge_two_sorted_ll.go) | [✓](linked_list/merge_two_sorted_ll_test.go) |
 | Reverse Ll | Given the beginning of a singly linked list head, reverse the list, and return t... | [reverse_ll.go](linked_list/reverse_ll.go) | [✓](linked_list/reverse_ll_test.go) |
 

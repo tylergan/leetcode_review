@@ -25,3 +25,26 @@ func sliceFromList(head *ListNode) []int {
 	}
 	return out
 }
+
+func listWithCycle(values []int, cycleIndex int) *ListNode {
+	if len(values) == 0 {
+		return nil
+	}
+	head := &ListNode{Val: values[0]}
+	curr := head
+	var cycleNode *ListNode
+	if cycleIndex == 0 {
+		cycleNode = head
+	}
+	for i, v := range values[1:] {
+		curr.Next = &ListNode{Val: v}
+		curr = curr.Next
+		if i+1 == cycleIndex {
+			cycleNode = curr
+		}
+	}
+	if cycleIndex >= 0 {
+		curr.Next = cycleNode
+	}
+	return head
+}
