@@ -34,29 +34,25 @@ Output: [[1,null],[2,2],[3,2]]
 
 func copyRandomList(head *Node) *Node {
 	mapping := map[*Node]*Node{}
-	dummy := &Node{}
-	prev := dummy
+	mapping[nil] = nil
 	p := head
-	// create a mapping of original to copies
 	for p != nil {
-		copied := &Node{Val: p.Val}
-		prev.Next = copied
-		mapping[p] = copied // map original to copies
-
-		// move forward
-		prev.Next = copied
-		prev = prev.Next
-		p = p.Next
-	}
-	// now, assign randoms to copied
-	p, prev = head, dummy.Next
-	for p != nil {
+		if _, ok := mapping[p]; !ok {
+			mapping[p] = &Node{Val: p.Val}
+		}
+		if p.Next != nil {
+			if _, ok := mapping[p.Next]; !ok {
+				mapping[p.Next] = &Node{Val: p.Next.Val}
+			}
+			mapping[p].Next = mapping[p.Next]
+		}
 		if p.Random != nil {
-			copied, _ := mapping[p.Random]
-			prev.Random = copied
+			if _, ok := mapping[p.Random]; !ok {
+				mapping[p.Random] = &Node{Val: p.Random.Val}
+			}
+			mapping[p].Random = mapping[p.Random]
 		}
 		p = p.Next
-		prev = prev.Next
 	}
-	return dummy.Next
+	return mapping[head]
 }
