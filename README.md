@@ -37,6 +37,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
+| Copy Ll W Random Ptr | You are given the head of a linked list of length n. Unlike a singly linked list... | [copy_ll_w_random_ptr.go](linked_list/copy_ll_w_random_ptr.go) | [✓](linked_list/copy_ll_w_random_ptr_test.go) |
 | Cycle Detection | Given the beginning of a linked list head, return true if there is a cycle in th... | [cycle_detection.go](linked_list/cycle_detection.go) | [✓](linked_list/cycle_detection_test.go) |
 | Merge Two Sorted Ll | You are given the heads of two sorted linked lists list1 and list2. | [merge_two_sorted_ll.go](linked_list/merge_two_sorted_ll.go) | [✓](linked_list/merge_two_sorted_ll_test.go) |
 | Remove Nth | You are given the beginning of a linked list head, and an integer n. | [remove_nth.go](linked_list/remove_nth.go) | [✓](linked_list/remove_nth_test.go) |

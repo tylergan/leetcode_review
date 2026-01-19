@@ -5,6 +5,12 @@ type ListNode struct {
 	Next *ListNode
 }
 
+type Node struct {
+	Val    int
+	Next   *Node
+	Random *Node
+}
+
 func listFromSlice(values []int) *ListNode {
 	if len(values) == 0 {
 		return nil
