@@ -40,6 +40,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Add Two Numbers | You are given two non-empty linked lists, l1 and l2, where each represents a non... | [add_two_numbers.go](linked_list/add_two_numbers.go) | [✓](linked_list/add_two_numbers_test.go) |
 | Copy Ll W Random Ptr | You are given the head of a linked list of length n. Unlike a singly linked list... | [copy_ll_w_random_ptr.go](linked_list/copy_ll_w_random_ptr.go) | [✓](linked_list/copy_ll_w_random_ptr_test.go) |
 | Cycle Detection | Given the beginning of a linked list head, return true if there is a cycle in th... | [cycle_detection.go](linked_list/cycle_detection.go) | [✓](linked_list/cycle_detection_test.go) |
+| Find Duplicate | You are given an array of integers nums containing n + 1 integers. Each integer ... | [find_duplicate.go](linked_list/find_duplicate.go) | [✓](linked_list/find_duplicate_test.go) |
 | Merge Two Sorted Ll | You are given the heads of two sorted linked lists list1 and list2. | [merge_two_sorted_ll.go](linked_list/merge_two_sorted_ll.go) | [✓](linked_list/merge_two_sorted_ll_test.go) |
 | Remove Nth | You are given the beginning of a linked list head, and an integer n. | [remove_nth.go](linked_list/remove_nth.go) | [✓](linked_list/remove_nth_test.go) |
 | Reorder Ll | You are given the head of a singly linked-list. | [reorder_ll.go](linked_list/reorder_ll.go) | [✓](linked_list/reorder_ll_test.go) |
