@@ -1,5 +1,7 @@
 package linked_list
 
+import "container/heap"
+
 /*
 You are given an array of k linked lists lists, where each list is sorted in ascending order.
 
@@ -86,5 +88,48 @@ func mergeKLists(lists []*ListNode) *ListNode {
 		dummy.Next = mergeTwoListsHelper(p, q)
 	}
 
+	return dummy.Next
+}
+
+// MIN HEAP IMPLEMENTATION
+
+type ListNodeHeap []*ListNode
+
+func (h ListNodeHeap) Len() int { return len(h) }
+
+func (h ListNodeHeap) Less(i, j int) bool { return h[i].Val < h[j].Val }
+
+func (h ListNodeHeap) Swap(i, j int) { h[i], h[j] = h[j], h[i] }
+
+func (h *ListNodeHeap) Push(node any) { *h = append(*h, node.(*ListNode)) }
+
+func (h *ListNodeHeap) Pop() any {
+	old := *h
+	n := len(old)
+	*h = (*h)[:n-1]
+	return old[n-1]
+}
+
+func mergeKListsHeap(lists []*ListNode) *ListNode {
+	if len(lists) == 0 {
+		return nil
+	}
+
+	h := &ListNodeHeap{}
+	heap.Init(h)
+	for _, list := range lists {
+		heap.Push(h, list)
+	}
+
+	dummy := &ListNode{}
+	curr := dummy
+	for h.Len() > 0 {
+		node := heap.Pop(h)
+		curr.Next = node.(*ListNode)
+		curr = curr.Next
+		if curr.Next != nil {
+			heap.Push(h, curr.Next)
+		}
+	}
 	return dummy.Next
 }
