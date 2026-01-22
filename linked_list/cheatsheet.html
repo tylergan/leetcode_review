@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LeetCode Linked List Cheat Sheet</title>
+    <style>
+        @page { size: A4; margin: 0.3cm 0.3cm 0.3cm 0.3cm; }
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 7pt;
+            line-height: 1.2;
+            color: #000;
+            background: #fff;
+        margin: 0;
+            padding: 0;
+        }
+        .container {
+            column-count: 3;
+            column-gap: 0.25cm;
+            width: 100%;
+        }
+        .box {
+            border: 1px solid #444;
+            padding: 2px 4px;
+            margin-bottom: 4px;
+            break-inside: avoid;
+            background-color: #fff;
+        }
+        h2 {
+            font-size: 8pt;
+            font-weight: bold;
+            background-color: #eee;
+            padding: 2px;
+            margin: 0 0 2px 0;
+            border-bottom: 1px solid #000;
+            text-transform: uppercase;
+        }
+        h3 {
+            font-size: 7.5pt;
+            font-weight: bold;
+            margin: 2px 0 1px 0;
+            text-decoration: underline;
+            color: #004085;
+        }
+        p { margin: 0 0 2px 0; text-align: left; }
+        ul { padding-left: 10px; margin: 0; }
+        li { margin: 0; }
+        .code-box {
+            font-family: "Courier New", monospace;
+            background-color: #f4f4f4;
+            border-left: 2px solid #333;
+            padding: 1px 2px;
+            margin: 1px 0;
+            font-size: 6.5pt;
+            white-space: pre-wrap;
+        }
+        .tag {
+            font-weight: bold;
+            color: #d63384;
+            font-size: 6.5pt;
+        }
+        .complexity {
+            font-weight: bold;
+            font-size: 6.5pt;
+            color: #007bff;
+            float: right;
+        }
+        .warn { color: #b00; font-weight: bold; }
+        .intro-box {
+            background-color: #fff3cd;
+            border: 2px solid #856404;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+        .floyd-box {
+            background-color: #d4edda;
+            border: 2px solid #155724;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Introduction -->
+    <div class="intro-box">
+        <h2>When to Use Linked List Techniques?</h2>
+        <p><b>Core Idea:</b> Sequential access with O(1) insertion/deletion at known positions. No random access, but pointer manipulation enables elegant in-place transformations.</p>
+        <h3>Pattern Recognition:</h3>
+        <ul>
+            <li><b>Dummy Node:</b> When head might change (merging, removing, inserting at front)</li>
+            <li><b>Fast/Slow Pointers:</b> Finding middle, cycle detection, nth from end</li>
+            <li><b>In-Place Reversal:</b> Reordering, palindrome check, k-group reversals</li>
+            <li><b>HashMap + DLL:</b> O(1) random access with ordering (LRU cache)</li>
+            <li><b>Merge Pattern:</b> Combining sorted lists, divide and conquer</li>
+        </ul>
+        <h3>Key Insight:</h3>
+        <p><b>Pointer Manipulation:</b> Unlike arrays, we can rewire connections without shifting elements. Master the three-pointer dance (prev, curr, next) and dummy node trick.</p>
+        <p><b>Why Not Array?</b> When you need O(1) insert/delete at arbitrary positions (given a reference), or when problem naturally involves following chains of references.</p>
+    </div>
+
+    <!-- 1. Reverse Linked List -->
+    <div class="box">
+        <h2>Reverse Linked List</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Reverse a singly linked list in-place.</p>
+        <h3>Technique: Three-Pointer Reversal</h3>
+        <p><b>Why Three Pointers?</b> When we reverse curr's pointer, we lose access to the next node. Save it first! prev tracks the new "next" for curr, next saves the original chain.</p>
+        <p><b>Key Insight:</b> At each step: save next, point curr back to prev, advance prev and curr. Return prev (new head) when curr becomes nil.</p>
+        <div class="code-box">var prev *ListNode = nil
+curr := head
+for curr != nil:
+  next := curr.Next     // save next
+  curr.Next = prev      // reverse pointer
+  prev = curr           // advance prev
+  curr = next           // advance curr
+return prev  // new head</div>
+        <p class="tag">Foundation Pattern:</p> Master this - it's used in reorder, k-group, palindrome problems.
+    </div>
+
+    <!-- 2. Merge Two Sorted Lists -->
+    <div class="box">
+        <h2>Merge Two Sorted Lists</h2>
+        <span class="complexity">O(n+m) Time / O(1) Space</span>
+        <p><b>Goal:</b> Merge two sorted lists into one sorted list.</p>
+        <h3>Technique: Dummy Node + Two-Pointer Merge</h3>
+        <p><b>Why Dummy Node?</b> We don't know which list provides the head until we compare. Dummy lets us build the result without special-casing the first node.</p>
+        <p><b>Key Insight:</b> Compare heads, attach smaller to result, advance that list. When one exhausts, attach the remainder of the other.</p>
+        <div class="code-box">dummy := &ListNode{}
+curr := dummy
+for list1 != nil && list2 != nil:
+  if list1.Val < list2.Val:
+    curr.Next = list1
+    list1 = list1.Next
+  else:
+    curr.Next = list2
+    list2 = list2.Next
+  curr = curr.Next
+// Attach remainder
+if list1 != nil: curr.Next = list1
+else: curr.Next = list2
+return dummy.Next</div>
+        <p class="warn">Don't Forget:</p> Handle nil inputs - return the other list directly.
+    </div>
+
+    <!-- 3. Remove Nth From End -->
+    <div class="box">
+        <h2>Remove Nth Node From End</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Remove the nth node from the end in one pass.</p>
+        <h3>Technique: Two-Pointer Gap</h3>
+        <p><b>Why Two Pointers?</b> Create a gap of n nodes between right and left. When right hits nil, left is exactly at the node before the target.</p>
+        <p><b>Key Insight:</b> Use dummy node so left can point to "before head" when removing the first node. Advance right by n first, then move both until right is nil.</p>
+        <div class="code-box">dummy := &ListNode{Next: head}
+left, right := dummy, head
+// Create gap of n
+for n > 0:
+  right = right.Next
+  n--
+// Move both until right hits nil
+for right != nil:
+  left = left.Next
+  right = right.Next
+// left is now before target
+left.Next = left.Next.Next
+return dummy.Next</div>
+        <p class="tag">Gap Pattern:</p> Offset pointers to find relative positions without counting length.
+    </div>
+
+    <!-- 4. Reorder List -->
+    <div class="box">
+        <h2>Reorder List</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Reorder [0,1,2,3,4,5] to [0,5,1,4,2,3] - interleave front and back.</p>
+        <h3>Technique: Find Middle + Reverse + Merge</h3>
+        <p><b>Why This Combo?</b> We need to access from both ends. Since we can't go backward, split at middle, reverse second half, then merge alternately.</p>
+        <p><b>Key Insight:</b> Three-step process: (1) Fast/slow to find middle, (2) Reverse second half, (3) Interleave first and reversed second half.</p>
+        <div class="code-box">// Step 1: Find middle (slow ends at middle)
+slow, fast := head, head.Next
+for fast != nil && fast.Next != nil:
+  slow = slow.Next
+  fast = fast.Next.Next
+
+// Step 2: Reverse second half
+second := slow.Next
+slow.Next = nil  // cut the list
+var prev *ListNode
+for second != nil:
+  tmp := second.Next
+  second.Next = prev
+  prev = second
+  second = tmp
+
+// Step 3: Merge alternately
+first, second := head, prev
+for second != nil:
+  tmp1, tmp2 := first.Next, second.Next
+  first.Next = second
+  second.Next = tmp1
+  first, second = tmp1, tmp2</div>
+        <p class="tag">Composite Pattern:</p> Combines fast/slow, reversal, and merge - know each piece!
+    </div>
+
+    <!-- 5. Add Two Numbers -->
+    <div class="box">
+        <h2>Add Two Numbers</h2>
+        <span class="complexity">O(max(n,m)) Time / O(1) Space</span>
+        <p><b>Goal:</b> Add two numbers represented as reversed linked lists (321 = 1->2->3).</p>
+        <h3>Technique: Dummy Node + Carry Propagation</h3>
+        <p><b>Why Reversed Order Helps:</b> Least significant digit first matches natural addition order. No need to reverse - just iterate and carry.</p>
+        <p><b>Key Insight:</b> Handle unequal lengths by treating missing nodes as 0. Continue while either list has nodes OR carry is non-zero.</p>
+        <div class="code-box">dummy := &ListNode{}
+curr := dummy
+carry := 0
+for l1 != nil || l2 != nil || carry != 0:
+  v1, v2 := 0, 0
+  if l1 != nil: v1, l1 = l1.Val, l1.Next
+  if l2 != nil: v2, l2 = l2.Val, l2.Next
+  sum := v1 + v2 + carry
+  carry = sum / 10
+  curr.Next = &ListNode{Val: sum % 10}
+  curr = curr.Next
+return dummy.Next</div>
+        <p class="warn">Don't Forget:</p> Final carry! [9,9] + [1] = [0,0,1], not [0,0].
+    </div>
+
+    <!-- 6. Copy List with Random Pointer -->
+    <div class="box">
+        <h2>Copy List with Random Pointer</h2>
+        <span class="complexity">O(n) Time / O(n) Space</span>
+        <p><b>Goal:</b> Deep copy a list where each node has a random pointer to any node.</p>
+        <h3>Technique: HashMap Old-to-New Mapping</h3>
+        <p><b>Why HashMap?</b> When copying node A, its random might point to node B that we haven't created yet. Map lets us create nodes on-demand and link later.</p>
+        <p><b>Key Insight:</b> For each node, ensure it and its next/random targets exist in map. Create if not exists, then wire up the copy's pointers.</p>
+        <div class="code-box">mapping := map[*Node]*Node{nil: nil}
+p := head
+for p != nil:
+  // Ensure current node exists
+  if _, ok := mapping[p]; !ok:
+    mapping[p] = &Node{Val: p.Val}
+  // Ensure and link Next
+  if p.Next != nil:
+    if _, ok := mapping[p.Next]; !ok:
+      mapping[p.Next] = &Node{Val: p.Next.Val}
+    mapping[p].Next = mapping[p.Next]
+  // Ensure and link Random
+  if p.Random != nil:
+    if _, ok := mapping[p.Random]; !ok:
+      mapping[p.Random] = &Node{Val: p.Random.Val}
+    mapping[p].Random = mapping[p.Random]
+  p = p.Next
+return mapping[head]</div>
+        <p class="tag">O(1) Space Alternative:</p> Interleave copies (A->A'->B->B'), set randoms, then separate.
+    </div>
+
+    <!-- 7. LRU Cache -->
+    <div class="box">
+        <h2>LRU Cache</h2>
+        <span class="complexity">O(1) All Operations</span>
+        <p><b>Goal:</b> Implement cache with O(1) get/put, evicting least recently used on capacity overflow.</p>
+        <h3>Technique: Doubly Linked List + HashMap</h3>
+        <p><b>Why DLL + HashMap?</b> HashMap gives O(1) key lookup. DLL gives O(1) removal and insertion at ends. Together: O(1) access with ordering.</p>
+        <p><b>Key Insight:</b> DLL maintains usage order (head=LRU, tail=MRU). On access: remove node, add to tail. On eviction: remove from head. HashMap maps key to DLL node.</p>
+        <div class="code-box">type LRUCache struct {
+  head, tail *Node  // dummy sentinels
+  mapping    map[int]*Node
+  capacity   int
+}
+func (c *LRUCache) Get(key int) int:
+  if node, ok := c.mapping[key]; ok:
+    c.remove(node)
+    c.addToTail(node)
+    return node.Val
+  return -1
+func (c *LRUCache) Put(key, val int):
+  if node, ok := c.mapping[key]; ok:
+    c.remove(node)
+  node := &Node{Key: key, Val: val}
+  c.addToTail(node)
+  c.mapping[key] = node
+  if len(c.mapping) > c.capacity:
+    lru := c.head.Next
+    c.remove(lru)
+    delete(c.mapping, lru.Key)</div>
+        <p class="warn">Sentinel Nodes:</p> Dummy head/tail simplify edge cases - never remove them!
+        <p class="tag">Why Key in Node?</p> When evicting LRU, we need its key to delete from HashMap.
+    </div>
+
+    <!-- 8. Merge K Sorted Lists -->
+    <div class="box">
+        <h2>Merge K Sorted Lists</h2>
+        <span class="complexity">O(n log k) Time / O(k) Space</span>
+        <p><b>Goal:</b> Merge k sorted linked lists into one sorted list.</p>
+        <h3>Technique: Min Heap</h3>
+        <p><b>Why Min Heap?</b> At each step, we need the smallest among k list heads. Heap gives O(log k) for this vs O(k) linear scan. Total: O(n log k).</p>
+        <p><b>Key Insight:</b> Push all k heads to heap. Pop min, add to result, push its next (if exists). Repeat until heap empty.</p>
+        <div class="code-box">heap := MinHeap{}  // ordered by node.Val
+for each list in lists:
+  if list != nil: heap.Push(list)
+
+dummy := &ListNode{}
+curr := dummy
+for heap.Len() > 0:
+  node := heap.Pop()
+  curr.Next = node
+  curr = curr.Next
+  if node.Next != nil:
+    heap.Push(node.Next)
+return dummy.Next</div>
+        <h3>Alternative: Divide & Conquer</h3>
+        <p>Pair up lists, merge each pair, repeat. Like merge sort - O(n log k) time, O(1) extra space.</p>
+        <p class="tag">Trade-off:</p> Heap is simpler to code; D&C uses less space.
+    </div>
+
+    <!-- 9. Reverse Nodes in K-Group -->
+    <div class="box">
+        <h2>Reverse Nodes in K-Group</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Reverse every k consecutive nodes. Leave remainder as-is if less than k.</p>
+        <h3>Technique: Group-by-Group Reversal</h3>
+        <p><b>Why Check First?</b> Must verify k nodes exist before reversing. Otherwise, we'd reverse a partial group then struggle to undo.</p>
+        <p><b>Key Insight:</b> For each group: (1) Count k nodes ahead, (2) If k exist, reverse them, (3) Connect reversed group to result. Track group boundaries carefully.</p>
+        <div class="code-box">dummy := &ListNode{}
+curr := dummy
+p := head
+for p != nil:
+  // Check if k nodes exist
+  q := p
+  for i := 0; i < k && q != nil; i++:
+    q = q.Next
+  if i < k:  // less than k nodes left
+    curr.Next = p
+    break
+
+  // Reverse k nodes
+  prev := q  // point to node after group
+  groupHead := p
+  for i := 0; i < k; i++:
+    tmp := p.Next
+    p.Next = prev
+    prev = p
+    p = tmp
+  curr.Next = prev   // connect to reversed group
+  curr = groupHead   // move to end of reversed group
+return dummy.Next</div>
+        <p class="warn">Key Detail:</p> Set prev = q (next group start) so reversed group connects properly.
+    </div>
+
+    <!-- Floyd's Algorithm Deep Dive -->
+    <div class="floyd-box">
+        <h2>Floyd's Cycle Detection (Tortoise and Hare)</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Detect if a linked list has a cycle, and find where it starts.</p>
+        <h3>The Lollipop Model</h3>
+        <p>Visualize the list as a lollipop or letter "P": a straight <b>stem</b> leading to a <b>loop</b>.</p>
+        <ul>
+            <li><b>x</b> = Length of stem (Head to Cycle Start)</li>
+            <li><b>y</b> = Distance from Cycle Start to Meeting Point</li>
+            <li><b>z</b> = Distance from Meeting Point back to Cycle Start</li>
+            <li><b>L = y + z</b> = Total cycle length</li>
+        </ul>
+        <h3>Phase 1: Detect Cycle</h3>
+        <div class="code-box">slow, fast := head, head
+for fast != nil && fast.Next != nil:
+  slow = slow.Next        // 1 step
+  fast = fast.Next.Next   // 2 steps
+  if slow == fast:
+    // Cycle detected! They meet at Meeting Point
+    break</div>
+        <p><b>Why They Meet:</b> Fast gains 1 node per iteration. If cycle exists, fast will lap slow and eventually catch up inside the cycle.</p>
+
+        <h3>The Math: Why x = z (mod L)</h3>
+        <p><b>When they meet:</b></p>
+        <ul>
+            <li>Tortoise traveled: <b>x + y</b></li>
+            <li>Hare traveled: <b>2(x + y)</b> (twice the speed)</li>
+            <li>Hare's actual path: <b>x + y + kL</b> (entered cycle, did k laps, met tortoise)</li>
+        </ul>
+        <p><b>Equating Hare's distances:</b></p>
+        <div class="code-box">2(x + y) = x + y + kL
+2x + 2y = x + y + kL
+x + y = kL
+x = kL - y</div>
+        <p><b>The Key Insight:</b></p>
+        <div class="code-box">x = kL - y
+x = (k-1)L + (L - y)
+x = (k-1)L + z    // since L = y + z, so L - y = z</div>
+        <p><b>What This Means:</b> Walking distance <b>x</b> from Head equals walking <b>(k-1) full laps + z</b> from Meeting Point. Both paths end at <b>Cycle Start</b>!</p>
+
+        <h3>Phase 2: Find Cycle Start</h3>
+        <div class="code-box">// Reset one pointer to head
+p := head
+for p != slow:
+  p = p.Next      // walks x steps
+  slow = slow.Next // walks z + (k-1)L steps
+return p  // Both meet at Cycle Start</div>
+        <p><b>Visual Proof:</b> Pointer from head walks x. Pointer from meeting point walks z (to cycle start) then possibly more full laps. They converge at cycle start.</p>
+        <p class="tag">Application:</p> Find Duplicate Number - treat array as linked list where arr[i] points to arr[arr[i]].
+    </div>
+
+    <!-- 10. Cycle Detection -->
+    <div class="box">
+        <h2>Cycle Detection</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> Return true if cycle exists in linked list.</p>
+        <h3>Technique: Floyd's Tortoise and Hare</h3>
+        <p><b>Why It Works:</b> If there's a cycle, fast pointer enters it first. Slow follows. Fast gains 1 node per step, so it will eventually catch slow inside the cycle.</p>
+        <div class="code-box">slow, fast := head, head
+for fast != nil && fast.Next != nil:
+  slow = slow.Next
+  fast = fast.Next.Next
+  if slow == fast:
+    return true
+return false</div>
+        <p class="warn">Check Both:</p> fast != nil AND fast.Next != nil (fast moves 2 steps).
+    </div>
+
+    <!-- 11. Find Duplicate Number -->
+    <div class="box">
+        <h2>Find Duplicate Number</h2>
+        <span class="complexity">O(n) Time / O(1) Space</span>
+        <p><b>Goal:</b> In array of n+1 integers in range [1,n], find the duplicate without modifying array.</p>
+        <h3>Technique: Floyd's on Array as Linked List</h3>
+        <p><b>Why This Works:</b> Treat index as "node" and arr[index] as "next pointer". Since values are in [1,n] and we have n+1 elements, there must be a cycle - the duplicate value is where multiple indices point.</p>
+        <p><b>Key Insight:</b> The duplicate is the <b>entrance to the cycle</b> (multiple paths lead into it). Use Floyd's to find meeting point, then find cycle start.</p>
+        <div class="code-box">// Phase 1: Find meeting point
+slow, fast := 0, 0
+for:
+  slow = nums[slow]
+  fast = nums[nums[fast]]
+  if slow == fast: break
+
+// Phase 2: Find cycle entrance (the duplicate)
+p := 0
+for p != slow:
+  p = nums[p]
+  slow = nums[slow]
+return slow  // The duplicate value</div>
+        <p class="tag">Array as Graph:</p> i -> nums[i] creates edges. Duplicate = node with in-degree > 1.
+    </div>
+
+    <!-- Linked List Patterns Summary -->
+    <div class="intro-box">
+        <h2>Linked List Patterns Summary</h2>
+        <h3>1. Dummy Node Pattern</h3>
+        <p><b>Use When:</b> Head might change (merging, removing first node, inserting at front).</p>
+        <p><b>Template:</b> dummy := &ListNode{Next: head} ... return dummy.Next</p>
+        <p><b>Examples:</b> Merge Two Lists, Remove Nth, Add Two Numbers.</p>
+
+        <h3>2. Fast/Slow (Tortoise & Hare)</h3>
+        <p><b>Use When:</b> Finding middle, detecting cycles, nth from end.</p>
+        <p><b>Template:</b> slow moves 1, fast moves 2. When fast ends, slow is at middle.</p>
+        <p><b>Examples:</b> Reorder List (middle), Cycle Detection, Find Duplicate.</p>
+
+        <h3>3. In-Place Reversal</h3>
+        <p><b>Use When:</b> Reversing all or part of list.</p>
+        <p><b>Template:</b> Three pointers - prev, curr, next. Save next, reverse curr, advance all.</p>
+        <p><b>Examples:</b> Reverse LL, Reorder List, Reverse K-Group.</p>
+
+        <h3>4. Two-Pointer Gap</h3>
+        <p><b>Use When:</b> Finding nth from end in one pass.</p>
+        <p><b>Template:</b> Advance right by n, then move both until right is nil.</p>
+        <p><b>Examples:</b> Remove Nth From End.</p>
+
+        <h3>5. HashMap + Linked Structure</h3>
+        <p><b>Use When:</b> Need O(1) lookup AND ordering/sequential access.</p>
+        <p><b>Template:</b> HashMap for key->node, DLL for order. Update both on access.</p>
+        <p><b>Examples:</b> LRU Cache, Copy Random List.</p>
+
+        <h3>6. Merge Pattern</h3>
+        <p><b>Use When:</b> Combining sorted lists.</p>
+        <p><b>Template:</b> Compare heads, attach smaller, advance. Handle remainders.</p>
+        <p><b>Examples:</b> Merge Two Lists, Merge K Lists.</p>
+
+        <p class="tag">Common Thread:</p> Linked lists excel at O(1) insert/delete with known position. Use pointers creatively - multiple pointers at different speeds, gaps, or reversals unlock elegant O(1) space solutions.
+    </div>
+
+</div>
+
+</body>
+</html>

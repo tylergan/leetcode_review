@@ -35,6 +35,8 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 ### Linked_List
 
+📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/linked_list/cheatsheet.html)** - Quick reference guide for linked_list problems
+
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
 | Add Two Numbers | You are given two non-empty linked lists, l1 and l2, where each represents a non... | [add_two_numbers.go](linked_list/add_two_numbers.go) | [✓](linked_list/add_two_numbers_test.go) |
