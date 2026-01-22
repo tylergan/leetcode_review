@@ -47,6 +47,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Remove Nth | You are given the beginning of a linked list head, and an integer n. | [remove_nth.go](linked_list/remove_nth.go) | [✓](linked_list/remove_nth_test.go) |
 | Reorder Ll | You are given the head of a singly linked-list. | [reorder_ll.go](linked_list/reorder_ll.go) | [✓](linked_list/reorder_ll_test.go) |
 | Reverse Ll | Given the beginning of a singly linked list head, reverse the list, and return t... | [reverse_ll.go](linked_list/reverse_ll.go) | [✓](linked_list/reverse_ll_test.go) |
+| Reverse Nodes In K Group | You are given the head of a singly linked list head and a positive integer k. | [reverse_nodes_in_k_group.go](linked_list/reverse_nodes_in_k_group.go) | [✓](linked_list/reverse_nodes_in_k_group_test.go) |
 
 ### Sliding_Window
 
