@@ -1,5 +1,11 @@
 package binary_tree
 
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
 func intPtr(v int) *int { return &v }
 
 func buildTree(level []*int) *TreeNode {
