@@ -38,6 +38,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
 | Invert Binary Tree | You are given the root of a binary tree root. Invert the binary tree and return ... | [invert_binary_tree.go](binary_tree/invert_binary_tree.go) | [✓](binary_tree/invert_binary_tree_test.go) |
+| Max Depth Binary Tree | Given the root of a binary tree, return its depth. | [max_depth_binary_tree.go](binary_tree/max_depth_binary_tree.go) | [✓](binary_tree/max_depth_binary_tree_test.go) |
 
 ### Linked_List
 
