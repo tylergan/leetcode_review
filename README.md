@@ -33,6 +33,12 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Search 2D Matrix | You are given an m x n 2-D integer array matrix and an integer target. | [search_2d_matrix.go](binary_search/search_2d_matrix.go) | [✓](binary_search/search_2d_matrix_test.go) |
 | Time Based Kv Store | Implement a time-based key-value data structure that supports: | [time_based_kv_store.go](binary_search/time_based_kv_store.go) | [✓](binary_search/time_based_kv_store_test.go) |
 
+### Binary_Tree
+
+| Problem | Description | Solution | Tests |
+|---------|-------------|----------|-------|
+| Invert Binary Tree | You are given the root of a binary tree root. Invert the binary tree and return ... | [invert_binary_tree.go](binary_tree/invert_binary_tree.go) | [✓](binary_tree/invert_binary_tree_test.go) |
+
 ### Linked_List
 
 📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/linked_list/cheatsheet.html)** - Quick reference guide for linked_list problems
