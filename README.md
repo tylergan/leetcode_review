@@ -35,6 +35,8 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 ### Binary_Tree
 
+📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/binary_tree/cheatsheet.html)** - Quick reference guide for binary_tree problems
+
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
 | Balanced Binary Tree | Given a binary tree, return true if it is height-balanced and false otherwise. | [balanced_binary_tree.go](binary_tree/balanced_binary_tree.go) | [✓](binary_tree/balanced_binary_tree_test.go) |

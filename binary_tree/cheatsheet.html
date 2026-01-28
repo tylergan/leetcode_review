@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LeetCode Binary Tree Cheat Sheet</title>
+    <style>
+        @page { size: A4; margin: 0.3cm 0.3cm 0.3cm 0.3cm; }
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 7pt;
+            line-height: 1.2;
+            color: #000;
+            background: #fff;
+        margin: 0;
+            padding: 0;
+        }
+        .container {
+            column-count: 3;
+            column-gap: 0.25cm;
+            width: 100%;
+        }
+        .box {
+            border: 1px solid #444;
+            padding: 2px 4px;
+            margin-bottom: 4px;
+            break-inside: avoid;
+            background-color: #fff;
+        }
+        h2 {
+            font-size: 8pt;
+            font-weight: bold;
+            background-color: #eee;
+            padding: 2px;
+            margin: 0 0 2px 0;
+            border-bottom: 1px solid #000;
+            text-transform: uppercase;
+        }
+        h3 {
+            font-size: 7.5pt;
+            font-weight: bold;
+            margin: 2px 0 1px 0;
+            text-decoration: underline;
+            color: #004085;
+        }
+        p { margin: 0 0 2px 0; text-align: left; }
+        ul { padding-left: 10px; margin: 0; }
+        li { margin: 0; }
+        .code-box {
+            font-family: "Courier New", monospace;
+            background-color: #f4f4f4;
+            border-left: 2px solid #333;
+            padding: 1px 2px;
+            margin: 1px 0;
+            font-size: 6.5pt;
+            white-space: pre-wrap;
+        }
+        .tag {
+            font-weight: bold;
+            color: #d63384;
+            font-size: 6.5pt;
+        }
+        .complexity {
+            font-weight: bold;
+            font-size: 6.5pt;
+            color: #007bff;
+            float: right;
+        }
+        .warn { color: #b00; font-weight: bold; }
+        .intro-box {
+            background-color: #fff3cd;
+            border: 2px solid #856404;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+        .pattern-box {
+            background-color: #d4edda;
+            border: 2px solid #155724;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Introduction -->
+    <div class="intro-box">
+        <h2>Binary Tree Fundamentals</h2>
+        <p><b>Core Idea:</b> Trees are recursive structures - every subtree is itself a tree. Most solutions exploit this by solving for subtrees and combining results.</p>
+        <h3>Two Traversal Paradigms:</h3>
+        <ul>
+            <li><b>DFS (Depth-First):</b> Go deep before wide. Natural with recursion. Use when answer depends on subtree properties.</li>
+            <li><b>BFS (Breadth-First):</b> Go level by level. Use queue. Use when answer depends on level structure or shortest path.</li>
+        </ul>
+        <h3>The Recursive Template:</h3>
+        <div class="code-box">func solve(root *TreeNode) Result:
+  if root == nil:
+    return BASE_CASE
+
+  left := solve(root.Left)
+  right := solve(root.Right)
+
+  return COMBINE(root, left, right)</div>
+        <h3>Key Insight:</h3>
+        <p><b>Trust the Recursion:</b> Assume solve(root.Left) correctly solves for the left subtree. Your job is only to combine left result, right result, and current node correctly.</p>
+        <p><b>Base Case Matters:</b> nil nodes return identity values (0 for height, true for validation, etc.).</p>
+    </div>
+
+    <!-- DFS vs BFS -->
+    <div class="pattern-box">
+        <h2>DFS vs BFS: When to Use Which?</h2>
+        <h3>Use DFS When:</h3>
+        <ul>
+            <li>Need subtree properties (height, size, sum)</li>
+            <li>Need to validate structural properties (balanced, BST)</li>
+            <li>Path problems (root-to-leaf, any path)</li>
+            <li>Need to modify tree structure (invert, delete)</li>
+        </ul>
+        <h3>Use BFS When:</h3>
+        <ul>
+            <li>Need level-order traversal</li>
+            <li>Need to process level by level (level averages, rightmost view)</li>
+            <li>Finding minimum depth (first leaf encountered)</li>
+            <li>Need nodes at same depth together</li>
+        </ul>
+        <h3>DFS Template (Recursive):</h3>
+        <div class="code-box">func dfs(root *TreeNode):
+  if root == nil: return
+  // Pre-order: process BEFORE children
+  dfs(root.Left)
+  // In-order: process BETWEEN children
+  dfs(root.Right)
+  // Post-order: process AFTER children</div>
+        <h3>BFS Template (Iterative):</h3>
+        <div class="code-box">queue := []*TreeNode{root}
+for len(queue) > 0:
+  levelSize := len(queue)
+  for i := 0; i < levelSize; i++:
+    node := queue[0]
+    queue = queue[1:]
+    // Process node
+    if node.Left != nil: queue = append(queue, node.Left)
+    if node.Right != nil: queue = append(queue, node.Right)
+  // Level complete - increment level counter, etc.</div>
+        <p class="tag">Level Tracking:</p> Capture len(queue) at start of each level to know when level ends.
+    </div>
+
+    <!-- 1. Invert Binary Tree -->
+    <div class="box">
+        <h2>Invert Binary Tree</h2>
+        <span class="complexity">O(n) Time / O(h) Space</span>
+        <p><b>Goal:</b> Mirror the tree - every left child becomes right and vice versa.</p>
+        <h3>Technique: Post-Order DFS</h3>
+        <p><b>Why Post-Order?</b> We need inverted subtrees before swapping. Invert children first, then swap them at current node. (Pre-order also works here since order doesn't affect correctness.)</p>
+        <p><b>Key Insight:</b> Trust recursion - invertTree(root.Left) returns a fully inverted left subtree. Just swap the two inverted subtrees.</p>
+        <div class="code-box">func invertTree(root *TreeNode) *TreeNode:
+  if root == nil:
+    return nil
+
+  left := invertTree(root.Left)   // inverted left subtree
+  right := invertTree(root.Right) // inverted right subtree
+
+  root.Left, root.Right = right, left  // swap
+  return root</div>
+        <p class="tag">Foundation:</p> Simplest tree modification - practice trusting recursion here.
+    </div>
+
+    <!-- 2. Maximum Depth -->
+    <div class="box">
+        <h2>Maximum Depth of Binary Tree</h2>
+        <span class="complexity">O(n) Time / O(h) Space</span>
+        <p><b>Goal:</b> Find the longest root-to-leaf path (number of nodes).</p>
+        <h3>Technique 1: DFS (Recursive)</h3>
+        <p><b>Why DFS?</b> Depth depends on subtree depths. Get max depth of left and right, add 1 for current node.</p>
+        <div class="code-box">func maxDepth(root *TreeNode) int:
+  if root == nil:
+    return 0
+  left := maxDepth(root.Left)
+  right := maxDepth(root.Right)
+  return 1 + max(left, right)</div>
+        <h3>Technique 2: BFS (Level-Order)</h3>
+        <p><b>Why BFS?</b> Count levels directly. Each complete level iteration = 1 depth.</p>
+        <div class="code-box">func maxDepthBFS(root *TreeNode) int:
+  if root == nil: return 0
+  queue := []*TreeNode{root}
+  depth := 0
+  for len(queue) > 0:
+    levelSize := len(queue)
+    for i := 0; i < levelSize; i++:
+      node := queue[0]
+      queue = queue[1:]
+      if node.Left != nil: queue = append(queue, node.Left)
+      if node.Right != nil: queue = append(queue, node.Right)
+    depth++
+  return depth</div>
+        <p class="warn">Base Case:</p> Empty tree has depth 0, not -1.
+    </div>
+
+    <!-- 3. Diameter of Binary Tree -->
+    <div class="box">
+        <h2>Diameter of Binary Tree</h2>
+        <span class="complexity">O(n) Time / O(h) Space</span>
+        <p><b>Goal:</b> Find longest path between any two nodes (measured in edges).</p>
+        <h3>Technique: DFS with Global State</h3>
+        <p><b>Why Global State?</b> We compute height (returned value) but track diameter (global). The longest path through a node = leftHeight + rightHeight. But the longest overall might not pass through root.</p>
+        <p><b>Key Insight:</b> At each node, we have a candidate diameter (left + right heights). Update global max. Return height (not diameter) for parent's calculation.</p>
+        <div class="code-box">func diameterOfBinaryTree(root *TreeNode) int:
+  maxDiameter := 0
+
+  var getHeight func(*TreeNode) int
+  getHeight = func(node *TreeNode) int:
+    if node == nil:
+      return 0
+    left := getHeight(node.Left)
+    right := getHeight(node.Right)
+
+    // Diameter through this node
+    maxDiameter = max(maxDiameter, left + right)
+
+    // Return height for parent
+    return 1 + max(left, right)
+
+  getHeight(root)
+  return maxDiameter</div>
+        <p class="tag">Two-Value Pattern:</p> Compute X (height), track Y (diameter). Return X, update Y globally.
+        <p class="warn">Return vs Track:</p> Height is returned (parent needs it). Diameter is tracked (comparing candidates).
+    </div>
+
+    <!-- 4. Balanced Binary Tree -->
+    <div class="box">
+        <h2>Balanced Binary Tree</h2>
+        <span class="complexity">O(n) Time / O(h) Space</span>
+        <p><b>Goal:</b> Check if every node's left and right subtrees differ in height by at most 1.</p>
+        <h3>Technique: DFS with Global Flag</h3>
+        <p><b>Why Global Flag?</b> Same pattern as diameter - compute height, track balance. Once we find an imbalanced node, set flag false.</p>
+        <p><b>Key Insight:</b> At each node, check |leftHeight - rightHeight| <= 1. If violated anywhere, tree is unbalanced.</p>
+        <div class="code-box">func isBalanced(root *TreeNode) bool:
+  balanced := true
+
+  var getHeight func(*TreeNode) int
+  getHeight = func(node *TreeNode) int:
+    if node == nil:
+      return 0
+    left := getHeight(node.Left)
+    right := getHeight(node.Right)
+
+    if abs(left - right) > 1:
+      balanced = false
+
+    return 1 + max(left, right)
+
+  getHeight(root)
+  return balanced</div>
+        <h3>Alternative: Return -1 for Imbalanced</h3>
+        <div class="code-box">// Return -1 if subtree is imbalanced
+var getHeight func(*TreeNode) int
+getHeight = func(node *TreeNode) int:
+  if node == nil: return 0
+  left := getHeight(node.Left)
+  if left == -1: return -1  // early exit
+  right := getHeight(node.Right)
+  if right == -1: return -1
+  if abs(left-right) > 1: return -1
+  return 1 + max(left, right)
+return getHeight(root) != -1</div>
+        <p class="tag">Early Exit:</p> Once imbalanced, propagate -1 up to skip unnecessary work.
+    </div>
+
+    <!-- 5. Same Tree -->
+    <div class="box">
+        <h2>Same Binary Tree</h2>
+        <span class="complexity">O(n) Time / O(h) Space</span>
+        <p><b>Goal:</b> Check if two trees have identical structure and values.</p>
+        <h3>Technique: Parallel DFS</h3>
+        <p><b>Why Parallel?</b> Compare corresponding nodes in both trees simultaneously. If any pair differs, trees are different.</p>
+        <p><b>Key Insight:</b> Both nil = same. One nil = different. Values differ = different. Otherwise, check both children match.</p>
+        <div class="code-box">func isSameTree(p, q *TreeNode) bool:
+  // Both nil - same (base case)
+  if p == nil && q == nil:
+    return true
+  // One nil or values differ - different
+  if p == nil || q == nil || p.Val != q.Val:
+    return false
+  // Both subtrees must match
+  return isSameTree(p.Left, q.Left) &&
+         isSameTree(p.Right, q.Right)</div>
+        <p class="tag">Short-Circuit:</p> AND (&&) stops at first false - efficient for mismatched trees.
+        <p class="warn">Order Matters:</p> Check nil cases before accessing .Val to avoid nil pointer dereference.
+    </div>
+
+    <!-- 6. Subtree of Another Tree -->
+    <div class="box">
+        <h2>Subtree of Another Tree</h2>
+        <span class="complexity">O(m*n) Time / O(h) Space</span>
+        <p><b>Goal:</b> Check if subRoot is a subtree of root (exact structure and values match).</p>
+        <h3>Technique: DFS + Same Tree Check</h3>
+        <p><b>Why Two Functions?</b> For each node in root, check "is subRoot the same as the subtree rooted here?" Use same-tree as a subroutine.</p>
+        <p><b>Key Insight:</b> If same-tree check fails at current node, the subtree might still exist in left or right children. Keep searching.</p>
+        <div class="code-box">func isSubtree(root, subRoot *TreeNode) bool:
+  // Helper: same tree check
+  var sameTree func(*TreeNode, *TreeNode) bool
+  sameTree = func(p, q *TreeNode) bool:
+    if p == nil && q == nil: return true
+    if p == nil || q == nil || p.Val != q.Val: return false
+    return sameTree(p.Left, q.Left) && sameTree(p.Right, q.Right)
+
+  // Main logic
+  if root == nil && subRoot == nil: return true
+  if root == nil || subRoot == nil: return false
+
+  // Check: is subRoot same as current subtree?
+  if sameTree(root, subRoot):
+    return true
+
+  // Otherwise, search in children
+  return isSubtree(root.Left, subRoot) ||
+         isSubtree(root.Right, subRoot)</div>
+        <p class="tag">Composition Pattern:</p> Complex problems often combine simpler subroutines.
+        <p class="warn">Edge Case:</p> root=[1,1], subRoot=[1] - sameTree fails at root, but subtree exists in left child.
+    </div>
+
+    <!-- Subtree O(n+m) approach -->
+    <div class="pattern-box">
+        <h2>Subtree: O(m+n) via String Matching</h2>
+        <p>The naive approach is O(m*n). We can do O(m+n) by serializing trees and using pattern matching:</p>
+        <h3>Step 1: Serialize Trees</h3>
+        <p>Convert trees to strings using preorder traversal. Use separators to prevent false matches:</p>
+        <div class="code-box">func serialize(root *TreeNode) string:
+  if root == nil: return "$#"
+  return "$" + strconv.Itoa(root.Val) +
+         serialize(root.Left) + serialize(root.Right)
+
+Tree [12] → "$12$#$#"
+Tree [2]  → "$2$#$#"  // Not a substring!</div>
+        <p class="warn">Why "$" prefix?</p> Without it, "2##" is substring of "12##" but [2] is NOT subtree of [12].
+        <h3>Step 2: Pattern Matching</h3>
+        <p>Check if serialized subRoot is a substring of serialized root using KMP or Z-function.</p>
+    </div>
+
+    <!-- KMP Algorithm -->
+    <div class="box">
+        <h2>KMP (Knuth-Morris-Pratt)</h2>
+        <span class="complexity">O(n+m) Time / O(m) Space</span>
+        <p><b>Core Idea:</b> When mismatch occurs, don't restart - use what we already matched.</p>
+        <h3>LPS Array (Longest Proper Prefix = Suffix)</h3>
+        <p>lps[i] = length of longest proper prefix of pattern[0..i] that's also a suffix.</p>
+        <div class="code-box">Pattern: A B A B C
+Index:   0 1 2 3 4
+LPS:     0 0 1 2 0
+
+LPS[3]=2: "ABAB" has prefix "AB" = suffix "AB"</div>
+        <h3>Why LPS Helps:</h3>
+        <div class="code-box">Text:    ...A B A B X...
+Pattern:    A B A B C
+                    ^ mismatch at j=4
+
+We matched "ABAB". LPS[3]=2 tells us the last 2
+chars ("AB") equal the first 2. Jump to j=2:
+
+Text:    ...A B A B X...
+Pattern:        A B A B C
+                ^ continue from j=2</div>
+        <h3>Build LPS:</h3>
+        <div class="code-box">func buildLPS(pattern string) []int:
+  lps := make([]int, len(pattern))
+  length := 0  // length of prev longest prefix-suffix
+  i := 1
+  for i < len(pattern):
+    if pattern[i] == pattern[length]:
+      length++
+      lps[i] = length
+      i++
+    else if length != 0:
+      length = lps[length-1]  // try shorter
+    else:
+      lps[i] = 0
+      i++
+  return lps</div>
+        <h3>KMP Search:</h3>
+        <div class="code-box">func kmpSearch(text, pattern string) bool:
+  lps := buildLPS(pattern)
+  i, j := 0, 0  // text index, pattern index
+  for i < len(text):
+    if text[i] == pattern[j]:
+      i++; j++
+      if j == len(pattern): return true
+    else if j != 0:
+      j = lps[j-1]  // use LPS to skip
+    else:
+      i++
+  return false</div>
+        <p class="tag">Mental Model:</p> "When I fail at position j, where in pattern can I resume?"
+    </div>
+
+    <!-- Z-Function Algorithm -->
+    <div class="box">
+        <h2>Z-Function Algorithm</h2>
+        <span class="complexity">O(n+m) Time / O(n+m) Space</span>
+        <p><b>Core Idea:</b> z[i] = length of longest substring starting at s[i] that matches a prefix of s.</p>
+        <h3>Z-Array Example:</h3>
+        <div class="code-box">String: a a b x a a b
+Index:  0 1 2 3 4 5 6
+Z:      - 1 0 0 3 1 0
+
+z[1]=1: s[1..1]="a" matches prefix s[0..0]="a"
+z[4]=3: s[4..6]="aab" matches prefix s[0..2]="aab"</div>
+        <h3>Pattern Matching with Z:</h3>
+        <div class="code-box">1. Combine: pattern + "|" + text
+2. Compute Z-array
+3. If any z[i] == len(pattern) for i > len(pattern),
+   pattern exists in text!
+
+Find "aab" in "xaabx":
+Combined: "aab|xaabx"
+Z:        - 1 0 0 0 3 1 0 0
+                    ^ z[5]=3 = len("aab") ✓</div>
+        <h3>Z-Function with Z-Box Optimization:</h3>
+        <div class="code-box">func zFunction(s string) []int:
+  n := len(s)
+  z := make([]int, n)
+  l, r := 0, 0  // [l,r] = rightmost interval matching prefix
+
+  for i := 1; i < n; i++:
+    if i <= r:
+      // Inside Z-box: s[i..r] = s[i-l..r-l]
+      z[i] = min(r-i+1, z[i-l])
+
+    // Extend z[i] by comparing characters
+    for i+z[i] < n && s[z[i]] == s[i+z[i]]:
+      z[i]++
+
+    // Update Z-box if we extended past r
+    if i+z[i]-1 > r:
+      l, r = i, i+z[i]-1
+
+  return z</div>
+        <p class="tag">Mental Model:</p> "At each position, how much of the beginning do I see here?"
+    </div>
+
+    <!-- KMP vs Z Comparison -->
+    <div class="box">
+        <h2>KMP vs Z-Function</h2>
+        <p>Both achieve O(n+m) time. Key differences:</p>
+        <h3>KMP:</h3>
+        <ul>
+            <li>Preprocess pattern only (O(m) space)</li>
+            <li>Two-phase: build LPS, then search</li>
+            <li>Better for streaming (process text char by char)</li>
+        </ul>
+        <h3>Z-Function:</h3>
+        <ul>
+            <li>Process combined string (O(n+m) space)</li>
+            <li>Single pass - preprocessing IS the search</li>
+            <li>More intuitive: z[i] directly answers "prefix match length"</li>
+        </ul>
+        <h3>Subtree Application:</h3>
+        <div class="code-box">// Both work the same way:
+serializedRoot := serialize(root)
+serializedSub := serialize(subRoot)
+
+// KMP: search directly
+return kmpSearch(serializedRoot, serializedSub)
+
+// Z-Function: combine then check
+combined := serializedSub + "|" + serializedRoot
+z := zFunction(combined)
+// Check if any z[i] == len(serializedSub)</div>
+        <p class="tag">When to Use:</p> KMP for streaming/memory constraints. Z for simplicity.
+    </div>
+
+    <!-- Patterns Summary -->
+    <div class="intro-box">
+        <h2>Core Patterns Summary</h2>
+        <h3>1. Basic DFS (Height/Depth/Size)</h3>
+        <p><b>Use When:</b> Computing aggregate properties from subtrees.</p>
+        <p><b>Template:</b> Base case nil, recurse children, combine with +1 or max or sum.</p>
+        <p><b>Examples:</b> Max Depth, Min Depth, Tree Size, Sum of Nodes.</p>
+
+        <h3>2. DFS with Modification</h3>
+        <p><b>Use When:</b> Changing tree structure.</p>
+        <p><b>Template:</b> Recurse to get modified subtrees, attach/swap at current node.</p>
+        <p><b>Examples:</b> Invert Tree, Prune Tree, Flatten to List.</p>
+
+        <h3>3. DFS with Global State</h3>
+        <p><b>Use When:</b> Computing one thing (returned) while tracking another (global).</p>
+        <p><b>Template:</b> Return local property (height), update global property (diameter/balance).</p>
+        <p><b>Examples:</b> Diameter, Balanced Check, Max Path Sum.</p>
+
+        <h3>4. Parallel DFS (Two Trees)</h3>
+        <p><b>Use When:</b> Comparing two trees node-by-node.</p>
+        <p><b>Template:</b> Check both nil, check one nil, check values, recurse both children.</p>
+        <p><b>Examples:</b> Same Tree, Symmetric Tree, Merge Trees.</p>
+
+        <h3>5. BFS Level-Order</h3>
+        <p><b>Use When:</b> Need level-by-level processing.</p>
+        <p><b>Template:</b> Queue with level-size tracking.</p>
+        <p><b>Examples:</b> Level Order Traversal, Right Side View, Level Averages.</p>
+
+        <h3>6. Composition</h3>
+        <p><b>Use When:</b> Problem needs a subroutine check at each node.</p>
+        <p><b>Template:</b> Outer DFS traverses, inner function validates.</p>
+        <p><b>Examples:</b> Subtree Check, Path Sum variants.</p>
+
+        <p class="tag">Building Blocks:</p> Master these 6 patterns - medium/hard problems combine them.
+    </div>
+
+    <!-- Space Complexity Note -->
+    <div class="box">
+        <h2>Space Complexity: O(h) vs O(n)</h2>
+        <p><b>O(h) Space</b> where h = height of tree:</p>
+        <ul>
+            <li>Recursive DFS uses call stack proportional to height</li>
+            <li>Best case (balanced): h = log(n)</li>
+            <li>Worst case (skewed): h = n</li>
+        </ul>
+        <p><b>O(n) Space:</b></p>
+        <ul>
+            <li>BFS queue can hold entire level</li>
+            <li>Widest level in complete tree: ~n/2 nodes</li>
+        </ul>
+        <p class="tag">Interview Tip:</p> Always clarify "O(h)" - interviewers may ask about balanced vs skewed trees.
+    </div>
+
+    <!-- Common Mistakes -->
+    <div class="box">
+        <h2>Common Mistakes</h2>
+        <h3>1. Forgetting Base Case</h3>
+        <p>Always handle nil before accessing .Left, .Right, or .Val.</p>
+        <h3>2. Wrong Return vs Track</h3>
+        <p>In diameter/balance: return height (parent needs), track answer (comparing).</p>
+        <h3>3. Depth vs Height Confusion</h3>
+        <p><b>Depth:</b> Distance from root (root has depth 0 or 1 depending on convention).</p>
+        <p><b>Height:</b> Distance to farthest leaf (leaf has height 0 or 1).</p>
+        <h3>4. Edge vs Node Counting</h3>
+        <p>Diameter is edges (left + right heights). Depth is often nodes (add 1).</p>
+        <h3>5. Nil Check Order</h3>
+        <div class="code-box">// WRONG: p.Val before nil check
+if p.Val != q.Val || p == nil ...
+
+// RIGHT: nil check first
+if p == nil || q == nil || p.Val != q.Val ...</div>
+    </div>
+
+    <!-- Preview: Medium Patterns -->
+    <div class="pattern-box">
+        <h2>Preview: Building to Medium Problems</h2>
+        <p>These easy problems establish foundations for harder patterns:</p>
+        <h3>Max Depth → Max Path Sum</h3>
+        <p>Same DFS-with-global-state pattern, but track max sum instead of diameter.</p>
+        <h3>Same Tree → Serialize/Deserialize</h3>
+        <p>If you can compare trees, you can convert to/from string representation.</p>
+        <h3>Subtree → Lowest Common Ancestor</h3>
+        <p>Both use "search in subtrees, combine at current node" pattern.</p>
+        <h3>BFS Depth → Level Order Variants</h3>
+        <p>Right side view, zigzag traversal - same BFS, different collection logic.</p>
+        <h3>Balanced Check → Validate BST</h3>
+        <p>Both check a property at every node while traversing.</p>
+        <p class="tag">Master the Basics:</p> Medium problems = combining/extending these exact patterns.</p>
+    </div>
+
+</div>
+
+</body>
+</html>
