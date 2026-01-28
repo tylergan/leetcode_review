@@ -42,6 +42,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Invert Binary Tree | You are given the root of a binary tree root. Invert the binary tree and return ... | [invert_binary_tree.go](binary_tree/invert_binary_tree.go) | [✓](binary_tree/invert_binary_tree_test.go) |
 | Max Depth Binary Tree | Given the root of a binary tree, return its depth. | [max_depth_binary_tree.go](binary_tree/max_depth_binary_tree.go) | [✓](binary_tree/max_depth_binary_tree_test.go) |
 | Same Binary Tree | Given the roots of two binary trees p and q, return true if the trees are equiva... | [same_binary_tree.go](binary_tree/same_binary_tree.go) | [✓](binary_tree/same_binary_tree_test.go) |
+| Subtree Of Another | Given the roots of two binary trees root and subRoot, return true if there is a ... | [subtree_of_another.go](binary_tree/subtree_of_another.go) | [✓](binary_tree/subtree_of_another_test.go) |
 
 ### Linked_List
 
