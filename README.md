@@ -41,6 +41,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Diameter Of Binary Tree | The diameter of a binary tree is defined as the length of the longest path betwe... | [diameter_of_binary_tree.go](binary_tree/diameter_of_binary_tree.go) | [✓](binary_tree/diameter_of_binary_tree_test.go) |
 | Invert Binary Tree | You are given the root of a binary tree root. Invert the binary tree and return ... | [invert_binary_tree.go](binary_tree/invert_binary_tree.go) | [✓](binary_tree/invert_binary_tree_test.go) |
 | Max Depth Binary Tree | Given the root of a binary tree, return its depth. | [max_depth_binary_tree.go](binary_tree/max_depth_binary_tree.go) | [✓](binary_tree/max_depth_binary_tree_test.go) |
+| Same Binary Tree | Given the roots of two binary trees p and q, return true if the trees are equiva... | [same_binary_tree.go](binary_tree/same_binary_tree.go) | [✓](binary_tree/same_binary_tree_test.go) |
 
 ### Linked_List
 
