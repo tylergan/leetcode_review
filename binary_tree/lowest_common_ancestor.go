@@ -33,3 +33,17 @@ func lowestCommonAncestor(root *TreeNode, p *TreeNode, q *TreeNode) *TreeNode {
 	}
 	return root // LCA is when it adheres to basic BTree principles s.t. one node is smaller than the root and the other node is larger than the root
 }
+
+func lowestCommonAncestorIter(root *TreeNode, p *TreeNode, q *TreeNode) *TreeNode {
+	curr := root
+	for curr != nil {
+		if curr.Val > p.Val && curr.Val > q.Val {
+			curr = curr.Left
+		} else if curr.Val < p.Val && curr.Val < q.Val {
+			curr = curr.Right
+		} else {
+			return curr
+		}
+	}
+	return nil
+}
