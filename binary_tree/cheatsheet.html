@@ -417,33 +417,74 @@ Find "aab" in "xaabx":
 Combined: "aab|xaabx"
 Z:        - 1 0 0 0 3 1 0 0
                     ^ z[5]=3 = len("aab") ✓</div>
-        <h3>Z-Function with Z-Box Optimization:</h3>
+    </div>
+
+    <!-- Z-Function Deep Dive -->
+    <div class="pattern-box">
+        <h2>Z-Box: The "Cloned Photograph" Model</h2>
+        <p>Think of the Z-box <b>[l,r]</b> as a photograph of the start of the string that's been pasted further down.</p>
+        <h3>What "Inside the Z-box" Means (i ≤ r):</h3>
+        <p>If box is [l=10, r=15], indices 10-15 are an <b>exact clone</b> of indices 0-5. When i is between l and r, you're standing in that cloned area.</p>
+        <h3>The Three Key Operations:</h3>
+        <p><b>1. The Mirror (i - l):</b> Since you're in a clone, look back at your "twin" position in the original prefix.</p>
+        <div class="code-box">z[i] = z[i - l]  // What did my twin see?</div>
+        <p><b>2. The Safety Limit (r - i + 1):</b> Your twin might have matched way beyond what your "photograph" covers. You can only trust up to the edge of the box.</p>
+        <div class="code-box">z[i] = min(r - i + 1, z[i - l])
+       ↑ chars left   ↑ twin's match
+         in photo</div>
+        <p class="warn">Example:</p> Twin says "I matched 100 chars" but you only have 3 chars left in your photo → you can only guarantee those 3.
+        <p><b>3. The Explorer (while loop):</b> After using memory to get a head start, check characters past the edge to extend the match.</p>
+        <h3>Updating the Box (High Water Mark):</h3>
+        <p><b>Why update?</b> When the explorer finds matches past r, we have a new, further-reaching "photograph." Algorithm is greedy—always wants r as far right as possible.</p>
+        <p><b>Why update l = i?</b> Re-centers your coordinate system. Distance from l equals distance from prefix start, enabling the mirror calculation.</p>
+        <div class="code-box">i + z[i] - 1 = ending index of current match
+If this > r, we've expanded our known territory:
+  l = i           // New anchor
+  r = i + z[i] - 1  // New high water mark</div>
+    </div>
+
+    <!-- Z-Function Code -->
+    <div class="box">
+        <h2>Z-Function Implementation</h2>
         <div class="code-box">func zFunction(s string) []int:
   n := len(s)
   z := make([]int, n)
-  l, r := 0, 0  // [l,r] = rightmost interval matching prefix
+  l, r := 0, 0  // [l,r] = rightmost match interval
 
   for i := 1; i < n; i++:
     if i <= r:
-      // Inside Z-box: s[i..r] = s[i-l..r-l]
+      // INSIDE box: use mirror + safety limit
       z[i] = min(r-i+1, z[i-l])
 
-    // Extend z[i] by comparing characters
+    // EXPLORE: extend past the box edge
     for i+z[i] < n && s[z[i]] == s[i+z[i]]:
       z[i]++
 
-    // Update Z-box if we extended past r
+    // UPDATE: move high water mark if extended
     if i+z[i]-1 > r:
       l, r = i, i+z[i]-1
 
   return z</div>
-        <p class="tag">Mental Model:</p> "At each position, how much of the beginning do I see here?"
+        <h3>Golden Rules:</h3>
+        <ul>
+            <li><b>i - l</b> = "Look at the original" (mirror position)</li>
+            <li><b>r - i + 1</b> = "Don't trust beyond the photo edge" (safety limit)</li>
+            <li><b>while loop</b> = "Explore new territory"</li>
+            <li><b>l, r update</b> = "Relocate base to new high water mark"</li>
+        </ul>
+        <p class="tag">Key Insight:</p> Text pointer never goes back. Work from discovering r is stored in Z-array and reused via the l anchor.
     </div>
 
     <!-- KMP vs Z Comparison -->
     <div class="box">
         <h2>KMP vs Z-Function</h2>
-        <p>Both achieve O(n+m) time. Key differences:</p>
+        <p>Both achieve O(n+m) time. Mental model difference:</p>
+        <h3>Strategic Approach:</h3>
+        <div class="code-box">KMP:   "Reactive" - I failed at pattern position j.
+       Where can I restart without re-reading text?
+
+Z-Alg: "Proactive" - I found a match here. Let me
+       map it so I skip work for upcoming chars.</div>
         <h3>KMP:</h3>
         <ul>
             <li>Preprocess pattern only (O(m) space)</li>
