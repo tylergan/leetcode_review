@@ -47,3 +47,54 @@ func kthSmallest(root *TreeNode, k int) int {
 	dfs(root)
 	return ans
 }
+
+func kthSmallestStack(root *TreeNode, k int) int {
+	var stk []*TreeNode
+	curr := root
+	for curr != nil && len(stk) > 0 {
+		for curr != nil {
+			stk = append(stk, curr)
+			curr = curr.Left
+		}
+		curr = stk[len(stk)-1]
+		stk = stk[:len(stk)-1]
+		k--
+		if k == 0 {
+			return curr.Val
+		}
+		curr = curr.Right
+	}
+	return -1
+}
+
+func kthSmallestMorris(root *TreeNode, k int) int { // https://www.youtube.com/watch?v=wGXB9OWhPTg
+	curr := root
+	for curr != nil {
+		if curr.Left == nil { // as per inorder, left --> root --> right
+			k--
+			if k == 0 {
+				return curr.Val
+			}
+			curr = curr.Right
+		} else {
+			pred := curr.Left
+			for pred.Right != nil && pred.Right != curr { // find the inorder pred. (though it is possible we have connected it before)
+				pred = pred.Right
+			}
+			if pred.Right == nil { // this path has not been visited before, so we connect the inorder pred to the curr so that we can go back to curr later
+				pred.Right = curr
+				curr = curr.Left
+			} else {
+				// if we have traversed this path before to find the inorder pred. for the curr node, this suggests we
+				//have visited the left side before, so visit the curr node and remove the link for the inorder pred.
+				pred.Right = nil
+				k--
+				if k == 0 {
+					return curr.Val
+				}
+				curr = curr.Right
+			}
+		}
+	}
+	return -1
+}
