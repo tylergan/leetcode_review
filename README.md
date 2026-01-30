@@ -41,6 +41,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 |---------|-------------|----------|-------|
 | Balanced Binary Tree | Given a binary tree, return true if it is height-balanced and false otherwise. | [balanced_binary_tree.go](binary_tree/balanced_binary_tree.go) | [✓](binary_tree/balanced_binary_tree_test.go) |
 | Btree Level Order Traversal | Given a binary tree root, return the level order traversal of it as a nested lis... | [btree_level_order_traversal.go](binary_tree/btree_level_order_traversal.go) | [✓](binary_tree/btree_level_order_traversal_test.go) |
+| Btree Right Side View | You are given the root of a binary tree. Return only the values of the nodes tha... | [btree_right_side_view.go](binary_tree/btree_right_side_view.go) | [✓](binary_tree/btree_right_side_view_test.go) |
 | Diameter Of Binary Tree | The diameter of a binary tree is defined as the length of the longest path betwe... | [diameter_of_binary_tree.go](binary_tree/diameter_of_binary_tree.go) | [✓](binary_tree/diameter_of_binary_tree_test.go) |
 | Invert Binary Tree | You are given the root of a binary tree root. Invert the binary tree and return ... | [invert_binary_tree.go](binary_tree/invert_binary_tree.go) | [✓](binary_tree/invert_binary_tree_test.go) |
 | Lowest Common Ancestor | Given a binary search tree (BST) where all node values are unique, and two nodes... | [lowest_common_ancestor.go](binary_tree/lowest_common_ancestor.go) | [✓](binary_tree/lowest_common_ancestor_test.go) |
