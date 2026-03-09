@@ -512,6 +512,69 @@ z := zFunction(combined)
         <p class="tag">When to Use:</p> KMP for streaming/memory constraints. Z for simplicity.
     </div>
 
+    <!-- Construct Tree from Preorder + Inorder -->
+    <div class="box">
+        <h2>Construct Tree from Preorder &amp; Inorder</h2>
+        <span class="complexity">O(n) Time / O(n) Space</span>
+        <p><b>Goal:</b> Given preorder and inorder traversals (unique values), rebuild the original binary tree.</p>
+        <h3>What Each Traversal Tells You:</h3>
+        <div class="code-box">Preorder: root → left → right
+  → First element is ALWAYS the root.
+  → After the root, left subtree nodes come
+    first, then right subtree nodes.
+
+Inorder:  left → root → right
+  → Everything LEFT of the root = left subtree.
+  → Everything RIGHT of the root = right subtree.
+  → Tells you the SIZE of each subtree.</div>
+        <h3>The Key Insight:</h3>
+        <p><b>Preorder identifies the root. Inorder splits left vs right.</b> The left subtree's size bridges the two arrays.</p>
+        <h3>Worked Example:</h3>
+        <div class="code-box">      8
+     / \
+    4   10        preorder = [8, 4, 2, 6, 10, 12]
+   / \    \       inorder  = [2, 4, 6, 8, 10, 12]
+  2   6    12
+
+Step 1: root = 8 (first in preorder)
+Step 2: Find 8 in inorder at index 3
+  left inorder:  [2, 4, 6]  (leftSize = 3)
+  right inorder: [10, 12]
+Step 3: Use leftSize to split preorder
+  left preorder:  [4, 2, 6]  (next 3 after root)
+  right preorder: [10, 12]   (the rest)
+Step 4: Recurse on both halves</div>
+        <h3>Recursive Decomposition:</h3>
+        <div class="code-box">preorder = [root | left subtree | right subtree]
+inorder  = [left subtree | root | right subtree]
+                           ↑
+                      leftSize = index of root in inorder
+
+left preorder  = preorder[1 : leftSize+1]
+left inorder   = inorder[0 : leftSize]
+right preorder = preorder[leftSize+1 :]
+right inorder  = inorder[leftSize+1 :]</div>
+        <h3>Code:</h3>
+        <div class="code-box">func buildTree(preorder, inorder []int) *TreeNode:
+  if len(preorder) == 0:
+    return nil
+
+  root := &TreeNode{Val: preorder[0]}
+  leftSize := 0
+  for i, v := range inorder:
+    if v == root.Val:
+      leftSize = i
+      break
+
+  root.Left = buildTree(
+    preorder[1:leftSize+1], inorder[:leftSize])
+  root.Right = buildTree(
+    preorder[leftSize+1:], inorder[leftSize+1:])
+  return root</div>
+        <p class="tag">Optimisation:</p> Build a hashmap of inorder value→index upfront to make root lookup O(1) instead of O(n), reducing overall time from O(n²) to O(n).
+        <p class="warn">Slice Sizes Must Match:</p> left preorder and left inorder must have the same length (leftSize). If they don't, the split is wrong.
+    </div>
+
     <!-- Patterns Summary -->
     <div class="intro-box">
         <h2>Core Patterns Summary</h2>
@@ -545,7 +608,12 @@ z := zFunction(combined)
         <p><b>Template:</b> Outer DFS traverses, inner function validates.</p>
         <p><b>Examples:</b> Subtree Check, Path Sum variants.</p>
 
-        <p class="tag">Building Blocks:</p> Master these 6 patterns - medium/hard problems combine them.
+        <h3>7. Reconstruction from Traversals</h3>
+        <p><b>Use When:</b> Building a tree from two traversal orders.</p>
+        <p><b>Template:</b> One traversal identifies root, the other splits left/right. Use subtree size to bridge arrays. Recurse on sub-slices.</p>
+        <p><b>Examples:</b> Construct from Preorder+Inorder, Construct from Inorder+Postorder.</p>
+
+        <p class="tag">Building Blocks:</p> Master these 7 patterns - medium/hard problems combine them.
     </div>
 
     <!-- Space Complexity Note -->
@@ -593,6 +661,8 @@ if p == nil || q == nil || p.Val != q.Val ...</div>
         <p>Same DFS-with-global-state pattern, but track max sum instead of diameter.</p>
         <h3>Same Tree → Serialize/Deserialize</h3>
         <p>If you can compare trees, you can convert to/from string representation.</p>
+        <h3>Construct from Traversals → Postorder Variant</h3>
+        <p>Same reconstruction logic, but with postorder the root is the <b>last</b> element instead of first. Split logic is identical.</p>
         <h3>Subtree → Lowest Common Ancestor</h3>
         <p>Both use "search in subtrees, combine at current node" pattern.</p>
         <h3>BFS Depth → Level Order Variants</h3>
