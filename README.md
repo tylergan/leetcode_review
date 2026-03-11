@@ -40,6 +40,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
 | Balanced Binary Tree | Given a binary tree, return true if it is height-balanced and false otherwise. | [balanced_binary_tree.go](binary_tree/balanced_binary_tree.go) | [✓](binary_tree/balanced_binary_tree_test.go) |
+| Binary Tree Max Path Sum | Given the root of a non-empty binary tree, return the maximum path sum of any no... | [binary_tree_max_path_sum.go](binary_tree/binary_tree_max_path_sum.go) | [✓](binary_tree/binary_tree_max_path_sum_test.go) |
 | Btree Level Order Traversal | Given a binary tree root, return the level order traversal of it as a nested lis... | [btree_level_order_traversal.go](binary_tree/btree_level_order_traversal.go) | [✓](binary_tree/btree_level_order_traversal_test.go) |
 | Btree Right Side View | You are given the root of a binary tree. Return only the values of the nodes tha... | [btree_right_side_view.go](binary_tree/btree_right_side_view.go) | [✓](binary_tree/btree_right_side_view_test.go) |
 | Construct Tree From Pre To In | You are given two integer arrays preorder and inorder. | [construct_tree_from_pre_to_in.go](binary_tree/construct_tree_from_pre_to_in.go) | [✓](binary_tree/construct_tree_from_pre_to_in_test.go) |
