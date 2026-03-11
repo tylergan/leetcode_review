@@ -41,14 +41,14 @@ func buildTreeFromPreIn(preorder []int, inorder []int) *TreeNode {
 		return nil
 	}
 	root := &TreeNode{Val: preorder[0]}
-	rootIndex := 0
+	leftSubtreeLen := 0
 	for i, v := range inorder {
 		if v == root.Val {
-			rootIndex = i
+			leftSubtreeLen = i
 			break
 		}
 	}
-	root.Left = buildTreeFromPreIn(preorder[1:rootIndex+1], inorder[:rootIndex])
-	root.Right = buildTreeFromPreIn(preorder[rootIndex+1:], inorder[rootIndex+1:])
+	root.Left = buildTreeFromPreIn(preorder[1:leftSubtreeLen+1], inorder[:leftSubtreeLen])
+	root.Right = buildTreeFromPreIn(preorder[leftSubtreeLen+1:], inorder[leftSubtreeLen+1:])
 	return root
 }
