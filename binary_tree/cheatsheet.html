@@ -575,6 +575,75 @@ right inorder  = inorder[leftSize+1 :]</div>
         <p class="warn">Slice Sizes Must Match:</p> left preorder and left inorder must have the same length (leftSize). If they don't, the split is wrong.
     </div>
 
+    <!-- Max Path Sum -->
+    <div class="box">
+        <h2>Binary Tree Maximum Path Sum</h2>
+        <span class="complexity">O(n) Time / O(h) Space</span>
+        <p><b>Goal:</b> Find the maximum sum of any non-empty path in the tree. A path connects adjacent nodes and cannot branch (no Y-shapes).</p>
+        <h3>Technique: DFS with Global State (Diameter Pattern)</h3>
+        <p><b>Why This Pattern?</b> Same idea as diameter: at each node, compute two different things.</p>
+        <h3>The Two Quantities:</h3>
+        <div class="code-box">1. COMPLETE PATH (updates global res):
+   Can use both children: left + node + right
+   "What if the best path passes through this node?"
+
+2. EXTENDABLE CHAIN (returned to parent):
+   Can only use one child: node + max(left, right)
+   "What is the best single chain I can hand upward?"
+
+Why different? If you returned both sides to your
+parent, the parent would create a Y-shape = invalid.</div>
+        <h3>Handling Negatives:</h3>
+        <p><b>Clip child contributions to 0:</b> If a child's best chain is negative, don't take that side. But never skip the node itself (all-negative trees must still return something).</p>
+        <div class="code-box">left  := max(dfs(node.Left), 0)   // ignore if negative
+right := max(dfs(node.Right), 0)  // ignore if negative
+
+complete path candidate = node.Val + left + right
+extendable chain        = node.Val + max(left, right)</div>
+        <h3>Worked Example:</h3>
+        <div class="code-box">      -15
+      /   \
+    10     20
+          /  \
+        15    5
+        /
+      -5
+
+At node 15: left=-5→0, right=0→0
+  complete = 15, extendable = 15
+At node 5:  no children
+  complete = 5, extendable = 5
+At node 20: left=15, right=5
+  complete = 15+20+5 = 40 ← global best!
+  extendable = 20+15 = 35 (pick better side)
+At node -15: left=10, right=35
+  complete = 10+(-15)+35 = 30 (< 40)
+  extendable = -15+35 = 20
+
+Answer: 40 (path 15→20→5, never goes through root)</div>
+        <h3>Code:</h3>
+        <div class="code-box">func maxPathSum(root *TreeNode) int:
+  res := math.MinInt32
+
+  var dfs func(*TreeNode) int
+  dfs = func(node *TreeNode) int:
+    if node == nil:
+      return 0
+    left := max(dfs(node.Left), 0)
+    right := max(dfs(node.Right), 0)
+
+    // Complete path through this node
+    res = max(res, node.Val + left + right)
+
+    // Extendable chain to parent (pick one side)
+    return node.Val + max(left, right)
+
+  dfs(root)
+  return res</div>
+        <p class="tag">Builds on Diameter:</p> Diameter returns height, tracks edge count. Max Path Sum returns best chain, tracks best complete path. Same structural pattern.
+        <p class="warn">Init res = MinInt32:</p> Not 0! An all-negative tree still has a valid answer (the least negative node).
+    </div>
+
     <!-- Patterns Summary -->
     <div class="intro-box">
         <h2>Core Patterns Summary</h2>
