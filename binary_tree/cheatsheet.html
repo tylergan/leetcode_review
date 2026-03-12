@@ -644,6 +644,78 @@ Answer: 40 (path 15→20→5, never goes through root)</div>
         <p class="warn">Init res = MinInt32:</p> Not 0! An all-negative tree still has a valid answer (the least negative node).
     </div>
 
+    <!-- Serialize & Deserialize Binary Tree -->
+    <div class="box">
+        <h2>Serialize &amp; Deserialize Binary Tree</h2>
+        <span class="complexity">O(n) Time / O(n) Space</span>
+        <p><b>Goal:</b> Convert a binary tree to a string and back, preserving the exact structure including nulls.</p>
+        <h3>Technique: BFS Level-Order (same as buildTree helper)</h3>
+        <p><b>Why BFS?</b> Level-order gives a natural positional encoding. For any node dequeued, the next two elements in the string are always its left and right children. This is the same logic as the test helper <code>buildTree([]*int)</code>.</p>
+        <h3>The Key Insight:</h3>
+        <div class="code-box">BFS processes nodes left→right at each level.
+When we serialize, we enqueue BOTH children
+(including nils) so every node's position is fixed.
+
+When we deserialize, we consume elements in pairs:
+  dequeue a node → next element = left child
+                 → element after = right child
+
+This works because the queue order during serialize
+matches the queue order during deserialize.</div>
+        <h3>Serialize (Tree → String):</h3>
+        <div class="code-box">func serialize(root *TreeNode) string:
+  if root == nil: return "$"
+  var res strings.Builder
+  queue := []*TreeNode{root}
+  for len(queue) > 0:
+    node := queue[0]; queue = queue[1:]
+    if node == nil:
+      res.WriteString("$#")  // nil marker + delimiter
+      continue
+    res.WriteString(fmt.Sprintf("%d#", node.Val))
+    queue = append(queue, node.Left, node.Right)
+  return res.String()</div>
+        <h3>Deserialize (String → Tree):</h3>
+        <div class="code-box">func deserialize(data string) *TreeNode:
+  if data == "$": return nil
+  parts := strings.Split(data, "#")
+  val, _ := strconv.Atoi(parts[0])
+  root := &TreeNode{Val: val}
+  queue := []*TreeNode{root}
+  idx := 1
+  for len(queue) > 0:
+    node := queue[0]; queue = queue[1:]
+    // Next two elements are this node's children
+    if idx < len(parts) && parts[idx] != "$":
+      val, _ := strconv.Atoi(parts[idx])
+      node.Left = &TreeNode{Val: val}
+      queue = append(queue, node.Left)
+    idx++
+    if idx < len(parts) && parts[idx] != "$":
+      val, _ := strconv.Atoi(parts[idx])
+      node.Right = &TreeNode{Val: val}
+      queue = append(queue, node.Right)
+    idx++
+  return root</div>
+        <h3>Why It Works - Pairing Invariant:</h3>
+        <div class="code-box">      1
+     / \
+    2   3         serialize queue order:
+       / \        dequeue 1 → enqueue 2, 3
+      4   5       dequeue 2 → enqueue $, $
+                  dequeue 3 → enqueue 4, 5
+String: "1#2#3#$#$#4#5#$#$#$#$#"
+
+deserialize reads pairs from idx:
+  node 1 → parts[1]=2 (left), parts[2]=3 (right)
+  node 2 → parts[3]=$ (left), parts[4]=$ (right)
+  node 3 → parts[5]=4 (left), parts[6]=5 (right)
+
+The queue ensures the pairing order is identical.</div>
+        <p class="tag">DFS Alternative:</p> Preorder DFS with a global index also works. BFS is more intuitive here because the "next two elements = children" pairing is direct.
+        <p class="warn">Delimiter Choice:</p> Use a separator (like "#") between tokens. Without it, multi-digit or negative values like "-10" become ambiguous.
+    </div>
+
     <!-- Patterns Summary -->
     <div class="intro-box">
         <h2>Core Patterns Summary</h2>
