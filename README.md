@@ -51,6 +51,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Lowest Common Ancestor | Given a binary search tree (BST) where all node values are unique, and two nodes... | [lowest_common_ancestor.go](binary_tree/lowest_common_ancestor.go) | [✓](binary_tree/lowest_common_ancestor_test.go) |
 | Max Depth Binary Tree | Given the root of a binary tree, return its depth. | [max_depth_binary_tree.go](binary_tree/max_depth_binary_tree.go) | [✓](binary_tree/max_depth_binary_tree_test.go) |
 | Same Binary Tree | Given the roots of two binary trees p and q, return true if the trees are equiva... | [same_binary_tree.go](binary_tree/same_binary_tree.go) | [✓](binary_tree/same_binary_tree_test.go) |
+| Serialise And Deserialise Btree | Implement an algorithm to serialize and deserialize a binary tree. | [serialise_and_deserialise_btree.go](binary_tree/serialise_and_deserialise_btree.go) | [✓](binary_tree/serialise_and_deserialise_btree_test.go) |
 | Subtree Of Another | Given the roots of two binary trees root and subRoot, return true if there is a ... | [subtree_of_another.go](binary_tree/subtree_of_another.go) | [✓](binary_tree/subtree_of_another_test.go) |
 | Valid Btree | Given the root of a binary tree, return true if it is a valid binary search tree... | [valid_btree.go](binary_tree/valid_btree.go) | [✓](binary_tree/valid_btree_test.go) |
 
