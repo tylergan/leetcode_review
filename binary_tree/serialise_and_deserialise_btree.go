@@ -89,3 +89,44 @@ func (this *Codec) deserialize(data string) *TreeNode {
 	}
 	return root
 }
+
+// type CodecDFS struct{}
+
+// func ConstructorDFS() CodecDFS { return CodecDFS{} }
+
+// func (cd *CodecDFS) serialize(root *TreeNode) string {
+// 	var res strings.Builder
+// 	var dfs func(*TreeNode)
+// 	dfs = func(node *TreeNode) {
+// 		if node == nil {
+// 			res.WriteString("$#")
+// 			return
+// 		}
+// 		res.WriteString(fmt.Sprintf("%d#", node.Val))
+// 		dfs(node.Left)
+// 		dfs(node.Right)
+// 	}
+// 	dfs(root)
+// 	return res.String()
+// }
+
+// func (cd *CodecDFS) deserialize(data string) *TreeNode {
+// 	parts := strings.Split(data, "#")
+// 	idx := 0
+// 	var dfs func() *TreeNode
+// 	dfs = func() *TreeNode {
+// 		if parts[idx] == "$" {
+// 			idx++
+// 			return nil
+// 		}
+
+// 		val, _ := strconv.Atoi(parts[idx])
+// 		node := &TreeNode{Val: val}
+// 		idx++
+// 		node.Left = dfs()
+// 		node.Right = dfs()
+// 		return node
+
+// 	}
+// 	return dfs()
+// }
