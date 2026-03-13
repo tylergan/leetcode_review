@@ -55,6 +55,14 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Subtree Of Another | Given the roots of two binary trees root and subRoot, return true if there is a ... | [subtree_of_another.go](binary_tree/subtree_of_another.go) | [✓](binary_tree/subtree_of_another_test.go) |
 | Valid Btree | Given the root of a binary tree, return true if it is a valid binary search tree... | [valid_btree.go](binary_tree/valid_btree.go) | [✓](binary_tree/valid_btree_test.go) |
 
+### Heap_Pq
+
+📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/heap_pq/cheatsheet.html)** - Quick reference guide for heap_pq problems
+
+| Problem | Description | Solution | Tests |
+|---------|-------------|----------|-------|
+| Kth Largest Element In Stream | Design a class to find the kth largest integer in a stream of values, including ... | [kth_largest_element_in_stream.go](heap_pq/kth_largest_element_in_stream.go) | [✓](heap_pq/kth_largest_element_in_stream_test.go) |
+
 ### Linked_List
 
 📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/linked_list/cheatsheet.html)** - Quick reference guide for linked_list problems
