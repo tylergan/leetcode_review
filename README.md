@@ -62,6 +62,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
 | Kth Largest Element In Stream | Design a class to find the kth largest integer in a stream of values, including ... | [kth_largest_element_in_stream.go](heap_pq/kth_largest_element_in_stream.go) | [✓](heap_pq/kth_largest_element_in_stream_test.go) |
+| Last Stone Weight | You are given an array of integers stones where stones[i] represents the weight ... | [last_stone_weight.go](heap_pq/last_stone_weight.go) | [✓](heap_pq/last_stone_weight_test.go) |
 
 ### Linked_List
 
