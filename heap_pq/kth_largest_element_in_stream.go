@@ -2,24 +2,6 @@ package heappq
 
 import "container/heap"
 
-type IntHeap []int
-
-func (h IntHeap) Len() int { return len(h) }
-
-func (h IntHeap) Less(i, j int) bool { return h[i] < h[j] }
-
-func (h IntHeap) Swap(i, j int) { h[i], h[j] = h[j], h[i] }
-
-func (h *IntHeap) Push(val any) { *h = append(*h, val.(int)) }
-
-func (h *IntHeap) Pop() any {
-	old := *h
-	n := len(old)
-	x := old[n-1]
-	*h = old[:n-1]
-	return x
-}
-
 /*
 Design a class to find the kth largest integer in a stream of values, including duplicates. E.g. the 2nd largest from [1, 2, 3, 3] is 3. The stream is not necessarily sorted.
 
@@ -52,12 +34,12 @@ There will always be at least k integers in the stream when you search for the k
 */
 
 type KthLargest struct {
-	h *IntHeap
+	h *IntHeapMin
 	k int
 }
 
 func Constructor(k int, nums []int) KthLargest {
-	h := &IntHeap{}
+	h := &IntHeapMin{}
 	heap.Init(h)
 	for _, n := range nums {
 		heap.Push(h, n)

@@ -210,6 +210,94 @@ func (this *KthLargest) Add(val int) int:
         <p class="warn">Heap Size Cap:</p> Never let the heap grow past k elements. Always pop after pushing if size exceeds k.
     </div>
 
+    <!-- How Push and Pop Work Internally -->
+    <div class="box">
+        <h2>How Heap Push &amp; Pop Work Internally</h2>
+        <p>A heap is a <b>complete binary tree stored as an array</b>. The tree structure is implicit from the indices:</p>
+        <div class="code-box">For node at index i:
+  parent      = (i - 1) / 2
+  left child  = 2*i + 1
+  right child = 2*i + 2
+
+Array: [1, 3, 2, 7, 5, 4, 6]
+Tree:        1          index 0
+           /   \
+          3     2       index 1, 2
+         / \   / \
+        7   5 4   6     index 3, 4, 5, 6</div>
+        <h3>Push — Bubble Up (Sift Up):</h3>
+        <p>Add to the end, then swap upward until the heap property is restored.</p>
+        <div class="code-box">Push(0) onto min-heap [1, 3, 2, 7, 5]:
+
+Step 1: Append to end
+  [1, 3, 2, 7, 5, 0]
+           1
+          / \
+         3   2
+        / \ /
+       7  5 0  ← new element at index 5
+
+Step 2: Compare with parent (index (5-1)/2 = 2)
+  0 < 2? Yes → swap
+  [1, 3, 0, 7, 5, 2]
+           1
+          / \
+         3   0  ← swapped up
+        / \ /
+       7  5 2
+
+Step 3: Compare with parent (index (2-1)/2 = 0)
+  0 < 1? Yes → swap
+  [0, 3, 1, 7, 5, 2]
+           0  ← now the root
+          / \
+         3   1
+        / \ /
+       7  5 2
+
+Step 4: At root, done. O(log n) swaps max.</div>
+        <h3>Pop — Bubble Down (Sift Down):</h3>
+        <p>Swap root with last element, remove last, then swap the new root downward with its <b>smaller child</b> until restored.</p>
+        <div class="code-box">Pop() from min-heap [1, 3, 2, 7, 5, 4]:
+
+Step 1: Swap root with last element
+  [4, 3, 2, 7, 5, 1]
+  Remove last → return value 1
+  [4, 3, 2, 7, 5]
+           4  ← out of place
+          / \
+         3   2
+        / \
+       7   5
+
+Step 2: Compare with children (index 1=3, index 2=2)
+  Smaller child is 2 (index 2). 4 > 2? Yes → swap
+  [2, 3, 4, 7, 5]
+           2
+          / \
+         3   4  ← swapped down
+        / \
+       7   5
+
+Step 3: Children of index 2 are index 5, 6 → none
+  No children, done. O(log n) swaps max.</div>
+        <h3>Why Swap With Smaller Child?</h3>
+        <p>In a min-heap, swapping with the smaller child guarantees the new parent is &le; both children. If you swapped with the larger child, the smaller child would be less than the new parent, violating the heap property.</p>
+        <h3>What heap.Push/heap.Pop Actually Do:</h3>
+        <div class="code-box">// heap.Push (simplified):
+func Push(h Interface, x any) {
+  h.Push(x)        // YOUR Push: append to slice
+  up(h, h.Len()-1) // LIBRARY: bubble up from last
+
+// heap.Pop (simplified):
+func Pop(h Interface) any {
+  n := h.Len() - 1
+  h.Swap(0, n)      // swap root with last
+  down(h, 0, n)     // bubble down new root
+  return h.Pop()    // YOUR Pop: remove & return last</div>
+        <p class="tag">Your methods vs library:</p> Your Push/Pop just append/remove the last element. The library's up/down functions handle all the swapping to maintain heap order. That's why you must call <code>heap.Push</code>/<code>heap.Pop</code>, not the methods directly.
+    </div>
+
     <!-- Pointer vs Value Receiver -->
     <div class="pattern-box">
         <h2>Why *IntHeap for Push/Pop but Not Swap?</h2>
