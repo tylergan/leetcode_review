@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LeetCode Heap / Priority Queue Cheat Sheet</title>
+    <style>
+        @page { size: A4; margin: 0.3cm 0.3cm 0.3cm 0.3cm; }
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 7pt;
+            line-height: 1.2;
+            color: #000;
+            background: #fff;
+        margin: 0;
+            padding: 0;
+        }
+        .container {
+            column-count: 3;
+            column-gap: 0.25cm;
+            width: 100%;
+        }
+        .box {
+            border: 1px solid #444;
+            padding: 2px 4px;
+            margin-bottom: 4px;
+            break-inside: avoid;
+            background-color: #fff;
+        }
+        h2 {
+            font-size: 8pt;
+            font-weight: bold;
+            background-color: #eee;
+            padding: 2px;
+            margin: 0 0 2px 0;
+            border-bottom: 1px solid #000;
+            text-transform: uppercase;
+        }
+        h3 {
+            font-size: 7.5pt;
+            font-weight: bold;
+            margin: 2px 0 1px 0;
+            text-decoration: underline;
+            color: #004085;
+        }
+        p { margin: 0 0 2px 0; text-align: left; }
+        ul { padding-left: 10px; margin: 0; }
+        li { margin: 0; }
+        .code-box {
+            font-family: "Courier New", monospace;
+            background-color: #f4f4f4;
+            border-left: 2px solid #333;
+            padding: 1px 2px;
+            margin: 1px 0;
+            font-size: 6.5pt;
+            white-space: pre-wrap;
+        }
+        .tag {
+            font-weight: bold;
+            color: #d63384;
+            font-size: 6.5pt;
+        }
+        .complexity {
+            font-weight: bold;
+            font-size: 6.5pt;
+            color: #007bff;
+            float: right;
+        }
+        .warn { color: #b00; font-weight: bold; }
+        .intro-box {
+            background-color: #fff3cd;
+            border: 2px solid #856404;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+        .pattern-box {
+            background-color: #d4edda;
+            border: 2px solid #155724;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Introduction -->
+    <div class="intro-box">
+        <h2>Heap / Priority Queue Fundamentals</h2>
+        <p><b>Core Idea:</b> A heap is a complete binary tree stored as an array that maintains a ordering property. It gives you O(1) access to the min (or max) and O(log n) insertion and removal.</p>
+        <h3>Min-Heap vs Max-Heap:</h3>
+        <ul>
+            <li><b>Min-Heap:</b> Parent &le; children. Root is the smallest element. Go's <code>container/heap</code> defaults to this with <code>Less(i,j) = h[i] &lt; h[j]</code>.</li>
+            <li><b>Max-Heap:</b> Parent &ge; children. Root is the largest element. Flip the <code>Less</code> comparison.</li>
+        </ul>
+        <h3>Key Operations:</h3>
+        <div class="code-box">Push(val)  → O(log n)  add element, bubble up
+Pop()      → O(log n)  remove root, bubble down
+Peek/Top   → O(1)      read root (h[0])
+Init(h)    → O(n)      heapify an existing slice</div>
+        <h3>Go's container/heap Interface:</h3>
+        <div class="code-box">type IntHeap []int
+
+func (h IntHeap) Len() int            { return len(h) }
+func (h IntHeap) Less(i, j int) bool  { return h[i] < h[j] }  // min-heap
+func (h IntHeap) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }
+func (h *IntHeap) Push(val any)       { *h = append(*h, val.(int)) }
+func (h *IntHeap) Pop() any {
+  old := *h; n := len(old)
+  x := old[n-1]; *h = old[:n-1]
+  return x
+}</div>
+        <p class="warn">Always use heap.Push/heap.Pop:</p> Call the <code>heap</code> package functions, not the methods directly. The package functions handle the bubbling; the methods are just the interface contract.
+    </div>
+
+    <!-- When to Use a Heap -->
+    <div class="pattern-box">
+        <h2>When to Use a Heap</h2>
+        <h3>Use a Heap When:</h3>
+        <ul>
+            <li>You need the k largest / k smallest elements from a stream or collection</li>
+            <li>You need to repeatedly extract the min or max efficiently</li>
+            <li>You need to merge k sorted lists (always pick the smallest head)</li>
+            <li>You need a running median (two heaps)</li>
+        </ul>
+        <h3>Min-Heap vs Max-Heap Choice:</h3>
+        <div class="code-box">Want the k LARGEST?  → use a MIN-heap of size k
+  Root = smallest of the k largest = the kth largest
+
+Want the k SMALLEST? → use a MAX-heap of size k
+  Root = largest of the k smallest = the kth smallest</div>
+        <p><b>Why the opposite type?</b> You use the heap as a gatekeeper. For "k largest": if a new element is bigger than the min-heap root, it belongs in the top k — push it in, pop the old root out. The root is always the answer.</p>
+        <h3>Heap vs Sort:</h3>
+        <ul>
+            <li><b>Sort:</b> O(n log n) upfront, then O(1) access. Good when data is static.</li>
+            <li><b>Heap:</b> O(log n) per operation. Good when data arrives as a stream or you only need partial ordering (top k, not full sort).</li>
+        </ul>
+    </div>
+
+    <!-- Kth Largest Element in a Stream -->
+    <div class="box">
+        <h2>Kth Largest Element in a Stream</h2>
+        <span class="complexity">O(n log k) Init / O(log k) Add</span>
+        <p><b>Goal:</b> Maintain a stream of integers. After each addition, return the kth largest element.</p>
+        <h3>What "kth largest" Means:</h3>
+        <div class="code-box">Sort all numbers from largest to smallest.
+The number at position k is the answer.
+Duplicates count as separate positions.
+
+[4, 5, 8, 2] sorted desc → [8, 5, 4, 2]
+  1st largest = 8
+  2nd largest = 5
+  3rd largest = 4
+
+[5, 5, 4] sorted desc → [5, 5, 4]
+  1st largest = 5
+  2nd largest = 5  (duplicate still counts)
+  3rd largest = 4</div>
+        <h3>Technique: Min-Heap of Size k</h3>
+        <p><b>Key Insight:</b> Keep only the k largest elements seen so far in a min-heap. The root of the heap is always the kth largest because every other element in the heap is larger than it.</p>
+        <div class="code-box">Why a MIN-heap for the LARGEST?
+
+The heap holds the k largest elements.
+The root is the smallest of those k elements.
+That smallest-of-the-k-largest IS the kth largest.
+
+Example: k=3, stream so far = [1, 2, 3, 5, 8]
+Heap holds the 3 largest: [3, 5, 8]  (min-heap)
+Root = 3 = 3rd largest ✓
+
+Everything NOT in the heap (1, 2) is smaller
+than the root, so they're irrelevant.</div>
+        <h3>How Add Works:</h3>
+        <div class="code-box">Add(val):
+  1. Push val onto the heap
+  2. If heap size > k, pop the root (the smallest)
+     → this evicts the (k+1)th largest
+  3. Return heap root = kth largest
+
+Example: k=3, heap = [1, 2, 3]  (3rd largest = 1)
+
+  Add(4): push → [1, 2, 3, 4], size > k → pop 1
+    heap = [2, 3, 4], root = 2 ✓  (3rd largest)
+
+  Add(0): push → [0, 2, 3, 4], size > k → pop 0
+    heap = [2, 3, 4], root = 2 ✓  (0 was too small)</div>
+        <h3>Code:</h3>
+        <div class="code-box">type KthLargest struct {
+  h IntHeap
+  k int
+}
+
+func Constructor(k int, nums []int) KthLargest:
+  kl := KthLargest{h: IntHeap{}, k: k}
+  heap.Init(&kl.h)
+  for _, n := range nums:
+    heap.Push(&kl.h, n)
+    if kl.h.Len() > k:
+      heap.Pop(&kl.h)
+  return kl
+
+func (this *KthLargest) Add(val int) int:
+  heap.Push(&this.h, val)
+  if this.h.Len() > this.k:
+    heap.Pop(&this.h)
+  return this.h[0]  // root of min-heap = kth largest</div>
+        <p class="tag">Why Not Max-Heap?</p> A max-heap gives the 1st largest in O(1), but getting the kth largest requires popping k-1 elements and pushing them back = O(k log n) per query. A min-heap of size k gives the kth largest in O(1) with O(log k) maintenance.
+        <p class="warn">Heap Size Cap:</p> Never let the heap grow past k elements. Always pop after pushing if size exceeds k.
+    </div>
+
+    <!-- Pointer vs Value Receiver -->
+    <div class="pattern-box">
+        <h2>Why *IntHeap for Push/Pop but Not Swap?</h2>
+        <p>A Go slice is a small struct with three fields: <b>pointer</b> to the underlying array, <b>length</b>, and <b>capacity</b>. When you call a method, the receiver gets a <b>copy</b> of that struct.</p>
+        <h3>Value Receiver (IntHeap) — Swap, Len, Less:</h3>
+        <div class="code-box">func (h IntHeap) Swap(i, j int) {
+  h[i], h[j] = h[j], h[i]
+}
+
+Swap modifies ELEMENTS in the underlying array.
+Both the caller's slice and the method's copy
+point to the SAME array → writes to h[i] are
+visible to the caller.
+
+The slice header (ptr, len, cap) doesn't change,
+so a value receiver (copy of the header) is fine.</div>
+        <h3>Pointer Receiver (*IntHeap) — Push, Pop:</h3>
+        <div class="code-box">func (h *IntHeap) Push(x any) {
+  *h = append(*h, x.(int))
+}
+
+Push calls append → may allocate a NEW array
+(changing the pointer) and ALWAYS changes the
+length. These are slice header changes.
+
+If this were a value receiver, the new header
+would be a local copy → caller never sees the
+change. *IntHeap lets us modify the caller's
+actual slice header.</div>
+        <h3>The Rule:</h3>
+        <div class="code-box">Modifying elements (h[i] = x)   → value receiver OK
+  (shared underlying array)
+
+Modifying the slice itself        → pointer receiver required
+  (append, reslice h[:n-1])</div>
+    </div>
+
+    <!-- Common Mistakes -->
+    <div class="box">
+        <h2>Common Mistakes</h2>
+        <h3>1. Wrong Heap Type</h3>
+        <p>"kth largest" → min-heap. "kth smallest" → max-heap. The opposite type acts as the gatekeeper.</p>
+        <h3>2. Calling Methods Instead of Package Functions</h3>
+        <div class="code-box">// WRONG: skips bubbling
+h.Push(val)
+
+// RIGHT: maintains heap property
+heap.Push(&h, val)</div>
+        <h3>3. Forgetting to Cap Heap Size</h3>
+        <p>If you push without popping when size > k, the root stops being the kth largest.</p>
+        <h3>4. Peeking After Pop</h3>
+        <p>After <code>heap.Pop</code>, the root has changed. If you need the answer, peek <b>before</b> popping or peek at the new root.</p>
+        <h3>5. Init vs Building One-by-One</h3>
+        <div class="code-box">// Option A: heap.Init on full slice → O(n)
+// But then you still need to trim to size k
+
+// Option B: Push one-by-one, pop when > k → O(n log k)
+// Simpler and directly gives you a size-k heap</div>
+    </div>
+
+</div>
+
+</body>
+</html>
