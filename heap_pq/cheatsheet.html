@@ -210,6 +210,53 @@ func (this *KthLargest) Add(val int) int:
         <p class="warn">Heap Size Cap:</p> Never let the heap grow past k elements. Always pop after pushing if size exceeds k.
     </div>
 
+    <!-- Last Stone Weight -->
+    <div class="box">
+        <h2>Last Stone Weight</h2>
+        <span class="complexity">O(n log n) Time / O(n) Space</span>
+        <p><b>Goal:</b> Repeatedly smash the two heaviest stones. If equal, both destroyed. If not, the lighter is destroyed and the heavier loses weight equal to the lighter. Return the last remaining stone (or 0).</p>
+        <h3>Technique: Max-Heap Simulation</h3>
+        <p><b>Why Max-Heap?</b> Each step requires the two heaviest stones. A max-heap gives the heaviest in O(1) and the second heaviest after one O(log n) pop. Sorting would require re-sorting after every smash.</p>
+        <h3>The Algorithm:</h3>
+        <div class="code-box">1. Push all stones into a max-heap
+2. While heap has more than 1 stone:
+   a. Pop twice → stone1, stone2 (the two heaviest)
+   b. If equal → both destroyed (do nothing)
+   c. If not   → push |stone1 - stone2| back
+3. Return heap root if 1 stone left, else 0</div>
+        <h3>Worked Example:</h3>
+        <div class="code-box">stones = [2, 3, 6, 2, 4]
+Max-heap: [6, 4, 3, 2, 2]
+
+Round 1: pop 6, pop 4 → 6 != 4 → push 2
+  heap: [3, 2, 2, 2]
+
+Round 2: pop 3, pop 2 → 3 != 2 → push 1
+  heap: [2, 2, 1]
+
+Round 3: pop 2, pop 2 → equal → both destroyed
+  heap: [1]
+
+Return 1 ✓</div>
+        <h3>Code:</h3>
+        <div class="code-box">func lastStoneWeight(stones []int) int:
+  h := &IntHeapMax{}
+  heap.Init(h)
+  for _, s := range stones:
+    heap.Push(h, s)
+
+  for h.Len() > 1:
+    s1, s2 := heap.Pop(h).(int), heap.Pop(h).(int)
+    if s1 != s2:
+      heap.Push(h, max(s1, s2) - min(s1, s2))
+
+  if h.Len() == 0:
+    return 0
+  return (*h)[0]</div>
+        <p class="tag">Why Not Min-Heap?</p> We need the two <b>heaviest</b> stones each round, not the lightest. Max-heap gives direct access to the largest element.
+        <p class="warn">Zero Remaining:</p> If all stones cancel out (e.g. [3,3]), the heap is empty. Check <code>h.Len() == 0</code> before accessing the root.
+    </div>
+
     <!-- How Push and Pop Work Internally -->
     <div class="box">
         <h2>How Heap Push &amp; Pop Work Internally</h2>
