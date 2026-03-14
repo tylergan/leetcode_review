@@ -257,6 +257,71 @@ Return 1 ✓</div>
         <p class="warn">Zero Remaining:</p> If all stones cancel out (e.g. [3,3]), the heap is empty. Check <code>h.Len() == 0</code> before accessing the root.
     </div>
 
+    <!-- K Closest Points to Origin -->
+    <div class="box">
+        <h2>K Closest Points to Origin</h2>
+        <span class="complexity">O(n log k) Time / O(k) Space</span>
+        <p><b>Goal:</b> Given n points, return the k closest to the origin (0, 0).</p>
+        <h3>Technique: Max-Heap of Size k</h3>
+        <p><b>Key Insight:</b> This is "k smallest" (by distance). Same gatekeeper pattern as Kth Largest, but flipped:</p>
+        <div class="code-box">Kth Largest  → keep k largest  → MIN-heap of size k
+  root = smallest of the k largest  → pop it to evict
+
+K Smallest   → keep k smallest → MAX-heap of size k
+  root = largest of the k smallest → pop it to evict
+
+The "opposite type" rule: the heap type matches
+what you want to EVICT, not what you want to KEEP.</div>
+        <h3>Why Max-Heap for Closest (Smallest)?</h3>
+        <div class="code-box">We want to keep the k closest (smallest distance).
+The max-heap root is the FARTHEST point in our set.
+
+When a new point arrives:
+  - Push it in (heap now has k+1 elements)
+  - Pop the root = the farthest point in the set
+  - What remains: the k closest points ✓
+
+If we used a min-heap, the root would be the
+closest point — popping it would evict the BEST
+point, which is the opposite of what we want.</div>
+        <h3>Worked Example:</h3>
+        <div class="code-box">points = [[0,2],[2,2],[2,0],[3,3]], k = 2
+Distances: [0,2]=2, [2,2]=2.83, [2,0]=2, [3,3]=4.24
+
+Max-heap ordered by distance (root = farthest):
+
+Push [0,2] (dist 2):    heap = [[0,2]]
+Push [2,2] (dist 2.83): heap = [[2,2], [0,2]]
+  size 2 = k, no pop
+
+Push [2,0] (dist 2):    heap = [[2,2], [0,2], [2,0]]
+  size 3 > k → pop root [2,2] (farthest)
+  heap = [[2,0], [0,2]]
+
+Push [3,3] (dist 4.24): heap = [[3,3], [0,2], [2,0]]
+  size 3 > k → pop root [3,3] (farthest)
+  heap = [[2,0], [0,2]]
+
+Result: [[0,2], [2,0]] ✓</div>
+        <h3>Custom Less — Ordering by Distance:</h3>
+        <div class="code-box">// Max-heap: "less" means FARTHER distance comes first
+func (pq PriorityQueue) Less(i, j int) bool:
+  dist1 := x1*x1 + y1*y1  // skip sqrt — doesn't
+  dist2 := x2*x2 + y2*y2  // change the ordering
+  return dist1 > dist2     // > for max-heap</div>
+        <p class="warn">Skip the sqrt:</p> Comparing x&sup2;+y&sup2; directly gives the same ordering as comparing sqrt(x&sup2;+y&sup2;). Avoids floating-point cost and precision issues.
+        <h3>Code:</h3>
+        <div class="code-box">func kClosest(points [][]int, k int) [][]int:
+  pq := &PriorityQueue{}
+  heap.Init(pq)
+  for _, point := range points:
+    heap.Push(pq, point)
+    if pq.Len() > k:
+      heap.Pop(pq)  // evict the farthest
+  return *pq</div>
+        <p class="tag">Same Pattern as Kth Largest:</p> Push, cap at k, the heap root is always the one to evict. Only difference is heap type (max vs min) and what you're comparing (distance vs value).
+    </div>
+
     <!-- How Push and Pop Work Internally -->
     <div class="box">
         <h2>How Heap Push &amp; Pop Work Internally</h2>
