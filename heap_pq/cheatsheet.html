@@ -322,6 +322,173 @@ func (pq PriorityQueue) Less(i, j int) bool:
         <p class="tag">Same Pattern as Kth Largest:</p> Push, cap at k, the heap root is always the one to evict. Only difference is heap type (max vs min) and what you're comparing (distance vs value).
     </div>
 
+    <!-- Kth Largest Element in an Array -->
+    <div class="box">
+        <h2>Kth Largest Element in an Array</h2>
+        <span class="complexity">O(n log k) Time / O(k) Space</span>
+        <p><b>Goal:</b> Given an unsorted array, return the kth largest element. Duplicates count as separate positions.</p>
+        <h3>Technique: Min-Heap of Size k (Same as Stream)</h3>
+        <p><b>Identical pattern</b> to Kth Largest in a Stream. The only difference is that all values are available upfront instead of arriving one at a time. The algorithm is the same: push each element, pop when size exceeds k, and the root is the answer.</p>
+        <div class="code-box">func findKthLargest(nums []int, k int) int:
+  h := &IntHeapMin{}
+  heap.Init(h)
+  for _, num := range nums:
+    heap.Push(h, num)
+    if h.Len() > k:
+      heap.Pop(h)
+  return (*h)[0]  // root = kth largest</div>
+        <p class="tag">Follow-Up:</p> Can you solve it without sorting? See QuickSelect below for an O(n) average-case approach.
+    </div>
+
+    <!-- QuickSelect Deep Dive -->
+    <div class="pattern-box">
+        <h2>QuickSelect Algorithm</h2>
+        <span class="complexity">O(n) Avg / O(n&sup2;) Worst / O(1) Space</span>
+        <p><b>Core Idea:</b> A partial QuickSort. Instead of sorting both halves, only recurse into the half that contains the kth element. On average, this halves the work each time: n + n/2 + n/4 + ... = O(n).</p>
+        <h3>Step 1: Understand the Goal</h3>
+        <div class="code-box">After a full sort (descending):
+  [8, 5, 4, 3, 2, 1]
+   ^     ^
+   k=1   k=3
+
+"kth largest" = element at index k-1 in desc order
+             = element at index n-k in ASC order
+
+QuickSelect finds the element that WOULD be at a
+target index, without fully sorting the array.</div>
+        <h3>Step 2: The Partition (Lomuto Scheme)</h3>
+        <p>Pick a pivot. Rearrange the array so that:</p>
+        <div class="code-box">[ elements <= pivot | PIVOT | elements >= pivot ]
+                          ^
+                     pivot's final index
+
+After partition, the pivot is in its CORRECT sorted
+position. We know exactly where it ranks.</div>
+        <p><b>How partition works step by step:</b></p>
+        <div class="code-box">partition(nums, left, right):
+  pivot = nums[right]  // choose rightmost as pivot
+  storeIdx = left      // where to put next small element
+
+  Scan from left to right-1:
+    if nums[i] <= pivot:
+      swap nums[i] with nums[storeIdx]
+      storeIdx++
+
+  Swap pivot (nums[right]) with nums[storeIdx]
+  return storeIdx  // pivot's final position
+
+Example: partition([3, 1, 5, 2, 4], left=0, right=4)
+  pivot = 4, storeIdx = 0
+
+  i=0: nums[0]=3 <= 4 → swap(0,0), storeIdx=1
+       [3, 1, 5, 2, 4]
+  i=1: nums[1]=1 <= 4 → swap(1,1), storeIdx=2
+       [3, 1, 5, 2, 4]
+  i=2: nums[2]=5 > 4  → skip
+  i=3: nums[3]=2 <= 4 → swap(2,3), storeIdx=3
+       [3, 1, 2, 5, 4]
+
+  Swap pivot into storeIdx: swap(3,4)
+       [3, 1, 2, 4, 5]
+                 ^
+            pivot at index 3 (correct position!)
+
+  Everything left of 4 is <= 4 ✓
+  Everything right of 4 is >= 4 ✓</div>
+        <h3>Step 3: The Selection</h3>
+        <p>After partition, compare pivot's index with the target:</p>
+        <div class="code-box">target = n - k  // convert "kth largest" to ascending index
+
+pivotIdx = partition(nums, left, right)
+
+if pivotIdx == target:
+  Found it! Return nums[pivotIdx]
+
+if pivotIdx < target:
+  Answer is in the RIGHT half → recurse right only
+
+if pivotIdx > target:
+  Answer is in the LEFT half → recurse left only
+
+Key: we DISCARD one half entirely each time.
+Unlike QuickSort which recurses into both halves.</div>
+        <h3>Full Worked Example:</h3>
+        <div class="code-box">nums = [3, 1, 5, 2, 4], k = 2
+target = 5 - 2 = 3  (index 3 in ascending order)
+
+Round 1: partition([3,1,5,2,4], 0, 4)
+  pivot = 4, result: [3,1,2, 4, 5], pivotIdx = 3
+  pivotIdx == target → FOUND! Return 4 ✓
+
+Another example: nums = [3,1,5,2,4], k = 4
+target = 5 - 4 = 1  (index 1 in ascending order)
+
+Round 1: partition → [3,1,2, 4, 5], pivotIdx = 3
+  pivotIdx 3 > target 1 → recurse LEFT [3,1,2]
+
+Round 2: partition([3,1,2], 0, 2), pivot = 2
+  result: [1, 2, 3], pivotIdx = 1
+  pivotIdx == target → FOUND! Return 2 ✓</div>
+        <h3>Code:</h3>
+        <div class="code-box">func findKthLargest(nums []int, k int) int:
+  target := len(nums) - k
+  left, right := 0, len(nums)-1
+
+  for left <= right:
+    pivotIdx := partition(nums, left, right)
+    if pivotIdx == target:
+      return nums[pivotIdx]
+    else if pivotIdx < target:
+      left = pivotIdx + 1   // search right half
+    else:
+      right = pivotIdx - 1  // search left half
+
+func partition(nums []int, left, right int) int:
+  pivot := nums[right]
+  storeIdx := left
+  for i := left; i < right; i++:
+    if nums[i] <= pivot:
+      nums[i], nums[storeIdx] = nums[storeIdx], nums[i]
+      storeIdx++
+  nums[storeIdx], nums[right] = nums[right], nums[storeIdx]
+  return storeIdx</div>
+        <h3>Why O(n) Average?</h3>
+        <div class="code-box">Each round, we expect the pivot to land roughly
+in the middle, halving the search space:
+
+Round 1: scan n elements
+Round 2: scan ~n/2 elements
+Round 3: scan ~n/4 elements
+...
+Total: n + n/2 + n/4 + ... = 2n = O(n)
+
+Compare to QuickSort which recurses BOTH halves:
+  n + 2*(n/2) + 4*(n/4) + ... = n * log(n)</div>
+        <h3>Why O(n&sup2;) Worst Case?</h3>
+        <div class="code-box">If the pivot is always the min or max (e.g. already
+sorted array with rightmost pivot), we only shrink
+by 1 each time: n + (n-1) + (n-2) + ... = O(n²)
+
+Fix: randomize the pivot choice.
+  randIdx := left + rand.Intn(right - left + 1)
+  swap nums[randIdx] with nums[right]
+  // then partition as usual</div>
+    </div>
+
+    <!-- Heap vs QuickSelect Comparison -->
+    <div class="box">
+        <h2>Kth Largest: Heap vs QuickSelect</h2>
+        <div class="code-box">                  Heap           QuickSelect
+Time (avg):      O(n log k)     O(n)
+Time (worst):    O(n log k)     O(n²)
+Space:           O(k)           O(1) in-place
+Mutates input?   No             Yes (reorders array)
+Streaming?       Yes            No (needs all data)
+Predictable?     Always         Depends on pivot</div>
+        <p><b>Use Heap when:</b> data arrives as a stream, you need stability, or k is small relative to n.</p>
+        <p><b>Use QuickSelect when:</b> all data is available, mutating the array is OK, and you want O(n) average with no extra space.</p>
+    </div>
+
     <!-- How Push and Pop Work Internally -->
     <div class="box">
         <h2>How Heap Push &amp; Pop Work Internally</h2>
