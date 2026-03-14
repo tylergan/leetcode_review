@@ -489,6 +489,152 @@ Predictable?     Always         Depends on pivot</div>
         <p><b>Use QuickSelect when:</b> all data is available, mutating the array is OK, and you want O(n) average with no extra space.</p>
     </div>
 
+    <!-- Task Scheduler -->
+    <div class="box">
+        <h2>Task Scheduler</h2>
+        <span class="complexity">O(n log 26) Time / O(1) Space</span>
+        <p><b>Goal:</b> Schedule CPU tasks with a cooldown of n cycles between identical tasks. Minimise total cycles (including idle).</p>
+        <h3>Technique: Max-Heap + Cooldown Queue</h3>
+        <p><b>Greedy Insight:</b> Always run the task with the highest remaining frequency. High-frequency tasks are the bottleneck — if you delay them, you create unnecessary idle time later. Running them first leaves more room to interleave other tasks during their cooldown.</p>
+        <h3>Two Data Structures, Two Jobs:</h3>
+        <div class="code-box">Max-Heap (by freq):
+  "Among AVAILABLE tasks, which should I run?"
+  → The one with highest frequency.
+
+Cooldown Queue (FIFO):
+  "Which tasks are on cooldown, and when do
+   they become available?"
+  → Tasks come off in the order they went on.</div>
+        <h3>Algorithm:</h3>
+        <div class="code-box">1. Count frequencies, push all into max-heap
+2. While heap or cooldown queue is non-empty:
+   a. cycles++
+   b. If heap empty → fast-forward to next
+      cooldown expiry (all idle until then)
+   c. Else → pop highest-freq task, execute it
+      - If freq > 0 after decrement, enqueue to
+        cooldown with sched = cycles + n
+   d. If front of cooldown queue has sched == cycles
+      → task is available again, push back to heap</div>
+        <h3>Worked Example:</h3>
+        <div class="code-box">tasks = [A,A,A, B,C], n = 3
+Freqs: A=3, B=1, C=1. Heap: [3,1,1].
+
+C1: pop 3(A). freq=2, sched=4. Heap:[1,1]
+C2: pop 1(B). freq=0.             Heap:[1]
+C3: pop 1(C). freq=0.             Heap:[]
+C4: heap empty → fast-forward=4.
+    A(sched=4) ready → push 2.    Heap:[2]
+C5: pop 2(A). freq=1, sched=8.    Heap:[]
+C6-8: fast-forward to 8.
+    A(sched=8) ready → push 1.    Heap:[1]
+C9: pop 1(A). Done.
+
+Total: 9. Schedule: A B C _ A _ _ _ A</div>
+        <h3>Code:</h3>
+        <div class="code-box">func leastInterval(tasks []byte, n int) int:
+  freqs := map[byte]int{}
+  for _, t := range tasks:
+    freqs[t]++
+
+  h := &IntHeapMax{}
+  heap.Init(h)
+  for _, f := range freqs:
+    heap.Push(h, f)
+
+  q := CooldownQueue{}  // []Task{freq, sched}
+  cycles := 0
+
+  for h.Len() > 0 || len(q) > 0:
+    cycles++
+    if h.Len() == 0:
+      cycles = q[0].sched  // fast-forward past idle
+    else:
+      freq := heap.Pop(h).(int)
+      freq--
+      if freq > 0:
+        q = append(q, &Task{freq, cycles + n})
+
+    if len(q) > 0 && q[0].sched == cycles:
+      heap.Push(h, q[0].freq)
+      q = q[1:]
+
+  return cycles</div>
+        <p class="tag">Only Frequencies Matter:</p> We don't need task identifiers. The heap just holds frequency counts — the greedy choice depends solely on "how many are left," not which letter it is.
+    </div>
+
+    <!-- Why Not a Single Combined Heap? -->
+    <div class="pattern-box">
+        <h2>Why Not a Single Combined Heap?</h2>
+        <p>A natural first instinct: put everything in one heap as <code>Task{freq, sched}</code> and let the comparator handle it all. This doesn't work, and understanding why reveals what a heap is actually good at.</p>
+        <h3>What Was Tried:</h3>
+        <div class="code-box">type Task struct { freq int; sched int }
+
+// Single heap holding ALL tasks (available + on cooldown)
+// Comparator: sort by sched ascending, then freq descending
+
+// At each cycle: pop root, check if sched <= cycles,
+// execute if available, otherwise idle.</div>
+        <h3>Why Every Comparator Fails:</h3>
+        <div class="code-box">Option 1: Sort by sched first, freq as tiebreaker
+  Problem: Two tasks both past cooldown still get
+  ordered by their OLD, stale sched values instead
+  of by frequency. Picks wrong task.
+
+Option 2: Sort by freq first, sched as tiebreaker
+  Problem: Picks highest-freq task even if it's
+  still on cooldown and can't run yet.
+
+Option 3: Any hybrid weighting
+  Problem: Same fundamental issue — a static
+  comparator can't adapt to changing time.</div>
+        <h3>The Root Cause: Filtering ≠ Ordering</h3>
+        <p>This problem requires a <b>two-step decision</b> each cycle:</p>
+        <div class="code-box">Step 1 — FILTER: "Which tasks are available?"
+  This is a yes/no question based on current time.
+  It changes every cycle as cooldowns expire.
+
+Step 2 — ORDER: "Among available tasks, which first?"
+  This is a ranking question based on frequency.
+
+A heap does ORDERING. It gives a single total
+ordering over ALL elements using a static comparator.
+It cannot FILTER — it has no concept of "current
+time" and doesn't re-sort when external state changes.
+
+A cooldown queue does FILTERING. Tasks enter when
+they go on cooldown and exit when their time is up.
+It doesn't rank — it just answers "ready or not."
+
+Combining both into one heap forces you to collapse
+filter + order into a single comparator. But they
+are fundamentally different operations that depend
+on different inputs (time vs frequency).</div>
+        <h3>Counterexample:</h3>
+        <div class="code-box">tasks = [A,A,A,A, B,B,B, C,C, D], n = 2
+Freqs: A=4, B=3, C=2, D=1
+
+Combined heap (sched asc, freq desc tiebreaker):
+
+C1: A(4,sched=0) ✓    → picks A (correct)
+C2: B(3,sched=0) ✓    → picks B (correct)
+C3: C(2,sched=0) ✓    → picks C (correct)
+C4: D(1,sched=0) and A(3,sched=4) BOTH available
+    Heap picks D because sched 0 < 4
+    But A has freq=3 — should be prioritised!
+
+This wrong choice delays A, which cascades:
+→ Combined heap: 11 cycles (1 unnecessary idle)
+→ Correct approach: 10 cycles (no idle)
+
+The stale sched=0 on D outranked A's sched=4,
+even though "available since cycle 0" vs "available
+since cycle 4" is irrelevant — both are available
+NOW. Only frequency should decide.</div>
+        <h3>The Lesson:</h3>
+        <p><b>A heap's job is to order things, not to decide when things become eligible.</b> When a problem involves eligibility (time-based filtering) AND priority (value-based ordering), use separate data structures for each concern. The cooldown queue handles "when," the heap handles "which."</p>
+    </div>
+
     <!-- How Push and Pop Work Internally -->
     <div class="box">
         <h2>How Heap Push &amp; Pop Work Internally</h2>
