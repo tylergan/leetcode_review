@@ -61,6 +61,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
+| Design Twitter | Implement a simplified version of Twitter which allows users to post tweets, fol... | [design_twitter.go](heap_pq/design_twitter.go) | [✓](heap_pq/design_twitter_test.go) |
 | K Closest Points To Origin | You are given an 2-D array points where points[i] = [xi, yi] represents the coor... | [k_closest_points_to_origin.go](heap_pq/k_closest_points_to_origin.go) | [✓](heap_pq/k_closest_points_to_origin_test.go) |
 | Kth Largest Elem | Given an unsorted array of integers nums and an integer k, return the kth larges... | [kth_largest_elem.go](heap_pq/kth_largest_elem.go) | [✓](heap_pq/kth_largest_elem_test.go) |
 | Kth Largest Element In Stream | Design a class to find the kth largest integer in a stream of values, including ... | [kth_largest_element_in_stream.go](heap_pq/kth_largest_element_in_stream.go) | [✓](heap_pq/kth_largest_element_in_stream_test.go) |
