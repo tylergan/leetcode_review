@@ -635,6 +635,110 @@ NOW. Only frequency should decide.</div>
         <p><b>A heap's job is to order things, not to decide when things become eligible.</b> When a problem involves eligibility (time-based filtering) AND priority (value-based ordering), use separate data structures for each concern. The cooldown queue handles "when," the heap handles "which."</p>
     </div>
 
+    <!-- Design Twitter -->
+    <div class="box">
+        <h2>Design Twitter</h2>
+        <span class="complexity">O(n * 10 * log 10) GetNewsFeed / O(1) other ops</span>
+        <p><b>Goal:</b> Support postTweet, getNewsFeed (10 most recent from self + followees), follow, and unfollow.</p>
+        <h3>The Core Insight: "Top 10 Most Recent" = Min-Heap of Size 10</h3>
+        <p>Each user might follow many people, each with many tweets. We need the 10 most recent across all of them. This is the <b>same "k largest" pattern</b> — keep a min-heap of size 10 ordered by timestamp, evict the oldest when size exceeds 10.</p>
+        <h3>Data Model:</h3>
+        <div class="code-box">Tweet { tweetID, tweetIdx }
+  tweetIdx = global counter that increases with
+  each post. Acts as a timestamp for ordering.
+
+Twitter {
+  tweetCounter int64           // global clock
+  tweets       map[UserID][]*Tweet  // per-user tweet list
+  following    map[UserID]FollowingSet  // who they follow
+}</div>
+        <h3>Key Design Decisions:</h3>
+        <div class="code-box">1. SELF-FOLLOW TRICK
+   On initUser, add the user to their own following
+   set. This means GetNewsFeed doesn't need a special
+   case for "also include my own tweets" — iterating
+   over followings already includes self.
+
+2. CAP TWEETS AT 10 PER USER
+   We only ever need the 10 most recent total, so
+   no single user can contribute more than 10.
+   On PostTweet, if a user has > 10 tweets, trim
+   the oldest: tweets = tweets[1:]
+   This bounds the inner loop to 10 per followee.
+
+3. MIN-HEAP BY tweetIdx (oldest at root)
+   Less = h[i].tweetIdx < h[j].tweetIdx
+   Root is the OLDEST tweet in the heap.
+   When size > 10, pop the root = evict oldest.
+   What remains: the 10 most recent. Same gatekeeper
+   pattern as Kth Largest.</div>
+        <h3>GetNewsFeed — How It Works:</h3>
+        <div class="code-box">User 1 follows User 2 and User 3 (and self).
+User 1 tweets: [(A,1), (B,5), (C,9)]
+User 2 tweets: [(D,2), (E,6)]
+User 3 tweets: [(F,3), (G,7), (H,8)]
+
+Min-heap (cap 10), push all tweets from all followees:
+  Push A(1), D(2), F(3), B(5), E(6), G(7), H(8), C(9)
+  All fit within 10, no evictions needed.
+
+Pop all from heap (oldest first):
+  A(1), D(2), F(3), B(5), E(6), G(7), H(8), C(9)
+
+But we need most-recent-first! So fill the result
+array from the BACK:
+  result[7] = pop → A(1)  // oldest
+  result[6] = pop → D(2)
+  ...
+  result[0] = pop → C(9)  // most recent
+
+Result: [C, H, G, E, B, F, D, A] (most recent first)</div>
+        <h3>Code:</h3>
+        <div class="code-box">func (this *Twitter) PostTweet(userId, tweetId int):
+  tweets = append(tweets, &Tweet{tweetId, this.tweetCounter})
+  if len(tweets) > 10:
+    tweets = tweets[1:]  // keep only last 10
+  this.tweetCounter++
+
+func (this *Twitter) GetNewsFeed(userId int) []int:
+  h := &TweetHeap{}  // min-heap by tweetIdx
+  for followeeID := range this.following[userId]:
+    for _, tweet := range this.tweets[followeeID]:
+      heap.Push(h, tweet)
+      if h.Len() > 10:
+        heap.Pop(h)  // evict oldest
+
+  result := make([]int, h.Len())
+  for i := h.Len() - 1; i >= 0; i--:
+    result[i] = heap.Pop(h).(*Tweet).TweetID
+  return result
+
+func (this *Twitter) Follow(followerId, followeeId int):
+  this.following[followerId][followeeId] = true
+
+func (this *Twitter) Unfollow(followerId, followeeId int):
+  if followerId == followeeId: return  // can't unfollow self
+  delete(this.following[followerId], followeeId)
+
+func (this *Twitter) initUser(uid UserID):
+  if already exists: return
+  this.tweets[uid] = []
+  this.following[uid] = {uid: true}  // self-follow</div>
+        <h3>Complexity Breakdown:</h3>
+        <div class="code-box">Let n = number of followees.
+Each followee has at most 10 tweets (capped).
+Heap is capped at size 10.
+
+GetNewsFeed: O(n * 10 * log 10) = O(n)
+  For each followee, push up to 10 tweets into a
+  size-10 heap. Each push/pop is O(log 10) = O(1).
+
+Without the cap, it would be O(n * m * log(n*m))
+where m = tweets per user. The cap removes m.</div>
+        <p class="tag">Pattern Recognition:</p> "Top k from multiple sorted lists" → min-heap of size k as gatekeeper. Same as Kth Largest / K Closest, just applied to Tweet objects instead of integers.
+        <p class="warn">Unfollow Self:</p> Since initUser adds self to following set, Unfollow must guard against removing self — otherwise a user stops seeing their own tweets.
+    </div>
+
     <!-- How Push and Pop Work Internally -->
     <div class="box">
         <h2>How Heap Push &amp; Pop Work Internally</h2>
