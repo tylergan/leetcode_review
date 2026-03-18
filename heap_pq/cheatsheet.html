@@ -739,6 +739,173 @@ where m = tweets per user. The cap removes m.</div>
         <p class="warn">Unfollow Self:</p> Since initUser adds self to following set, Unfollow must guard against removing self — otherwise a user stops seeing their own tweets.
     </div>
 
+    <!-- Find Median from Data Stream -->
+    <div class="pattern-box">
+        <h2>A Heap is NOT a Sorted Array</h2>
+        <p>A common misconception: "if I push numbers into a min-heap, the backing slice is sorted, so I can index into the middle for the median." <b>This is wrong.</b></p>
+        <h3>What a Heap Actually Guarantees:</h3>
+        <div class="code-box">Sorted array: every earlier element &lt;= every later element
+Min-heap:     every PARENT &lt;= its CHILDREN
+
+These are very different guarantees.
+A heap is "partially ordered," not "fully sorted."</div>
+        <h3>Concrete Example:</h3>
+        <div class="code-box">Insert 7, 3, 5, 1, 6, 2, 4 into a min-heap:
+
+Final heap array: [1, 3, 2, 7, 6, 5, 4]
+Sorted would be:  [1, 2, 3, 4, 5, 6, 7]
+
+As a tree:
+        1
+      /   \
+     3     2
+    / \   / \
+   7   6 5   4
+
+Valid min-heap? Yes:
+  1&lt;=3, 1&lt;=2, 3&lt;=7, 3&lt;=6, 2&lt;=5, 2&lt;=4 ✓
+
+Sorted? No:
+  3 before 2, 7 before 6, 6 before 5 ✗
+
+heap[3] = 7, but the 4th smallest is 4.
+Indexing into the middle gives the WRONG answer.</div>
+        <p class="warn">Only the top is trustworthy.</p> A min-heap lets you trust <code>h[0]</code> is the smallest. After that, the rest is just organized enough for efficient insert/remove — not globally ordered.
+    </div>
+
+    <div class="box">
+        <h2>Find Median from Data Stream</h2>
+        <span class="complexity">O(log n) AddNum / O(1) FindMedian</span>
+        <p><b>Goal:</b> Maintain a stream of integers. After each addition, return the median of all elements seen so far.</p>
+        <h3>Why One Heap Fails:</h3>
+        <div class="code-box">Naive idea: use a single min-heap, index into
+the middle of its backing slice for the median.
+
+Problem: a heap is NOT a sorted array. h[mid]
+is just some node in the tree's level-order storage,
+not the middle value. (See box above.)
+
+To get the true median from a single heap, you'd
+have to pop n/2 elements each time → O(n log n)
+per FindMedian call. Way too slow.</div>
+        <h3>Key Insight: The Median Lives at a Boundary</h3>
+        <div class="code-box">If the data were sorted:
+  [ lower half  |  upper half ]
+                ^
+            median is HERE
+
+The median depends on exactly TWO values:
+  - The largest value in the lower half
+  - The smallest value in the upper half
+
+What gives O(1) access to the largest?  → Max-heap
+What gives O(1) access to the smallest? → Min-heap
+
+So use TWO heaps, one for each half:</div>
+        <h3>Technique: Two Heaps (Max-Heap + Min-Heap)</h3>
+        <div class="code-box">leftSide  = Max-Heap  (lower half of numbers)
+  → root = LARGEST of the lower half
+
+rightSide = Min-Heap  (upper half of numbers)
+  → root = SMALLEST of the upper half
+
+These two roots sit right at the boundary.
+The median is either one of them or their average.
+
+Example: stream = [5, 2, 8, 3]
+Sorted: [2, 3, 5, 8]
+
+leftSide (max-heap):  [3, 2]  → root = 3
+rightSide (min-heap): [5, 8]  → root = 5
+
+Median = (3 + 5) / 2 = 4.0 ✓</div>
+        <h3>Why Not Just Track Global Min and Max?</h3>
+        <div class="code-box">The median is about the CENTER, not the extremes.
+
+[1, 2, 100] → min=1, max=100, median=2
+[1, 50, 100] → min=1, max=100, median=50
+
+Same bounds, very different medians.
+You need the boundary between the two HALVES.</div>
+        <h3>AddNum — Placement + Rebalancing:</h3>
+        <div class="code-box">AddNum(num):
+  1. PLACE: Compare num to rightSide's root.
+     - If num > rightSide root → belongs in upper half
+       → push to rightSide (min-heap)
+     - Otherwise → belongs in lower half
+       → push to leftSide (max-heap)
+     - If rightSide is empty, default to leftSide.
+
+  2. REBALANCE: The halves must differ by at most 1.
+     - If leftSide has 2+ more than rightSide:
+       → pop leftSide root, push to rightSide
+     - If rightSide has 2+ more than leftSide:
+       → pop rightSide root, push to leftSide
+
+Why rebalance? If one side grows too large, the
+roots no longer sit at the true middle boundary.</div>
+        <h3>FindMedian — O(1) Peek:</h3>
+        <div class="code-box">FindMedian():
+  If sizes are equal (even total):
+    → median = (leftSide root + rightSide root) / 2
+
+  If leftSide has one more (odd total):
+    → median = leftSide root
+
+  If rightSide has one more (odd total):
+    → median = rightSide root
+
+The roots are always the two middle candidates.
+No iteration, no indexing — just peek at the tops.</div>
+        <h3>Worked Example:</h3>
+        <div class="code-box">Stream: 1, 3, 2
+
+Add 1: rightSide empty → push to left
+  left=[1]  right=[]     median = 1.0
+
+Add 3: 3 > nothing in right? right empty, so left.
+  Actually: right is empty → default push to left
+  left=[3,1] right=[]  → left has 2 more → REBALANCE
+  pop 3 from left, push to right
+  left=[1]  right=[3]    median = (1+3)/2 = 2.0
+
+Add 2: 2 &lt; right root (3) → push to left
+  left=[2,1]  right=[3]
+  Sizes differ by 1, OK.  median = 2.0 ✓
+
+               left (max)   right (min)
+               root = 2      root = 3
+Sorted: [1, 2 | 3]
+              ^
+          median = 2</div>
+        <h3>Code:</h3>
+        <div class="code-box">type MedianFinder struct {
+  leftSide  *IntHeapMax  // lower half
+  rightSide *IntHeapMin  // upper half
+}
+
+func (this *MedianFinder) AddNum(num int):
+  if rightSide.Len() > 0 && num > rightSide root:
+    heap.Push(rightSide, num)
+  else:
+    heap.Push(leftSide, num)
+
+  // rebalance if sizes differ by more than 1
+  if leftSide.Len() > rightSide.Len() + 1:
+    heap.Push(rightSide, heap.Pop(leftSide))
+  else if rightSide.Len() > leftSide.Len() + 1:
+    heap.Push(leftSide, heap.Pop(rightSide))
+
+func (this *MedianFinder) FindMedian() float64:
+  if leftSide.Len() > rightSide.Len():
+    return leftSide root
+  if rightSide.Len() > leftSide.Len():
+    return rightSide root
+  return (leftSide root + rightSide root) / 2.0</div>
+        <p class="tag">Pattern: Two Heaps = Split at the Middle</p> Whenever you need O(1) access to the middle of a dynamic dataset, consider splitting it into two heaps. The max-heap holds the lower half, the min-heap holds the upper half, and their roots give you the boundary.
+        <p class="warn">Always Rebalance:</p> After every push, check that the heap sizes differ by at most 1. Without rebalancing, the roots drift away from the true median.
+    </div>
+
     <!-- How Push and Pop Work Internally -->
     <div class="box">
         <h2>How Heap Push &amp; Pop Work Internally</h2>
