@@ -66,6 +66,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Kth Largest Elem | Given an unsorted array of integers nums and an integer k, return the kth larges... | [kth_largest_elem.go](heap_pq/kth_largest_elem.go) | [✓](heap_pq/kth_largest_elem_test.go) |
 | Kth Largest Element In Stream | Design a class to find the kth largest integer in a stream of values, including ... | [kth_largest_element_in_stream.go](heap_pq/kth_largest_element_in_stream.go) | [✓](heap_pq/kth_largest_element_in_stream_test.go) |
 | Last Stone Weight | You are given an array of integers stones where stones[i] represents the weight ... | [last_stone_weight.go](heap_pq/last_stone_weight.go) | [✓](heap_pq/last_stone_weight_test.go) |
+| Median In Data Stream | The median is the middle value in a sorted list of integers. For lists of even l... | [median_in_data_stream.go](heap_pq/median_in_data_stream.go) | [✓](heap_pq/median_in_data_stream_test.go) |
 | Task Scheduler | You are given an array of CPU tasks tasks, where tasks[i] is an uppercase englis... | [task_scheduler.go](heap_pq/task_scheduler.go) | [✓](heap_pq/task_scheduler_test.go) |
 
 ### Linked_List
