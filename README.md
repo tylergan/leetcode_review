@@ -20,6 +20,14 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Valid Anagram | Given two strings s and t, return true if the two strings are anagrams of each o... | [valid_anagram.go](arrays/valid_anagram.go) | [✓](arrays/valid_anagram_test.go) |
 | Valid Sudoku | You are given a 9 x 9 Sudoku board. A Sudoku board is valid if the following rul... | [valid_sudoku.go](arrays/valid_sudoku.go) | [✓](arrays/valid_sudoku_test.go) |
 
+### Backtrack
+
+📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/backtrack/cheatsheet.html)** - Quick reference guide for backtrack problems
+
+| Problem | Description | Solution | Tests |
+|---------|-------------|----------|-------|
+| Subset | Given an array nums of unique integers, return all possible subsets of nums. | [subset.go](backtrack/subset.go) | [✓](backtrack/subset_test.go) |
+
 ### Binary_Search
 
 📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/binary_search/cheatsheet.html)** - Quick reference guide for binary_search problems
