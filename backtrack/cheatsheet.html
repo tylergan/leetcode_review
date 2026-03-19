@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LeetCode Backtracking Cheat Sheet</title>
+    <style>
+        @page { size: A4; margin: 0.3cm 0.3cm 0.3cm 0.3cm; }
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 7pt;
+            line-height: 1.2;
+            color: #000;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            column-count: 3;
+            column-gap: 0.25cm;
+            width: 100%;
+        }
+        .box {
+            border: 1px solid #444;
+            padding: 2px 4px;
+            margin-bottom: 4px;
+            break-inside: avoid;
+            background-color: #fff;
+        }
+        h2 {
+            font-size: 8pt;
+            font-weight: bold;
+            background-color: #eee;
+            padding: 2px;
+            margin: 0 0 2px 0;
+            border-bottom: 1px solid #000;
+            text-transform: uppercase;
+        }
+        h3 {
+            font-size: 7.5pt;
+            font-weight: bold;
+            margin: 2px 0 1px 0;
+            text-decoration: underline;
+            color: #004085;
+        }
+        p { margin: 0 0 2px 0; text-align: left; }
+        ul { padding-left: 10px; margin: 0; }
+        li { margin: 0; }
+        .code-box {
+            font-family: "Courier New", monospace;
+            background-color: #f4f4f4;
+            border-left: 2px solid #333;
+            padding: 1px 2px;
+            margin: 1px 0;
+            font-size: 6.5pt;
+            white-space: pre-wrap;
+        }
+        .tag {
+            font-weight: bold;
+            color: #d63384;
+            font-size: 6.5pt;
+        }
+        .complexity {
+            font-weight: bold;
+            font-size: 6.5pt;
+            color: #007bff;
+            float: right;
+        }
+        .warn { color: #b00; font-weight: bold; }
+        .intro-box {
+            background-color: #fff3cd;
+            border: 2px solid #856404;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+        .pattern-box {
+            background-color: #d4edda;
+            border: 2px solid #155724;
+            padding: 4px;
+            margin-bottom: 6px;
+            break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Introduction -->
+    <div class="intro-box">
+        <h2>Backtracking Fundamentals</h2>
+        <p><b>Core Idea:</b> Build solutions incrementally. At each step, make a choice, recurse, then <b>undo</b> the choice (backtrack) to explore other paths. The recursion tree represents all possible decision sequences.</p>
+        <h3>The Template:</h3>
+        <div class="code-box">func backtrack(choices):
+  if goal_reached:
+    record solution
+    return
+
+  for each choice in choices:
+    make choice          // modify state
+    backtrack(remaining) // recurse
+    undo choice          // restore state</div>
+        <h3>Key Properties:</h3>
+        <ul>
+            <li><b>State:</b> A mutable structure (e.g. <code>curr</code> slice) tracking the current partial solution.</li>
+            <li><b>Choices:</b> What can be added next. Shrinks as you go deeper.</li>
+            <li><b>Backtrack:</b> After recursing, undo the last choice so the next iteration starts clean.</li>
+        </ul>
+        <h3>Why Clone?</h3>
+        <div class="code-box">// curr is mutated in place throughout the recursion.
+// When we find a valid subset, we must CLONE it
+// before appending to results. Otherwise every entry
+// in res points to the same underlying array, and
+// they all end up as whatever curr's final state is.
+
+res = append(res, slices.Clone(curr))</div>
+    </div>
+
+    <!-- Subsets -->
+    <div class="box">
+        <h2>Subsets</h2>
+        <span class="complexity">O(n * 2^n) Time / O(n) Space (excl. output)</span>
+        <p><b>Goal:</b> Given an array of unique integers, return all possible subsets (the power set). No duplicate subsets.</p>
+        <h3>Technique: DFS with Forward-Only Choices</h3>
+        <p><b>Key Insight:</b> For each element, you have two choices: include it or skip it. To avoid duplicate subsets, only consider elements <b>after</b> the current index. Passing <code>nums[i+1:]</code> ensures we never revisit earlier elements.</p>
+        <div class="code-box">Why forward-only?
+
+If nums = [1,2,3]:
+  Starting from 1, we can pick 2 or 3 next.
+  Starting from 2, we can only pick 3 next.
+  Starting from 3, no more choices.
+
+We never go backwards (e.g. pick 1 after 2),
+so [2,1] is never generated — only [1,2].
+This prevents duplicate subsets.</div>
+        <h3>How It Works:</h3>
+        <div class="code-box">1. Start with res = [[]] (empty set always included)
+2. DFS explores adding each number at index i:
+   a. Append nums[i] to curr
+   b. Clone curr into res (every non-empty curr is valid)
+   c. Recurse with nums[i+1:] (only future elements)
+   d. Pop last element from curr (backtrack)
+3. The for loop tries each starting index, so all
+   combinations starting from that index are explored</div>
+        <h3>Code:</h3>
+        <div class="code-box">func subsets(nums []int) [][]int {
+  res := [][]int{[]int{}}  // start with empty set
+  curr := []int{}
+  var dfs func([]int)
+  dfs = func(nums []int) {
+    if len(curr) > 0 {
+      res = append(res, slices.Clone(curr))
+    }
+    for i, n := range nums {
+      curr = append(curr, n)
+      if i < len(nums) {
+        dfs(nums[i+1:])   // only elements after i
+      } else {
+        dfs([]int{})
+      }
+      curr = curr[:len(curr)-1] // backtrack
+    }
+  }
+  dfs(nums)
+  return res
+}</div>
+        <p class="tag">Why start res with [[]]?</p> The empty set is always a valid subset. The DFS only records non-empty <code>curr</code> values, so the empty set must be pre-seeded.
+        <p class="warn">slices.Clone is critical:</p> Without cloning, every entry in res shares the same backing array and gets overwritten as curr changes.
+    </div>
+
+    <!-- Full Decision Tree -->
+    <div class="pattern-box">
+        <h2>Full Decision Tree: nums = [1,2,3]</h2>
+        <p>Each node shows <code>curr</code> at that point. Branching = "which element do I add next?" Backtracking = returning to parent and trying the next branch.</p>
+        <div class="code-box">                        []
+                     /   |   \
+                   /     |     \
+               pick 1  pick 2  pick 3
+                 /       |        \
+              [1]       [2]       [3]
+             / \         |
+        pick 2 pick 3  pick 3
+          /       \      |
+       [1,2]    [1,3]  [2,3]
+        |
+     pick 3
+       |
+    [1,2,3]</div>
+        <h3>Step-by-Step DFS Trace:</h3>
+        <div class="code-box">res = [[]]  (pre-seeded with empty set)
+
+dfs([1,2,3]), curr = []
+|
+|-- i=0, pick 1: curr = [1]
+|   res = [[], [1]]
+|   |
+|   |-- dfs([2,3]), curr = [1]
+|   |   |
+|   |   |-- i=0, pick 2: curr = [1,2]
+|   |   |   res = [[], [1], [1,2]]
+|   |   |   |
+|   |   |   |-- dfs([3]), curr = [1,2]
+|   |   |   |   |
+|   |   |   |   |-- i=0, pick 3: curr = [1,2,3]
+|   |   |   |   |   res = [[], [1], [1,2], [1,2,3]]
+|   |   |   |   |   |
+|   |   |   |   |   |-- dfs([]), no elements, return
+|   |   |   |   |   |
+|   |   |   |   |-- backtrack: curr = [1,2]
+|   |   |   |
+|   |   |-- backtrack: curr = [1]
+|   |   |
+|   |   |-- i=1, pick 3: curr = [1,3]
+|   |   |   res = [[], [1], [1,2], [1,2,3], [1,3]]
+|   |   |   |
+|   |   |   |-- dfs([]), no elements, return
+|   |   |   |
+|   |   |-- backtrack: curr = [1]
+|   |
+|-- backtrack: curr = []
+|
+|-- i=1, pick 2: curr = [2]
+|   res = [[], [1], [1,2], [1,2,3], [1,3], [2]]
+|   |
+|   |-- dfs([3]), curr = [2]
+|   |   |
+|   |   |-- i=0, pick 3: curr = [2,3]
+|   |   |   res = [..., [2,3]]
+|   |   |   |
+|   |   |   |-- dfs([]), no elements, return
+|   |   |   |
+|   |   |-- backtrack: curr = [2]
+|   |
+|-- backtrack: curr = []
+|
+|-- i=2, pick 3: curr = [3]
+|   res = [..., [3]]
+|   |
+|   |-- dfs([]), no elements, return
+|   |
+|-- backtrack: curr = []
+
+DONE. res = [[], [1], [1,2], [1,2,3],
+             [1,3], [2], [2,3], [3]]
+Total: 8 subsets = 2^3  ✓</div>
+        <h3>Why 2^n Subsets?</h3>
+        <div class="code-box">Each element has exactly 2 choices:
+  - Include it in the subset
+  - Don't include it
+
+For n elements: 2 x 2 x ... x 2 = 2^n
+
+nums = [1, 2, 3]:
+  1: in/out  x  2: in/out  x  3: in/out
+  = 2 x 2 x 2 = 8 subsets</div>
+    </div>
+
+    <!-- Backtracking Mechanics -->
+    <div class="box">
+        <h2>The Backtrack Step Explained</h2>
+        <p>The line <code>curr = curr[:len(curr)-1]</code> is the backtrack. It undoes the choice so the next loop iteration starts from the same state.</p>
+        <div class="code-box">curr = []
+curr = append(curr, 1)  → curr = [1]
+
+  // recurse: explore all subsets starting with [1]
+
+curr = curr[:len(curr)-1] → curr = []
+  // back to empty — ready to try starting with 2
+
+curr = append(curr, 2)  → curr = [2]
+  // recurse: explore all subsets starting with [2]
+
+curr = curr[:len(curr)-1] → curr = []
+  // back to empty — ready to try starting with 3</div>
+        <h3>Deeper Example:</h3>
+        <div class="code-box">curr = [1]
+curr = append(curr, 2) → curr = [1,2]
+
+  // recurse: explore [1,2,...] subsets
+
+curr = curr[:len(curr)-1] → curr = [1]
+  // undid adding 2, now try 3
+
+curr = append(curr, 3) → curr = [1,3]
+
+  // recurse: explore [1,3,...] subsets
+
+curr = curr[:len(curr)-1] → curr = [1]
+  // undid adding 3, loop ends, return to parent</div>
+        <p class="tag">Think of it as:</p> Push onto a stack (append), explore, pop off the stack (reslice). The stack represents the current path from root to the current node in the decision tree.
+    </div>
+
+    <!-- nums[i+1:] Slice Trick -->
+    <div class="box">
+        <h2>The nums[i+1:] Trick</h2>
+        <p>Passing <code>nums[i+1:]</code> to the recursive call is what prevents duplicate subsets and controls the branching.</p>
+        <div class="code-box">dfs([1,2,3]):
+  pick 1 → dfs([2,3])   // can only pick 2 or 3
+  pick 2 → dfs([3])     // can only pick 3
+  pick 3 → dfs([])      // nothing left
+
+dfs([2,3]):
+  pick 2 → dfs([3])     // can only pick 3
+  pick 3 → dfs([])      // nothing left
+
+Notice: after picking 2 in dfs([2,3]), we pass
+[3], not [2,3]. We NEVER look backwards.
+
+This means [2,1] can never be generated.
+Only [1,2] exists because 1 was picked first
+when both were available.</div>
+        <h3>What If We Passed All nums Instead?</h3>
+        <div class="code-box">// WRONG: dfs(nums) instead of dfs(nums[i+1:])
+// This would generate duplicates:
+
+dfs([1,2,3]):
+  pick 1 → dfs([1,2,3])
+    pick 1 → [1,1]     // duplicate element!
+    pick 2 → [1,2]
+  pick 2 → dfs([1,2,3])
+    pick 1 → [2,1]     // same as [1,2]!
+
+Forward-only slicing prevents BOTH problems:
+  1. No element used twice (no self-reference)
+  2. No reordered duplicates (strict ordering)</div>
+    </div>
+
+    <!-- Complexity Analysis -->
+    <div class="box">
+        <h2>Complexity Analysis</h2>
+        <h3>Time: O(n * 2^n)</h3>
+        <div class="code-box">There are 2^n subsets total.
+For each subset, we do O(n) work to clone it
+into the result (slices.Clone copies up to n
+elements).
+
+Total: O(n * 2^n)
+
+The DFS itself visits 2^n nodes (one per subset).
+At each node, the for loop runs at most n times
+across all nodes at that depth. The branching
+factor decreases: n choices, then n-1, then n-2...
+This sums to 2^n total recursive calls.</div>
+        <h3>Space: O(n)</h3>
+        <div class="code-box">Excluding the output (which is O(n * 2^n)):
+  - curr: at most n elements deep
+  - Recursion stack: at most n frames deep
+  - Total auxiliary space: O(n)</div>
+    </div>
+
+    <!-- Subsets vs Permutations vs Combinations -->
+    <div class="pattern-box">
+        <h2>Subsets vs Permutations vs Combinations</h2>
+        <p>All three use backtracking but differ in what choices are available and when to record a solution.</p>
+        <div class="code-box">SUBSETS: all possible selections (any size)
+  Choices: elements after current index
+  Record: every node in the tree
+  [1,2,3] → [], [1], [1,2], [1,2,3], [1,3],
+             [2], [2,3], [3]
+
+COMBINATIONS (k elements): subsets of exact size k
+  Choices: elements after current index
+  Record: only when len(curr) == k
+  [1,2,3], k=2 → [1,2], [1,3], [2,3]
+
+PERMUTATIONS: all orderings (use all elements)
+  Choices: ALL unused elements (not forward-only)
+  Record: only when len(curr) == n
+  [1,2,3] → [1,2,3], [1,3,2], [2,1,3],
+             [2,3,1], [3,1,2], [3,2,1]</div>
+        <h3>The Key Difference:</h3>
+        <div class="code-box">Subsets/Combinations: order doesn't matter
+  → use nums[i+1:] to enforce one ordering
+  → {1,2} and {2,1} are the SAME subset
+
+Permutations: order matters
+  → use a "used" set to track which elements
+    are taken, but allow any unused element next
+  → [1,2] and [2,1] are DIFFERENT permutations</div>
+    </div>
+
+</div>
+
+</body>
+</html>
