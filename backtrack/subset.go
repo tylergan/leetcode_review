@@ -24,8 +24,9 @@ Constraints:
 */
 
 func subsets(nums []int) [][]int {
-	res := [][]int{[]int{}}
+	res := [][]int{{}}
 	curr := []int{}
+
 	var dfs func([]int)
 	dfs = func(nums []int) {
 		if len(curr) > 0 {
@@ -41,6 +42,7 @@ func subsets(nums []int) [][]int {
 			curr = curr[:len(curr)-1]
 		}
 	}
+
 	dfs(nums)
 	return res
 }

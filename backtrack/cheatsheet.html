@@ -168,6 +168,108 @@ This prevents duplicate subsets.</div>
         <p class="warn">slices.Clone is critical:</p> Without cloning, every entry in res shares the same backing array and gets overwritten as curr changes.
     </div>
 
+    <!-- Combination Sum -->
+    <div class="box">
+        <h2>Combination Sum</h2>
+        <span class="complexity">O(n^(T/M)) Time / O(T/M) Space (excl. output)</span>
+        <p><b>Goal:</b> Given distinct integers <code>nums</code> and a <code>target</code>, return all unique combinations that sum to target. The same number may be reused unlimited times.</p>
+        <h3>The Problem I Hit: Duplicates Without Index Tracking</h3>
+        <p>My first attempt looped over <b>all</b> of <code>nums</code> every time, with no index parameter:</p>
+        <div class="code-box">// OLD: no index → visits earlier elements → duplicates
+var dfs func(int)
+dfs = func(currTotal int) {
+  if currTotal == target {
+    res = append(res, slices.Clone(curr))
+    return
+  }
+  for _, n := range nums {   // loops from 0 every time!
+    curr = append(curr, n)
+    dfs(currTotal + n)
+    curr = curr[:len(curr)-1]
+  }
+}
+
+nums = [2,5], target = 9:
+  dfs picks 2 → 2 → 5 → total=9 → records [2,2,5]
+  dfs picks 2 → 5 → 2 → total=9 → records [2,5,2] ← DUPLICATE
+  dfs picks 5 → 2 → 2 → total=9 → records [5,2,2] ← DUPLICATE
+
+Same multiset {2,2,5} generated 3 times in different orders.
+Had to deduplicate with a seen map + frequency key array.</div>
+        <h3>The Fix: Track an Index</h3>
+        <p><b>Key insight:</b> The index is what prevents duplicates, NOT sorting. By starting the loop from <code>j := i</code> instead of 0, we never revisit earlier elements. Each combination is built in one canonical order.</p>
+        <div class="code-box">// FIXED: index prevents going backwards → no duplicates
+var dfs func(int, int)
+dfs = func(i, currTotal int) {
+  if currTotal > target { return }
+  if currTotal == target {
+    res = append(res, slices.Clone(curr))
+    return
+  }
+  for j := i; j < len(nums); j++ {  // start from i, not 0
+    curr = append(curr, nums[j])
+    dfs(j, currTotal+nums[j])       // pass j, not j+1
+    curr = curr[:len(curr)-1]
+  }
+}
+
+nums = [2,5], target = 9:
+  dfs(i=0) picks 2 → dfs(i=0) picks 2 → dfs(i=0) picks 5
+    → total=9 → records [2,2,5] ✓
+  After picking 5 (index 1), dfs starts from j=1.
+  Index 0 (value 2) is BEHIND j → never visited.
+  [2,5,2] and [5,2,2] can NEVER be generated.</div>
+        <h3>Why It Works:</h3>
+        <div class="code-box">for j := i means:
+  - CAN reuse the same element (j starts at i, not i+1)
+  - CANNOT go back to earlier elements (j never < i)
+
+After choosing nums[j], the next call starts from j.
+So combinations are always built in non-decreasing
+index order. Each unique multiset appears exactly once.
+
+No seen map. No key array. No fmt.Sprintf dedup.</div>
+        <h3>Sorting Is Optional (But Enables Pruning):</h3>
+        <div class="code-box">WITHOUT sort.Ints(nums):
+  The index rule alone prevents duplicates. Correct results.
+  But we must check every candidate even if it's too large.
+
+WITH sort.Ints(nums):
+  Once currTotal+nums[j] > target, every nums[j+1],
+  nums[j+2], ... is also too large. We can return early.
+  Sorting does NOT prevent duplicates — only pruning.</div>
+        <h3>Code (with sort for pruning):</h3>
+        <div class="code-box">func combinationSum(nums []int, target int) [][]int {
+  res := [][]int{}
+  sort.Ints(nums)
+
+  var dfs func(int, []int, int)
+  dfs = func(i int, curr []int, currTotal int) {
+    if currTotal == target {
+      res = append(res, slices.Clone(curr))
+      return
+    }
+    for j := i; j < len(nums); j++ {
+      if currTotal+nums[j] > target {
+        return  // pruning: sorted, so all later too big
+      }
+      curr = append(curr, nums[j])
+      dfs(j, curr, currTotal+nums[j])  // j, not j+1
+      curr = curr[:len(curr)-1]        // backtrack
+    }
+  }
+  dfs(0, []int{}, 0)
+  return res
+}</div>
+        <h3>Subsets vs Combination Sum: The Index Difference</h3>
+        <div class="code-box">SUBSETS:          dfs(j+1, ...)  → each element AT MOST once
+COMBINATION SUM:  dfs(j, ...)    → each element reusable
+
+BOTH prevent going backwards (j never < i).
+That is the duplicate prevention mechanism.</div>
+        <p class="tag">T = target, M = min(nums):</p> Deepest recursion is T/M (e.g. target=9, min=2 → depth 4). Branching factor up to n at each level → O(n^(T/M)) worst case.
+    </div>
+
     <!-- Full Decision Tree -->
     <div class="pattern-box">
         <h2>Full Decision Tree: nums = [1,2,3]</h2>
