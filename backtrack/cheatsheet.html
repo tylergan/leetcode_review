@@ -270,6 +270,110 @@ That is the duplicate prevention mechanism.</div>
         <p class="tag">T = target, M = min(nums):</p> Deepest recursion is T/M (e.g. target=9, min=2 → depth 4). Branching factor up to n at each level → O(n^(T/M)) worst case.
     </div>
 
+    <!-- Combination Sum II -->
+    <div class="box">
+        <h2>Combination Sum II</h2>
+        <span class="complexity">O(2^n) Time / O(n) Space (excl. output)</span>
+        <p><b>Goal:</b> Given candidates (may contain duplicates) and a target, return all unique combinations that sum to target. Each element may be used <b>at most once</b>.</p>
+        <h3>Two Changes From Combination Sum I:</h3>
+        <div class="code-box">COMBINATION SUM I:   dfs(j,   ...)  // j, not j+1 → reuse allowed
+COMBINATION SUM II:  dfs(j+1, ...)  // j+1        → each element at most once
+
+Plus: a duplicate-sibling skip to handle repeated values in input.</div>
+        <h3>The Duplicate Problem:</h3>
+        <div class="code-box">candidates = [2,2,5], target = 7
+
+Without duplicate skipping:
+  Branch A: start with candidates[0]=2 → explores [2,5]
+  Branch B: start with candidates[1]=2 → explores [2,5] again ← DUPLICATE
+
+Both branches start with the same value at the same depth.
+They will always produce identical combinations.
+Skipping Branch B prevents this without losing any valid answer.</div>
+        <h3>Why Skipping Siblings Doesn't Lose [2,2,...] Answers:</h3>
+        <div class="code-box">candidates = [2,2,5], target = 9
+
+Sorted: [2, 2, 5]
+
+Branch A starts with candidates[0]=2.
+  Inside that branch, the recursive call starts from j+1=1.
+  So it CAN still pick candidates[1]=2 at the DEEPER level.
+  → [2,2,5] is found ✓
+
+Branch B would start with candidates[1]=2 at the TOP level.
+  This produces the same subtree as Branch A — skip it.
+
+Key: "skip sibling with same value" ≠ "ban same value in combination."
+     Skipping only applies at the same recursion depth (same loop level).
+     Deeper levels are unaffected.</div>
+        <h3>The Skip: Two Equivalent Styles:</h3>
+        <div class="code-box">// STYLE 1: skip AFTER backtracking (this implementation)
+// After exploring candidates[j], advance j past any
+// equal values so the next sibling starts with a new value.
+for j := i; j < len(candidates); j++ {
+    curr = append(curr, candidates[j])
+    dfs(j+1, curr, currTotal+candidates[j])
+    curr = curr[:len(curr)-1]          // backtrack
+    for j+1 < len(candidates) && candidates[j] == candidates[j+1] {
+        j++                            // skip duplicate siblings
+    }
+}
+
+// STYLE 2: skip AT THE TOP of the loop (canonical NeetCode style)
+// Skip if this element equals the previous one at the same depth.
+for j := i; j < len(candidates); j++ {
+    if j > i && candidates[j] == candidates[j-1] {
+        continue                       // skip duplicate sibling
+    }
+    ...
+}
+
+Both styles produce identical results. Style 1 skips forward after
+processing; Style 2 guards at the start by comparing to the prior element.</div>
+        <h3>Early Pruning:</h3>
+        <div class="code-box">if currTotal+candidates[j] > target {
+    return   // not break
+}
+
+Checking currTotal+candidates[j] (BEFORE adding) is important.
+It prunes the branch before any work is done on it.
+
+Because the array is sorted, if candidates[j] overshoots,
+every candidates[j+1], candidates[j+2], ... also overshoots.
+So return (not continue) exits the entire loop.</div>
+        <h3>Code:</h3>
+        <div class="code-box">func combinationSum2(candidates []int, target int) [][]int {
+  res := [][]int{}
+  sort.Ints(candidates)
+  var dfs func(int, []int, int)
+  dfs = func(i int, curr []int, currTotal int) {
+    if currTotal == target {
+      res = append(res, slices.Clone(curr))
+      return
+    }
+    for j := i; j < len(candidates); j++ {
+      if currTotal+candidates[j] > target {
+        return                               // pruning
+      }
+      curr = append(curr, candidates[j])
+      dfs(j+1, curr, currTotal+candidates[j]) // j+1: no reuse
+      curr = curr[:len(curr)-1]               // backtrack
+      for j+1 < len(candidates) && candidates[j] == candidates[j+1] {
+        j++                                  // skip dup siblings
+      }
+    }
+  }
+  dfs(0, []int{}, 0)
+  return res
+}</div>
+        <h3>Combination Sum I vs II — Full Diff:</h3>
+        <div class="code-box">                     SUM I          SUM II
+Duplicates in input?  No             Yes
+Reuse element?        Yes            No
+Recursive index:      dfs(j,  ...)   dfs(j+1, ...)
+Dup-sibling skip?     Not needed     Required (sort first)</div>
+    </div>
+
     <!-- Full Decision Tree -->
     <div class="pattern-box">
         <h2>Full Decision Tree: nums = [1,2,3]</h2>
