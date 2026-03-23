@@ -28,6 +28,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 |---------|-------------|----------|-------|
 | Combination Sum | You are given an array of distinct integers nums and a target integer target. Yo... | [combination_sum.go](backtrack/combination_sum.go) | [✓](backtrack/combination_sum_test.go) |
 | Combination Sum 2 | You are given an array of integers candidates, which may contain duplicates, and... | [combination_sum_2.go](backtrack/combination_sum_2.go) | [✓](backtrack/combination_sum_2_test.go) |
+| Permutations | Given an array nums of unique integers, return all the possible permutations. Yo... | [permutations.go](backtrack/permutations.go) | [✓](backtrack/permutations_test.go) |
 | Subset | Given an array nums of unique integers, return all possible subsets of nums. | [subset.go](backtrack/subset.go) | [✓](backtrack/subset_test.go) |
 
 ### Binary_Search
