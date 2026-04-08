@@ -374,6 +374,196 @@ Recursive index:      dfs(j,  ...)   dfs(j+1, ...)
 Dup-sibling skip?     Not needed     Required (sort first)</div>
     </div>
 
+    <!-- Subsets II -->
+    <div class="box">
+        <h2>Subsets II (With Duplicates)</h2>
+        <span class="complexity">O(n * 2^n) Time / O(n) Space (excl. output)</span>
+        <p><b>Goal:</b> Given an array of integers that <b>may contain duplicates</b>, return all possible subsets. The solution set must not contain duplicate subsets.</p>
+        <h3>What Changes From Subsets I:</h3>
+        <div class="code-box">SUBSETS I:  Input has unique elements → forward-only is enough
+SUBSETS II: Input has duplicates    → forward-only + skip duplicate siblings
+
+The skip is IDENTICAL to Combination Sum II.
+Sort first, then skip siblings with the same value.</div>
+        <h3>The Duplicate Problem:</h3>
+        <div class="code-box">nums = [1, 2, 2]  (sorted)
+
+Without duplicate skipping:
+  dfs picks nums[1]=2 → explores [2], [2,2] (using nums[2])
+  dfs picks nums[2]=2 → explores [2]        ← DUPLICATE of [2]
+
+Both siblings have value 2 at the same depth.
+The second branch is a subset of the first branch's
+work — everything it generates was already explored.
+
+Fix: after processing nums[1]=2, skip nums[2]=2.</div>
+        <h3>Why [2,2] Is NOT Lost:</h3>
+        <div class="code-box">When we process nums[1]=2 (the first 2):
+  curr = [2]
+  Recurse with j+1 → starts at nums[2]=2
+  Inside that recursive call, we pick nums[2]=2:
+    curr = [2,2] ✓ recorded
+
+The skip only prevents starting a NEW top-level branch
+with the same value. It does NOT prevent picking
+the same value at a deeper level.
+
+Same principle as Combination Sum II:
+  "skip sibling" ≠ "ban from combination"</div>
+        <h3>Code:</h3>
+        <div class="code-box">func subsetsWithDup(nums []int) [][]int {
+  res := [][]int{[]int{}}
+  curr := []int{}
+  sort.Ints(nums)           // MUST sort to group duplicates
+
+  var dfs func(int)
+  dfs = func(i int) {
+    for j := i; j < len(nums); j++ {
+      if j > i && nums[j] == nums[j-1] {
+        continue              // skip duplicate siblings
+      }
+      curr = append(curr, nums[j])
+      res = append(res, slices.Clone(curr))
+      dfs(j + 1)             // j+1: each element at most once
+      curr = curr[:len(curr)-1]
+    }
+  }
+  dfs(0)
+  return res
+}</div>
+        <h3>Subsets I vs II — Full Diff:</h3>
+        <div class="code-box">                     SUBSETS I       SUBSETS II
+Duplicates in input?  No              Yes
+Sort required?        No              Yes (group duplicates)
+Dup-sibling skip?     Not needed      Required
+Recursive index:      dfs(i+1)        dfs(j+1) — same
+Record when:          Every node      Every node — same
+
+The ONLY additions are: sort + skip duplicate siblings.
+The rest of the structure is identical to Subsets I.</div>
+        <h3>Count Is No Longer 2^n:</h3>
+        <div class="code-box">Subsets I: always 2^n subsets (each element in/out).
+
+Subsets II: depends on duplicate counts.
+  For each group of k identical elements, there
+  are k+1 choices (use 0, 1, 2, ..., or k of them).
+
+  nums = [1, 2, 2]:
+    1 appears once  → 2 choices (0 or 1)
+    2 appears twice → 3 choices (0, 1, or 2)
+    Total: 2 × 3 = 6 subsets
+
+  nums = [3, 3, 3]:
+    3 appears 3 times → 4 choices (0, 1, 2, or 3)
+    Total: 4 subsets</div>
+    </div>
+
+    <!-- Generate Parentheses -->
+    <div class="box">
+        <h2>Generate Parentheses</h2>
+        <span class="complexity">O(4^n / √n) Time / O(n) Space (excl. output)</span>
+        <p><b>Goal:</b> Given <code>n</code> pairs of parentheses, generate all combinations of well-formed (valid) parentheses.</p>
+        <h3>Technique: Constrained Choices, Not Index Tracking</h3>
+        <p><b>Key Insight:</b> Unlike subsets/combinations where we pick from an array, here we choose between two characters: <code>(</code> and <code>)</code>. The constraints are what make it backtracking, not an index.</p>
+        <div class="code-box">At each position, we can place:
+  '(' if we haven't used all n open parens
+  ')' if it wouldn't create an invalid prefix
+
+Two counters track this:
+  open  = number of '(' placed so far
+  close = number of ')' placed so far
+
+Rules:
+  Can add '(' when: open < n
+  Can add ')' when: close < open
+
+That's it. These two rules guarantee every
+generated string is valid.</div>
+        <h3>Why close &lt; open (Not close &lt; n):</h3>
+        <div class="code-box">n = 3, curr = "(()":
+  open = 2, close = 1
+
+  Can add '('? open < n → 2 < 3 → YES
+  Can add ')'? close < open → 1 < 2 → YES
+
+n = 3, curr = "()":
+  open = 1, close = 1
+
+  Can add '('? open < n → 1 < 3 → YES
+  Can add ')'? close < open → 1 < 1 → NO
+    Adding ')' here would give "()" with close=open,
+    meaning no unmatched '(' to close. Any future ')'
+    would be unmatched.
+
+close < open ensures every ')' we place has a
+matching '(' that hasn't been closed yet.
+close < n alone would allow "))((" — clearly wrong.</div>
+        <h3>Decision Tree for n=2:</h3>
+        <div class="code-box">                    ""
+                    |
+                   "("         only '(' is valid (open=0)
+                  /    \
+              "(("     "()"
+              /         |
+          "(()"       "()("    close < open allows ')'
+            |           |
+         "(())"      "()()"
+
+Result: ["(())", "()()"]
+
+Every leaf has length 2n = 4.
+No invalid string is ever partially built.</div>
+        <h3>Code:</h3>
+        <div class="code-box">func generateParenthesis(n int) []string {
+  res := []string{}
+  curr := []byte{}
+
+  var dfs func(int, int)
+  dfs = func(open, close int) {
+    if len(curr) == 2*n {
+      res = append(res, string(curr))
+      return
+    }
+    if open < n {
+      curr = append(curr, '(')
+      dfs(open+1, close)
+      curr = curr[:len(curr)-1]     // backtrack
+    }
+    if close < open {
+      curr = append(curr, ')')
+      dfs(open, close+1)
+      curr = curr[:len(curr)-1]     // backtrack
+    }
+  }
+  dfs(0, 0)
+  return res
+}</div>
+        <h3>How This Fits the Backtracking Template:</h3>
+        <div class="code-box">Template:                Generate Parentheses:
+  choices              → '(' or ')'
+  make choice          → append to curr
+  recurse              → dfs(open+1, close) or dfs(open, close+1)
+  undo choice          → curr = curr[:len(curr)-1]
+  goal_reached         → len(curr) == 2*n
+  constraint/pruning   → open < n, close < open
+
+The difference from subsets/combinations:
+  - No array of elements to pick from
+  - No index tracking
+  - Two fixed choices with counter-based constraints
+  - Only record at leaves (when complete), not at every node</div>
+        <h3>Complexity — The Catalan Number:</h3>
+        <div class="code-box">The number of valid parenthesizations of n pairs
+is the nth Catalan number: C(n) = (2n)! / ((n+1)! × n!)
+
+n:     1   2   3    4    5
+C(n):  1   2   5   14   42
+
+Time:  O(4^n / √n) — the Catalan bound.
+       Each valid string is O(n) to build/copy.
+Space: O(n) — recursion depth is 2n, curr is 2n bytes.</div>
+    </div>
+
     <!-- Full Decision Tree -->
     <div class="pattern-box">
         <h2>Full Decision Tree: nums = [1,2,3]</h2>
