@@ -32,6 +32,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Permutations | Given an array nums of unique integers, return all the possible permutations. Yo... | [permutations.go](backtrack/permutations.go) | [✓](backtrack/permutations_test.go) |
 | Subset | Given an array nums of unique integers, return all possible subsets of nums. | [subset.go](backtrack/subset.go) | [✓](backtrack/subset_test.go) |
 | Subset 2 | You are given an array nums of integers, which may contain duplicates. Return al... | [subset_2.go](backtrack/subset_2.go) | [✓](backtrack/subset_2_test.go) |
+| Word Search | Given a 2-D grid of characters board and a string word, return true if the word ... | [word_search.go](backtrack/word_search.go) | [✓](backtrack/word_search_test.go) |
 
 ### Binary_Search
 
