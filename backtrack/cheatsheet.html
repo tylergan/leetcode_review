@@ -564,6 +564,93 @@ Time:  O(4^n / √n) — the Catalan bound.
 Space: O(n) — recursion depth is 2n, curr is 2n bytes.</div>
     </div>
 
+    <!-- Palindrome Partitioning -->
+    <div class="box">
+        <h2>Palindrome Partitioning</h2>
+        <span class="complexity">O(n * 2^n) Time / O(n) Space (excl. output)</span>
+        <p><b>Goal:</b> Split a string into substrings where every substring is a palindrome. Return every valid partition.</p>
+        <h3>Technique: Try Every Prefix, Prune Non-Palindromes</h3>
+        <p><b>Key Insight:</b> At each node, the choices are the prefixes of the remaining string. A prefix can only be chosen if it is a palindrome; after choosing it, recurse on the suffix.</p>
+        <div class="code-box">s = "aab"
+
+Choices from "aab":
+  "a"   ✓ palindrome → recurse on "ab"
+  "aa"  ✓ palindrome → recurse on "b"
+  "aab" ✗ not palindrome → prune
+
+Choices from "ab":
+  "a"  ✓ palindrome → recurse on "b"
+  "ab" ✗ not palindrome → prune
+
+Choices from "b":
+  "b" ✓ palindrome → recurse on ""
+
+When remaining string is "":
+  record a clone of curr</div>
+        <h3>Decision Tree for "aab":</h3>
+        <div class="code-box">                       curr=[]
+                         "aab"
+                    /       |       \
+                 "a"       "aa"     "aab"
+                  ✓          ✓        ✗ prune
+                  |          |
+               curr=["a"]  curr=["aa"]
+                 "ab"        "b"
+                /    \        |
+             "a"     "ab"    "b"
+              ✓        ✗      ✓
+              |               |
+         curr=["a","a"]   curr=["aa","b"]
+             "b"              ""
+              |
+             "b" ✓
+              |
+       curr=["a","a","b"]
+              ""
+
+Result:
+  ["a","a","b"]
+  ["aa","b"]</div>
+        <h3>Code:</h3>
+        <div class="code-box">func partition(s string) [][]string {
+  var res [][]string
+  curr := []string{}
+
+  var dfs func(string)
+  dfs = func(s string) {
+    if s == "" {
+      res = append(res, slices.Clone(curr))
+    }
+
+    for i := 0; i < len(s); i++ {
+      substr := s[:i+1]
+      if !isPal(substr) {
+        continue
+      }
+
+      curr = append(curr, substr)
+      dfs(s[i+1:])
+      curr = curr[:len(curr)-1]
+    }
+  }
+
+  dfs(s)
+  return res
+}</div>
+        <h3>How This Fits the Backtracking Template:</h3>
+        <div class="code-box">Template:                Palindrome Partitioning:
+  choices              → every prefix of the remaining string
+  constraint/pruning   → prefix must be a palindrome
+  make choice          → append prefix to curr
+  recurse              → dfs(remaining suffix)
+  undo choice          → curr = curr[:len(curr)-1]
+  goal_reached         → no remaining string
+
+The remaining string shrinks on every recursive call,
+so each path is one possible way to cut the original string.</div>
+        <p class="warn">slices.Clone is critical:</p> <code>curr</code> is reused across the whole DFS. Clone it when a complete partition is found so later backtracking does not mutate the stored result.
+    </div>
+
     <!-- Full Decision Tree -->
     <div class="pattern-box">
         <h2>Full Decision Tree: nums = [1,2,3]</h2>

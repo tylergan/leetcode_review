@@ -29,6 +29,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Combination Sum | You are given an array of distinct integers nums and a target integer target. Yo... | [combination_sum.go](backtrack/combination_sum.go) | [✓](backtrack/combination_sum_test.go) |
 | Combination Sum 2 | You are given an array of integers candidates, which may contain duplicates, and... | [combination_sum_2.go](backtrack/combination_sum_2.go) | [✓](backtrack/combination_sum_2_test.go) |
 | Gen Parentheses | You are given an integer n. Return all well-formed parentheses strings that you ... | [gen_parentheses.go](backtrack/gen_parentheses.go) | [✓](backtrack/gen_parentheses_test.go) |
+| Palindrome Partitioning | Given a string s, split s into substrings where every substring is a palindrome.... | [palindrome_partitioning.go](backtrack/palindrome_partitioning.go) | [✓](backtrack/palindrome_partitioning_test.go) |
 | Permutations | Given an array nums of unique integers, return all the possible permutations. Yo... | [permutations.go](backtrack/permutations.go) | [✓](backtrack/permutations_test.go) |
 | Subset | Given an array nums of unique integers, return all possible subsets of nums. | [subset.go](backtrack/subset.go) | [✓](backtrack/subset_test.go) |
 | Subset 2 | You are given an array nums of integers, which may contain duplicates. Return al... | [subset_2.go](backtrack/subset_2.go) | [✓](backtrack/subset_2_test.go) |
