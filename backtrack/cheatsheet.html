@@ -564,6 +564,80 @@ Time:  O(4^n / √n) — the Catalan bound.
 Space: O(n) — recursion depth is 2n, curr is 2n bytes.</div>
     </div>
 
+    <!-- Letter Combinations of a Phone Number -->
+    <div class="box">
+        <h2>Letter Combinations of a Phone Number</h2>
+        <span class="complexity">O(4^n * n) Time / O(n) Space (excl. output)</span>
+        <p><b>Goal:</b> Given digits from <code>2</code> through <code>9</code>, return every string that can be made by choosing one mapped letter per digit.</p>
+        <h3>Technique: One Digit Per Depth</h3>
+        <p><b>Key Insight:</b> The recursion depth is the digit index. At each level, branch over the letters for the current digit, append one letter, recurse to the next digit, then remove that letter.</p>
+        <div class="code-box">digits = "34"
+
+mapping:
+  3 → d e f
+  4 → g h i
+
+Decision tree:
+                  ""
+            /      |      \
+          "d"     "e"     "f"
+         / | \    / | \    / | \
+       dg dh di eg eh ei fg fh fi
+
+Record only when dIdx == len(digits).</div>
+        <h3>Code:</h3>
+        <div class="code-box">func letterCombinations(digits string) []string {
+  if digits == "" {
+    return []string{}
+  }
+
+  mapping := map[string][]string{
+    "2": []string{"a", "b", "c"},
+    "3": []string{"d", "e", "f"},
+    "4": []string{"g", "h", "i"},
+    "5": []string{"j", "k", "l"},
+    "6": []string{"m", "n", "o"},
+    "7": []string{"p", "q", "r", "s"},
+    "8": []string{"t", "u", "v"},
+    "9": []string{"w", "x", "y", "z"},
+  }
+
+  var res []string
+  curr := ""
+
+  var dfs func(int)
+  dfs = func(dIdx int) {
+    if dIdx == len(digits) {
+      res = append(res, curr)
+      return
+    }
+
+    currDigit := string(digits[dIdx])
+    letters := mapping[currDigit]
+
+    for i := 0; i < len(letters); i++ {
+      curr = curr + letters[i]
+      dfs(dIdx+1)
+      curr = curr[:len(curr)-1]
+    }
+  }
+
+  dfs(0)
+  return res
+}</div>
+        <h3>How This Fits the Backtracking Template:</h3>
+        <div class="code-box">Template:                Letter Combinations:
+  state                → curr string
+  choices              → letters mapped from digits[dIdx]
+  make choice          → append one letter to curr
+  recurse              → dfs(dIdx + 1)
+  undo choice          → remove last letter from curr
+  goal_reached         → dIdx == len(digits)
+
+Unlike subsets, there is no skip choice. Each valid
+result must pick exactly one letter for every digit.</div>
+    </div>
+
     <!-- Palindrome Partitioning -->
     <div class="box">
         <h2>Palindrome Partitioning</h2>
