@@ -638,6 +638,86 @@ Unlike subsets, there is no skip choice. Each valid
 result must pick exactly one letter for every digit.</div>
     </div>
 
+    <!-- N-Queens -->
+    <div class="box">
+        <h2>N-Queens</h2>
+        <span class="complexity">O(n!) Time / O(n^2) Space (excl. output)</span>
+        <p><b>Goal:</b> Place <code>n</code> queens on an <code>n x n</code> board so no two queens share a row, column, or diagonal.</p>
+        <h3>Technique: One Row Per Depth</h3>
+        <p><b>Key Insight:</b> The recursion depth is the row. Because DFS places exactly one queen per row, horizontal conflicts are impossible; each candidate only needs column and diagonal checks against already-placed queens.</p>
+        <div class="code-box">n = 4
+
+dfs(row=0):
+  try each column in row 0
+  place Q if safe
+  recurse to row 1
+  remove Q when returning
+
+Safety checks:
+  vertical:       same column above
+  forward slash:  r+c diagonal
+  backward slash: r-c diagonal
+
+When row == n:
+  convert [][]rune board into []string
+  append the board to res</div>
+        <h3>Why Only One Row at a Time?</h3>
+        <div class="code-box">Each recursive call owns one row:
+
+dfs(0) places a queen in row 0
+dfs(1) places a queen in row 1
+dfs(2) places a queen in row 2
+...
+
+That means:
+  - No row can ever contain two queens
+  - We only need to ask: can this queen attack
+    something from a previous row?</div>
+        <h3>Code Shape:</h3>
+        <div class="code-box">func solveNQueens(n int) [][]string {
+  var res [][]string
+  curr := createMatrix(n)
+
+  var dfs func(int)
+  dfs = func(r int) {
+    if r == n {
+      res = append(res, toString(curr))
+      return
+    }
+
+    for c := 0; c < n; c++ {
+      if isSafe(r, c, curr) {
+        curr[r][c] = 'Q'
+        dfs(r + 1)
+        curr[r][c] = '.'
+      }
+    }
+  }
+
+  dfs(0)
+  return res
+}</div>
+        <h3>Connection to connect_k:</h3>
+        <div class="code-box">Both problems can use directional stepping:
+
+rowStep, colStep describe a line.
+For each step:
+  nextRow = row + step * rowStep
+  nextCol = col + step * colStep
+
+Stop when out of bounds.
+Fail if the next cell contains an attacking piece.</div>
+        <h3>How This Fits the Backtracking Template:</h3>
+        <div class="code-box">Template:                N-Queens:
+  state                → current board
+  choices              → columns in the current row
+  constraint/pruning   → isSafe(row, col, board)
+  make choice          → board[row][col] = 'Q'
+  recurse              → dfs(row + 1)
+  undo choice          → board[row][col] = '.'
+  goal_reached         → row == n</div>
+    </div>
+
     <!-- Palindrome Partitioning -->
     <div class="box">
         <h2>Palindrome Partitioning</h2>
