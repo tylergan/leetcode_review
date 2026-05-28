@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Tries Cheat Sheet</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.5; color: #222; margin: 24px; background: #f8f9fa; }
+        .container { max-width: 980px; margin: 0 auto; }
+        .box { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 18px; margin-bottom: 18px; }
+        .code-box { background: #f3f4f6; border-left: 4px solid #4b5563; padding: 12px; white-space: pre-wrap; font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; }
+        .warn { color: #b45309; font-weight: bold; }
+        .complexity { display: inline-block; background: #e0f2fe; color: #075985; padding: 2px 8px; border-radius: 999px; font-size: 13px; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="box">
+        <h2>Trie Fundamentals</h2>
+        <p><b>Core idea:</b> Each edge represents one character. Walking from the root through characters answers prefix questions in O(length of query).</p>
+        <div class="code-box">Insert:
+  curr = root
+  for each char in word:
+    create child if missing
+    curr = child
+  curr.end = true
+
+Search exact word:
+  walk every char
+  return finalNode.end</div>
+        <p class="warn">Important:</p> A prefix is not automatically a word. The <code>end</code> marker is what distinguishes <code>"app"</code> after inserting <code>"apple"</code>.</p>
+    </div>
+
+    <div class="box">
+        <h2>Design Add and Search Word</h2>
+        <span class="complexity">O(m) normal search / O(26^d * m) with d dots</span>
+        <p><b>Goal:</b> Support adding words and searching patterns where <code>.</code> can match any single letter.</p>
+        <h3>Mental Note: Let DFS Own the Search</h3>
+        <p>The tempting overcomplication is to count consecutive dots, look ahead to a future target character, and try to jump there. That creates edge cases: dots at the start, dots at the end, missing-length checks, and discarded recursive results.</p>
+        <div class="code-box">Instead, make the whole search recursive:
+
+dfs(node, word, i):
+  if node == nil:
+    return false
+
+  if i == len(word):
+    return node.end
+
+  if word[i] == '.':
+    try every child with dfs(child, word, i+1)
+    return true if any child works
+
+  return dfs(node.children[word[i]], word, i+1)</div>
+        <h3>Why No Target Character Is Needed</h3>
+        <div class="code-box">Searching ".ay" after adding day, bay, may:
+
+root
+├── d → a → y (end)
+├── b → a → y (end)
+└── m → a → y (end)
+
+At i=0, '.' means try d, b, and m.
+Each recursive call naturally moves to i=1,
+where the next character is 'a'.
+
+The future target is handled by the next recursive frame.</div>
+        <h3>Key Pitfall</h3>
+        <div class="code-box">If the remaining pattern is all dots, do NOT return true immediately.
+
+Example:
+  added: "b"
+  search: "b.."
+
+The prefix exists, but no word of length 3 exists.
+The base case must still land on a node with end == true.</div>
+    </div>
+
+    <div class="box">
+        <h2>Word Search II</h2>
+        <span class="complexity">O(m * n * 4^L) worst case / Trie pruning in practice</span>
+        <p><b>Goal:</b> Find all dictionary words that can be formed by walking horizontally or vertically through the board without reusing a cell in the same word.</p>
+        <h3>Trie + Board DFS</h3>
+        <div class="code-box">1. Build a trie from all words.
+2. Start DFS from every board cell.
+3. At each cell:
+   - Check whether the current trie node has board[i][j].
+   - If not, prune immediately.
+   - If the child has a complete word, record it.
+   - Mark board[i][j] as visited.
+   - Explore four directions.
+   - Restore board[i][j].</div>
+        <h3>Why Store the Word on the Terminal Node?</h3>
+        <div class="code-box">Instead of rebuilding the path string on every DFS step,
+store the full word at the terminal trie node:
+
+curr.word = word
+
+Then when DFS reaches that node:
+  res = append(res, curr.word)
+  curr.word = ""   // prevents duplicate output</div>
+        <p class="warn">Mental note:</p> The trie is the pruning structure. If the current board path is not a prefix in the trie, stop immediately instead of continuing to build paths that cannot match any target word.</p>
+    </div>
+
+</div>
+</body>
+</html>

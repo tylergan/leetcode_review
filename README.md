@@ -132,9 +132,13 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 
 ### Tries
 
+📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/tries/cheatsheet.html)** - Quick reference guide for tries problems
+
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
+| Design Add Search Word | Design a data structure that supports adding new words and searching for existi... | [design_add_search_word.go](tries/design_add_search_word.go) | [✓](tries/design_add_search_word_test.go) |
 | Implement Trie Prefix Tree | A trie (pronounced as "try") or prefix tree is a tree data structure used to eff... | [implement_trie_prefix_tree.go](tries/implement_trie_prefix_tree.go) | [✓](tries/implement_trie_prefix_tree_test.go) |
+| Word Search 2 | Given a 2-D grid of characters board and a list of strings words, return all wor... | [word_search_2.go](tries/word_search_2.go) | [✓](tries/word_search_2_test.go) |
 
 ### Two_Pointers
 

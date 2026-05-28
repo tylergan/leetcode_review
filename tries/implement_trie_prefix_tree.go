@@ -40,6 +40,7 @@ At most 3 * 10^4 calls in total will be made to insert, search, and startsWith.
 type Node struct {
 	char       rune
 	end        bool
+	word       string // Used by Word Search II when this trie node terminates a word.
 	neighbours map[rune]*Node
 }
 
