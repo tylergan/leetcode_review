@@ -130,6 +130,12 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Minimum Stack | Design a stack class that supports the push, pop, top, and getMin operations. | [minimum_stack.go](stack/minimum_stack.go) | [✓](stack/minimum_stack_test.go) |
 | Valid Parantheses | You are given a string s consisting of the following characters: '(', ')', '{', ... | [valid_parantheses.go](stack/valid_parantheses.go) | [✓](stack/valid_parantheses_test.go) |
 
+### Tries
+
+| Problem | Description | Solution | Tests |
+|---------|-------------|----------|-------|
+| Implement Trie Prefix Tree | A trie (pronounced as "try") or prefix tree is a tree data structure used to eff... | [implement_trie_prefix_tree.go](tries/implement_trie_prefix_tree.go) | [✓](tries/implement_trie_prefix_tree_test.go) |
+
 ### Two_Pointers
 
 📄 **[View Cheat Sheet](https://tylergan.github.io/leetcode_review/two_pointers/cheatsheet.html)** - Quick reference guide for two_pointers problems
