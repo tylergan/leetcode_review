@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Graphs Cheat Sheet</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.5; color: #222; margin: 24px; background: #f8f9fa; }
+        .container { max-width: 980px; margin: 0 auto; }
+        .box { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 18px; margin-bottom: 18px; }
+        .code-box { background: #f3f4f6; border-left: 4px solid #4b5563; padding: 12px; white-space: pre-wrap; font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; }
+        .complexity { display: inline-block; background: #e0f2fe; color: #075985; padding: 2px 8px; border-radius: 999px; font-size: 13px; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="box">
+        <h2>Clone Graph</h2>
+        <span class="complexity">O(V + E) Time / O(V) Space</span>
+        <p><b>Goal:</b> Return a deep copy of a connected undirected graph.</p>
+        <h3>BFS With Original-to-Clone Map</h3>
+        <div class="code-box">if node == nil:
+  return nil
+
+clones[node] = new Node(node.val)
+queue = [node]
+
+while queue is not empty:
+  curr = pop queue
+  for neighbour in curr.neighbours:
+    if neighbour is not cloned:
+      clones[neighbour] = new Node(neighbour.val)
+      push neighbour
+
+    clones[curr].neighbours append clones[neighbour]</div>
+        <h3>Key Insight</h3>
+        <div class="code-box">The map answers two questions:
+  1. Have we already discovered this original node?
+  2. What clone should edges point to?
+
+Never append original neighbours into the clone.
+Every edge in the cloned graph must point to cloned nodes.</div>
+    </div>
+
+    <div class="box">
+        <h2>Number of Islands</h2>
+        <span class="complexity">O(m * n) Time / O(m * n) Space worst case</span>
+        <p><b>Goal:</b> Count connected components of land in a 2D grid. Connections are horizontal and vertical only.</p>
+        <h3>Sink Land DFS</h3>
+        <div class="code-box">for each cell:
+  if cell is water:
+    continue
+
+  count++
+  dfs(cell)
+
+dfs(row, col):
+  if out of bounds:
+    return
+  if cell is water:
+    return
+
+  mark cell as water
+  dfs(up)
+  dfs(down)
+  dfs(left)
+  dfs(right)</div>
+        <h3>Key Insight</h3>
+        <div class="code-box">The first land cell found in an island increments count.
+
+DFS then "sinks" every connected land cell by changing it
+from '1' to '0'. That prevents the rest of the same island
+from being counted again later in the outer loop.</div>
+    </div>
+
+    <div class="box">
+        <h2>Max Area of Island</h2>
+        <span class="complexity">O(m * n) Time / O(m * n) Space worst case</span>
+        <p><b>Goal:</b> Find the largest connected component of land. Area is the number of cells in the island.</p>
+        <h3>Same DFS, Different Accumulator</h3>
+        <div class="code-box">for each land cell:
+  currArea = 0
+  dfs(cell)
+  maxArea = max(maxArea, currArea)
+
+dfs(row, col):
+  if out of bounds or water:
+    return
+
+  currArea++
+  mark cell as water
+  dfs(up/down/left/right)</div>
+        <h3>Key Difference from Number of Islands</h3>
+        <div class="code-box">Number of Islands:
+  count how many times we start DFS from fresh land
+
+Max Area of Island:
+  count how many cells one DFS sinks
+  keep the largest DFS size seen</div>
+    </div>
+
+</div>
+</body>
+</html>
