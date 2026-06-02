@@ -79,8 +79,12 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Problem | Description | Solution | Tests |
 |---------|-------------|----------|-------|
 | Clone Graph | Given a node in a connected undirected graph, return a deep copy of the graph. | [clone_graph.go](graphs/clone_graph.go) | [✓](graphs/clone_graph_test.go) |
+| Islands And Treasure | You are given a m x n 2D grid initialized with these three possible values: | [islands_and_treasure.go](graphs/islands_and_treasure.go) | [✓](graphs/islands_and_treasure_test.go) |
 | Max Area Of Island | You are given a matrix grid where grid[i] is either a 0 (representing water) or ... | [max_area_of_island.go](graphs/max_area_of_island.go) | [✓](graphs/max_area_of_island_test.go) |
 | Number Of Islands | Given a 2D grid grid where '1' represents land and '0' represents water, count a... | [number_of_islands.go](graphs/number_of_islands.go) | [✓](graphs/number_of_islands_test.go) |
+| Pacific Atlantic Water Flow | You are given a rectangular island heights where heights[r][c] represents the he... | [pacific_atlantic_water_flow.go](graphs/pacific_atlantic_water_flow.go) | [✓](graphs/pacific_atlantic_water_flow_test.go) |
+| Rotting Fruit | You are given a 2-D matrix grid. Each cell can have one of three possible values: | [rotting_fruit.go](graphs/rotting_fruit.go) | [✓](graphs/rotting_fruit_test.go) |
+| Surrounded Regions | You are given a 2-D matrix board containing 'X' and 'O' characters. | [surrounded_regions.go](graphs/surrounded_regions.go) | [✓](graphs/surrounded_regions_test.go) |
 
 ### Heap_Pq
 

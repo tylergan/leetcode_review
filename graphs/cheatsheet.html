@@ -44,6 +44,127 @@ Every edge in the cloned graph must point to cloned nodes.</div>
     </div>
 
     <div class="box">
+        <h2>Islands and Treasure</h2>
+        <span class="complexity">O(m * n) Time / O(m * n) Space</span>
+        <p><b>Goal:</b> Fill every traversable land cell with its distance to the nearest treasure chest.</p>
+        <h3>Multi-Source BFS</h3>
+        <div class="code-box">queue = all treasure cells
+
+while queue is not empty:
+  curr = pop queue
+  for each neighbour:
+    if neighbour is not INF:
+      continue
+
+    neighbour = curr + 1
+    push neighbour</div>
+        <h3>Key Insight</h3>
+        <div class="code-box">Start BFS from every treasure chest at once.
+
+That means the first time an INF cell is reached,
+it is reached by the nearest treasure chest.
+
+No separate visited set is needed because updating
+INF to a distance marks the cell as visited.</div>
+    </div>
+
+    <div class="box">
+        <h2>Rotting Fruit</h2>
+        <span class="complexity">O(m * n) Time / O(m * n) Space</span>
+        <p><b>Goal:</b> Return how many minutes it takes for all reachable fresh fruit to become rotten, or <code>-1</code> if some fresh fruit can never be reached.</p>
+        <h3>Multi-Source BFS With Time</h3>
+        <div class="code-box">queue = all rotten fruit with time 0
+totalFruit = count of fresh + rotten fruit
+reachedFruit = 0
+maxTime = 0
+
+while queue is not empty:
+  row, col, time = pop queue
+  reachedFruit++
+
+  for each neighbour:
+    if neighbour is not fresh:
+      continue
+
+    neighbour = rotten
+    push neighbour with time + 1
+    maxTime = max(maxTime, time + 1)
+
+if reachedFruit != totalFruit:
+  return -1
+return maxTime</div>
+        <h3>Key Difference from Islands and Treasure</h3>
+        <div class="code-box">Both start BFS from many sources.
+
+Islands and Treasure:
+  update INF cells with nearest distance
+
+Rotting Fruit:
+  update fresh cells to rotten
+  track the latest time reached
+  detect impossible cases when fresh fruit is isolated</div>
+    </div>
+
+    <div class="box">
+        <h2>Pacific Atlantic Water Flow</h2>
+        <span class="complexity">O(m * n) Time / O(m * n) Space</span>
+        <p><b>Goal:</b> Find cells that can drain to both oceans.</p>
+        <h3>Reverse the Direction</h3>
+        <div class="code-box">Original question:
+  From this cell, can water flow downhill to an ocean?
+
+Easier reverse question:
+  Starting from the ocean border, which cells can reach
+  the ocean if we walk uphill?
+
+Pacific starts:
+  top row + left column
+
+Atlantic starts:
+  bottom row + right column</div>
+        <h3>Meet in the Middle</h3>
+        <div class="code-box">Run DFS/BFS from all Pacific borders.
+Run DFS/BFS from all Atlantic borders.
+
+If a coordinate appears in both reachable sets,
+water can flow from that cell to both oceans.</div>
+        <h3>Movement Rule When Reversed</h3>
+        <div class="code-box">Normal water flow:
+  curr can flow to next when next <= curr
+
+Reverse search:
+  ocean can walk to next when next >= curr
+
+That is why the DFS skips neighbours lower than
+the current cell.</div>
+    </div>
+
+    <div class="box">
+        <h2>Surrounded Regions</h2>
+        <span class="complexity">O(m * n) Time / O(m * n) Space worst case</span>
+        <p><b>Goal:</b> Flip only the <code>O</code> regions that cannot reach the board border.</p>
+        <h3>Boundary-Started DFS</h3>
+        <div class="code-box">1. Start DFS from every border O.
+2. Mark all connected border-reachable O cells as T.
+3. Sweep the whole board:
+   - O -> X   // trapped region
+   - T -> O   // safe region</div>
+        <h3>Why This Beats Backtracking From the Inside</h3>
+        <div class="code-box">The tempting approach is:
+  "Assume O is surrounded, flip it to X,
+   then undo if a path reaches the border."
+
+That creates bugs when a component has branches:
+  - one branch may look trapped
+  - another branch later reaches the border
+  - cells from the first branch can be left flipped
+
+Boundary DFS avoids guessing.
+If an O is reached from the border, it is safe.
+Everything still marked O after that is trapped.</div>
+    </div>
+
+    <div class="box">
         <h2>Number of Islands</h2>
         <span class="complexity">O(m * n) Time / O(m * n) Space worst case</span>
         <p><b>Goal:</b> Count connected components of land in a 2D grid. Connections are horizontal and vertical only.</p>
