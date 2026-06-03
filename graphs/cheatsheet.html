@@ -361,6 +361,31 @@ single-node queues. It makes the proof visible:
 
 The frontier version is the one to keep because it is not
 just fast; it is easy to reason about.</div>
+        <h3>Where the Misconception Was</h3>
+        <div class="code-box">Equal word length is NOT what guarantees correctness.
+
+Equal length only defines the graph edges:
+  two words are adjacent if they differ at one position.
+
+The correctness guarantee comes from two other facts:
+  1. The graph is unweighted.
+     Every word transformation costs exactly one step.
+
+  2. The algorithm expands whole BFS rings.
+     Every item in a frontier has the same distance.
+
+The original single-node queue version was still "BFS",
+but it was not operating on clean bidirectional rings.
+A queue can mix leftover nodes from one level with new
+nodes from the next level.
+
+That means first contact could glue together:
+  - a shallow node from one side
+  - a deeper node from the other side
+
+The returned path was real, but not always shortest.
+When that bug appears, it overshoots rather than undershoots:
+it finds a valid ladder, just not the best one.</div>
         <h3>What Is a Synchronized Ring?</h3>
         <div class="code-box">A synchronized ring is one full BFS layer.
 
@@ -376,6 +401,24 @@ replaces it with the next ring.
 That is different from thinking of "the queue" as the
 frontier, because a queue can temporarily contain nodes
 from multiple levels.</div>
+        <h3>Why Weighted Edges Break This</h3>
+        <div class="code-box">The ring argument depends on every edge having cost 1.
+
+If changing one letter could cost different amounts,
+then "k hops away" would not mean "cost k away".
+
+A frontier would no longer be a uniform-cost ring:
+  some words might be cheap
+  some words might be expensive
+  even if they use the same number of transformations
+
+In that world, BFS is no longer enough.
+You would need a cost-aware algorithm such as Dijkstra.
+
+The same warning applies to bidirectional Dijkstra:
+do not stop just because the two searches first touch.
+You need a cost-based stopping condition, not just
+a frontier collision.</div>
     </div>
 
     <div class="box">
