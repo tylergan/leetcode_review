@@ -90,6 +90,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Redundant Connection | You are given a connected undirected graph with n nodes labeled from 1 to n. Ini... | [redundant_connection.go](graphs/redundant_connection.go) | [✓](graphs/redundant_connection_test.go) |
 | Rotting Fruit | You are given a 2-D matrix grid. Each cell can have one of three possible values... | [rotting_fruit.go](graphs/rotting_fruit.go) | [✓](graphs/rotting_fruit_test.go) |
 | Surrounded Regions | You are given a 2-D matrix board containing 'X' and 'O' characters. | [surrounded_regions.go](graphs/surrounded_regions.go) | [✓](graphs/surrounded_regions_test.go) |
+| Word Ladder | You are given two words, beginWord and endWord, and also a list of words wordLis... | [word_ladder.go](graphs/word_ladder.go) | [✓](graphs/word_ladder_test.go) |
 
 ### Heap_Pq
 

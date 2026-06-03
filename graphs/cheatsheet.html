@@ -300,6 +300,85 @@ The same component logic applies either way.</div>
     </div>
 
     <div class="box">
+        <h2>Word Ladder</h2>
+        <span class="complexity">O(N * M^2) Time / O(N * M) Space</span>
+        <p><b>Goal:</b> Find the shortest sequence of one-letter word changes from <code>beginWord</code> to <code>endWord</code>.</p>
+        <h3>Bidirectional BFS With Frontiers</h3>
+        <div class="code-box">forwardFrontier = {beginWord}
+backwardFrontier = {endWord}
+forwardLevel = 1
+backwardLevel = 1
+
+while both frontiers are non-empty:
+  expand the smaller frontier
+  generate the next complete frontier
+  if a generated word is in the opposite frontier:
+    return forwardLevel + backwardLevel</div>
+        <h3>Why Frontiers, Not Single Queue Pops?</h3>
+        <div class="code-box">A frontier is one distance ring.
+Every word inside it has the same distance from its side.
+
+That uniform distance is what makes early return safe.
+When the two current rings meet, the total length is
+well-defined.
+
+A FIFO queue can temporarily hold the tail of one level
+and the head of the next level. That is fine for normal
+BFS, but it makes bidirectional "first meeting" reasoning
+harder unless you track levels very carefully.</div>
+        <h3>Why Expand the Smaller Side?</h3>
+        <div class="code-box">Expanding a frontier costs roughly:
+  len(frontier) * wordLength * 26
+
+So the smaller frontier is the cheaper next ring to buy.
+As one side grows larger, the algorithm naturally switches
+to the other side, keeping both waves balanced around the
+middle of the path.</div>
+        <h3>Visited Sets Still Matter</h3>
+        <div class="code-box">Each side has its own visited set.
+
+visited does NOT store distance here.
+It only prevents one side from re-expanding the same word.
+
+The distance is tracked by the frontier-level counters.</div>
+        <h3>Thoughts on the Claude Discussion</h3>
+        <div class="code-box">The useful critique was not "BFS is wrong."
+BFS is the right tool.
+
+The issue was proving correctness for bidirectional BFS.
+
+Plain BFS gives a shortest-path guarantee because nodes are
+processed in nondecreasing distance from one source.
+
+Bidirectional BFS needs a stronger invariant:
+  each side's current frontier must be one synchronized ring.
+
+That is why this version keeps frontier sets instead of
+single-node queues. It makes the proof visible:
+  - every forward frontier word is at forwardLevel
+  - every backward frontier word is at backwardLevel
+  - when the rings touch, the answer is forwardLevel + backwardLevel
+
+The frontier version is the one to keep because it is not
+just fast; it is easy to reason about.</div>
+        <h3>What Is a Synchronized Ring?</h3>
+        <div class="code-box">A synchronized ring is one full BFS layer.
+
+If forwardLevel == 3, then every word in forwardFrontier
+is exactly 3 words away from beginWord.
+
+If backwardLevel == 4, then every word in backFrontier
+is exactly 4 words away from endWord.
+
+The algorithm expands one entire ring at a time and then
+replaces it with the next ring.
+
+That is different from thinking of "the queue" as the
+frontier, because a queue can temporarily contain nodes
+from multiple levels.</div>
+    </div>
+
+    <div class="box">
         <h2>Islands and Treasure</h2>
         <span class="complexity">O(m * n) Time / O(m * n) Space</span>
         <p><b>Goal:</b> Fill every traversable land cell with its distance to the nearest treasure chest.</p>
