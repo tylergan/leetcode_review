@@ -44,6 +44,262 @@ Every edge in the cloned graph must point to cloned nodes.</div>
     </div>
 
     <div class="box">
+        <h2>Course Schedule</h2>
+        <span class="complexity">O(V + E) Time / O(V + E) Space</span>
+        <p><b>Goal:</b> Decide whether all courses can be completed given prerequisite rules.</p>
+        <h3>Kahn's Algorithm: Topological Sort</h3>
+        <div class="code-box">Topological sort is a valid ordering of tasks
+where every prerequisite appears before the task
+that depends on it.
+
+Example:
+  socks -> shoes
+
+Socks must come before shoes, so shoes cannot be
+processed until its incoming prerequisite is gone.</div>
+        <h3>In-Degree Means "Prerequisites Remaining"</h3>
+        <div class="code-box">For Course Schedule, [a, b] means:
+  take b before a
+
+So the graph edge is:
+  b -> a
+
+indegree[a]++ because course a has one more
+prerequisite remaining.</div>
+        <h3>Why Reversed Edges Still Pass canFinish</h3>
+        <div class="code-box">For the boolean canFinish question, edge direction
+does not change whether a cycle exists.
+
+If you reverse every edge, you get the transpose
+of the graph:
+
+  0 -> 1 -> 2 -> 0
+
+becomes:
+
+  0 -> 2 -> 1 -> 0
+
+Still a cycle, just in the opposite direction.
+So cycle detection gives the same true/false answer.</div>
+        <h3>But Course Order Would Be Backwards</h3>
+        <div class="code-box">Topological order depends on edge direction.
+
+If [a, b] means "take b before a", the edge should be:
+
+  b -> a
+
+If you accidentally build:
+
+  a -> b
+
+canFinish still detects cycles correctly, but a returned
+course ordering would be for the reversed graph. It would
+come out backwards for the original prerequisite meaning.</div>
+        <h3>Course Schedule II: Return the Ordering</h3>
+        <div class="code-box">Course Schedule I:
+  return processed == numCourses
+
+Course Schedule II:
+  append each popped node to res
+  if processed != numCourses:
+    return []
+  return res
+
+Because res is the actual topological order,
+edge direction is no longer just a cycle-detection detail.
+Use prerequisite -> course.</div>
+        <h3>The Algorithm</h3>
+        <div class="code-box">1. Build graph and indegree counts.
+2. Queue every node with indegree 0.
+   These courses have no prerequisites.
+3. Pop a course from the queue.
+4. For each course it unlocks:
+   indegree[neighbour]--
+   if indegree becomes 0, enqueue it.
+5. If processed == numCourses, no cycle exists.
+   Otherwise, some courses are stuck in a cycle.</div>
+        <h3>Cycle Detection Intuition</h3>
+        <div class="code-box">A cycle has no valid starting point.
+
+0 -> 1
+1 -> 0
+
+Both nodes have incoming edges, so neither ever
+reaches indegree 0. The queue empties before all
+courses are processed.</div>
+    </div>
+
+    <div class="box">
+        <h2>Graph Valid Tree</h2>
+        <span class="complexity">O(E * α(V)) Time / O(V) Space</span>
+        <p><b>Goal:</b> Decide whether an undirected graph is exactly one connected, acyclic component.</p>
+        <h3>Union Find View</h3>
+        <div class="code-box">Start with every node in its own component.
+
+For every edge (a, b):
+  if a and b already have the same root:
+    return false   // adding this edge creates a cycle
+
+  union(a, b)
+
+At the end:
+  return numberOfComponents == 1</div>
+        <h3>Why This Works</h3>
+        <div class="code-box">A valid tree needs both:
+
+1. No cycles
+   Union detects this when an edge connects two
+   nodes already in the same component.
+
+2. Connected
+   All nodes must collapse into one component.
+
+If either condition fails, the graph is not a tree.</div>
+        <h3>Union Find Is Not the Graph</h3>
+        <div class="code-box">The UnionFind parent array does NOT store graph edges.
+
+parent[x] only means:
+  "walk upward to find this node's component representative"
+
+Union by size and path compression are free to rewrite
+those parent pointers however they like. The only fact
+UnionFind preserves is the partition of nodes into
+connected components.</div>
+        <h3>Cycle Detection Is Local</h3>
+        <div class="code-box">An undirected edge (u, v) creates a cycle iff:
+  find(u) == find(v)
+
+That means u and v were already connected by some
+other path before this edge arrived.
+
+This can happen long before the whole graph is connected:
+
+n = 5
+edges = [[0,1], [1,2], [2,0], [3,4]]
+
+After [0,1] and [1,2], nodes 0,1,2 share a component.
+When [2,0] arrives, both endpoints already have the
+same representative, so Union returns false.
+
+At that moment there are still 3 components:
+  {0,1,2}, {3}, {4}
+
+So cycles are not "only when everything is already
+one component"; they are detected inside any component.</div>
+        <h3>Two Kinds of Edges</h3>
+        <div class="code-box">Every edge (u, v) is exactly one of these:
+
+1. Endpoints in different components
+   - no path exists between u and v yet
+   - this edge is the first bridge between them
+   - Union succeeds
+   - nComponents drops by 1
+   - cannot create a cycle
+
+2. Endpoints in the same component
+   - some path already connects u and v
+   - this edge is a second route between them
+   - Union fails
+   - nComponents stays the same
+   - this edge closes a cycle
+
+There is no third kind of edge.</div>
+        <h3>The Bridge Between UF and the Graph</h3>
+        <div class="code-box">UnionFind does not remember the actual path.
+It only remembers that a path exists.
+
+find(u) == find(v)
+  means u and v are in the same connected component
+  means there is already some path u -> ... -> v
+
+If you then add edge (u, v), that new direct edge
+closes the loop with the old path.</div>
+        <h3>Tree = Acyclic and Connected</h3>
+        <div class="code-box">The two checks are independent:
+
+No failed union:
+  no cycle was found
+
+nComponents == 1:
+  all nodes are connected
+
+Tree means BOTH are true.</div>
+        <h3>Alternate Shortcut</h3>
+        <div class="code-box">For an undirected graph:
+  connected + no cycles  <=>  exactly n-1 edges
+
+So many solutions first check:
+  len(edges) == n - 1
+
+Then they only need to prove connectivity.</div>
+    </div>
+
+    <div class="box">
+        <h2>Number of Connected Components</h2>
+        <span class="complexity">O(E * α(V)) Time / O(V) Space</span>
+        <p><b>Goal:</b> Count how many disconnected groups exist in an undirected graph.</p>
+        <h3>Union Find Component Counter</h3>
+        <div class="code-box">Start:
+  nComponents = n
+
+For every edge (a, b):
+  if find(a) != find(b):
+    union(a, b)
+    nComponents--
+
+Return nComponents.</div>
+        <h3>Key Difference from Graph Valid Tree</h3>
+        <div class="code-box">Connected Components:
+  cycles are fine
+  duplicate connectivity just does not change the count
+
+Graph Valid Tree:
+  cycles are not allowed
+  if Union sees same representative, return false</div>
+    </div>
+
+    <div class="box">
+        <h2>Redundant Connection</h2>
+        <span class="complexity">O(E * α(V)) Time / O(V) Space</span>
+        <p><b>Goal:</b> Return the edge that creates the cycle in an almost-tree.</p>
+        <h3>Failed Union Identifies the Answer</h3>
+        <div class="code-box">for each edge (a, b):
+  if union(a, b) fails:
+    answer = edge
+
+return answer</div>
+        <h3>Why Removing That Edge Works</h3>
+        <div class="code-box">A failed union means:
+  a and b were already connected by another path
+
+So the new edge is redundant connectivity.
+It closes a cycle, but removing it leaves the old path
+in place, so the graph stays connected.</div>
+        <h3>Why the Failed Edge Is the Last Cycle Edge</h3>
+        <div class="code-box">This problem guarantees:
+  original graph = tree
+  input graph = tree + one extra edge
+
+So there is exactly one cycle.
+
+As edges are processed in input order, every cycle edge
+except the last one still connects two different components.
+Those unions succeed because the loop is not closed yet.
+
+The final edge of that cycle is the first time its two
+endpoints already have the same representative.
+So the failed union is exactly the edge the prompt wants.</div>
+        <h3>Dynamic Node Labels</h3>
+        <div class="code-box">This problem labels nodes from 1..n.
+
+You can use:
+  - an array sized n+1, or
+  - a map-backed UnionFind that lazily initializes nodes
+
+The same component logic applies either way.</div>
+    </div>
+
+    <div class="box">
         <h2>Islands and Treasure</h2>
         <span class="complexity">O(m * n) Time / O(m * n) Space</span>
         <p><b>Goal:</b> Fill every traversable land cell with its distance to the nearest treasure chest.</p>
