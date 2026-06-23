@@ -14,6 +14,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Find Duplicates | Given an integer array nums, return true if any value appears more than once in ... | [find_duplicates.go](arrays/find_duplicates.go) | [✓](arrays/find_duplicates_test.go) |
 | Group Anagrams | Given an array of strings strs, group all anagrams together into sublists. You m... | [group_anagrams.go](arrays/group_anagrams.go) | [✓](arrays/group_anagrams_test.go) |
 | Longest Consecutive Subsequence | Given an array of integers nums, return the length of the longest consecutive se... | [longest_consecutive_subsequence.go](arrays/longest_consecutive_subsequence.go) | [✓](arrays/longest_consecutive_subsequence_test.go) |
+| Majority Element | Given an array nums of size n, return the majority element. | [majority_element.go](arrays/majority_element.go) | [✓](arrays/majority_element_test.go) |
 | Product Of Array Except Self | Given an integer array nums, return an array output where output[i] is the produ... | [product_of_array_except_self.go](arrays/product_of_array_except_self.go) | [✓](arrays/product_of_array_except_self_test.go) |
 | Top Freq K Elems | Given an integer array nums and an integer k, return the k most frequent element... | [top_freq_k_elems.go](arrays/top_freq_k_elems.go) | [✓](arrays/top_freq_k_elems_test.go) |
 | Two Sum | Given an array of integers nums and an integer target, return the indices i and ... | [two_sum.go](arrays/two_sum.go) | [✓](arrays/two_sum_test.go) |
@@ -115,6 +116,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Add Two Numbers | You are given two non-empty linked lists, l1 and l2, where each represents a non... | [add_two_numbers.go](linked_list/add_two_numbers.go) | [✓](linked_list/add_two_numbers_test.go) |
 | Copy Ll W Random Ptr | You are given the head of a linked list of length n. Unlike a singly linked list... | [copy_ll_w_random_ptr.go](linked_list/copy_ll_w_random_ptr.go) | [✓](linked_list/copy_ll_w_random_ptr_test.go) |
 | Cycle Detection | Given the beginning of a linked list head, return true if there is a cycle in th... | [cycle_detection.go](linked_list/cycle_detection.go) | [✓](linked_list/cycle_detection_test.go) |
+| Design Hashset | Design a HashSet without using any built-in hash table libraries. | [design_hashset.go](linked_list/design_hashset.go) | [✓](linked_list/design_hashset_test.go) |
 | Find Duplicate | You are given an array of integers nums containing n + 1 integers. Each integer ... | [find_duplicate.go](linked_list/find_duplicate.go) | [✓](linked_list/find_duplicate_test.go) |
 | Lru Cache | Implement the Least Recently Used (LRU) cache class LRUCache. The class should s... | [lru_cache.go](linked_list/lru_cache.go) | [✓](linked_list/lru_cache_test.go) |
 | Merge K Sorted Lists | You are given an array of k linked lists lists, where each list is sorted in asc... | [merge_k_sorted_lists.go](linked_list/merge_k_sorted_lists.go) | [✓](linked_list/merge_k_sorted_lists_test.go) |
@@ -158,6 +160,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 |---------|-------------|----------|-------|
 | Design Add Search Word | Design a data structure that supports adding new words and searching for existin... | [design_add_search_word.go](tries/design_add_search_word.go) | [✓](tries/design_add_search_word_test.go) |
 | Implement Trie Prefix Tree | A trie (pronounced as "try") or prefix tree is a tree data structure used to eff... | [implement_trie_prefix_tree.go](tries/implement_trie_prefix_tree.go) | [✓](tries/implement_trie_prefix_tree_test.go) |
+| Longest Common Prefix | You are given an array of strings strs. Return the longest common prefix of all ... | [longest_common_prefix.go](tries/longest_common_prefix.go) | [✓](tries/longest_common_prefix_test.go) |
 | Word Search 2 | Given a 2-D grid of characters board and a list of strings words, return all wor... | [word_search_2.go](tries/word_search_2.go) | [✓](tries/word_search_2_test.go) |
 
 ### Two_Pointers
@@ -168,6 +171,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 |---------|-------------|----------|-------|
 | 3Sum | Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]]... | [3Sum.go](two_pointers/3Sum.go) | [✓](two_pointers/3Sum_test.go) |
 | Container With Most Water | You are given an integer array heights where heights[i] represents the height of... | [container_with_most_water.go](two_pointers/container_with_most_water.go) | [✓](two_pointers/container_with_most_water_test.go) |
+| Remove Element | Given an integer array nums and an integer val, remove all occurrences of val in... | [remove_element.go](two_pointers/remove_element.go) | [✓](two_pointers/remove_element_test.go) |
 | Trapping Rain Water | You are given an array of non-negative integers height which represent an elevat... | [trapping_rain_water.go](two_pointers/trapping_rain_water.go) | [✓](two_pointers/trapping_rain_water_test.go) |
 | Two Integer Sum 2 | Given an array of integers numbers that is sorted in non-decreasing order. | [two_integer_sum_2.go](two_pointers/two_integer_sum_2.go) | [✓](two_pointers/two_integer_sum_2_test.go) |
 | Valid Palindrome | Given a string s, return true if it is a palindrome, otherwise return false. | [valid_palindrome.go](two_pointers/valid_palindrome.go) | [✓](two_pointers/valid_palindrome_test.go) |
