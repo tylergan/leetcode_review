@@ -16,6 +16,8 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Longest Consecutive Subsequence | Given an array of integers nums, return the length of the longest consecutive se... | [longest_consecutive_subsequence.go](arrays/longest_consecutive_subsequence.go) | [✓](arrays/longest_consecutive_subsequence_test.go) |
 | Majority Element | Given an array nums of size n, return the majority element. | [majority_element.go](arrays/majority_element.go) | [✓](arrays/majority_element_test.go) |
 | Product Of Array Except Self | Given an integer array nums, return an array output where output[i] is the produ... | [product_of_array_except_self.go](arrays/product_of_array_except_self.go) | [✓](arrays/product_of_array_except_self_test.go) |
+| Range Sum Query 2D Immutable | You are given a 2D matrix matrix, handle multiple queries of the following type: | [range_sum_query_2d_immutable.go](arrays/range_sum_query_2d_immutable.go) | [✓](arrays/range_sum_query_2d_immutable_test.go) |
+| Sort An Array | You are given an array of integers nums, sort the array in ascending order and r... | [sort_an_array.go](arrays/sort_an_array.go) | [✓](arrays/sort_an_array_test.go) |
 | Top Freq K Elems | Given an integer array nums and an integer k, return the k most frequent element... | [top_freq_k_elems.go](arrays/top_freq_k_elems.go) | [✓](arrays/top_freq_k_elems_test.go) |
 | Two Sum | Given an array of integers nums and an integer target, return the indices i and ... | [two_sum.go](arrays/two_sum.go) | [✓](arrays/two_sum_test.go) |
 | Valid Anagram | Given two strings s and t, return true if the two strings are anagrams of each o... | [valid_anagram.go](arrays/valid_anagram.go) | [✓](arrays/valid_anagram_test.go) |
@@ -116,6 +118,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | Add Two Numbers | You are given two non-empty linked lists, l1 and l2, where each represents a non... | [add_two_numbers.go](linked_list/add_two_numbers.go) | [✓](linked_list/add_two_numbers_test.go) |
 | Copy Ll W Random Ptr | You are given the head of a linked list of length n. Unlike a singly linked list... | [copy_ll_w_random_ptr.go](linked_list/copy_ll_w_random_ptr.go) | [✓](linked_list/copy_ll_w_random_ptr_test.go) |
 | Cycle Detection | Given the beginning of a linked list head, return true if there is a cycle in th... | [cycle_detection.go](linked_list/cycle_detection.go) | [✓](linked_list/cycle_detection_test.go) |
+| Design Hashmap | Design a HashMap without using any built-in hash table libraries. | [design_hashmap.go](linked_list/design_hashmap.go) | [✓](linked_list/design_hashmap_test.go) |
 | Design Hashset | Design a HashSet without using any built-in hash table libraries. | [design_hashset.go](linked_list/design_hashset.go) | [✓](linked_list/design_hashset_test.go) |
 | Find Duplicate | You are given an array of integers nums containing n + 1 integers. Each integer ... | [find_duplicate.go](linked_list/find_duplicate.go) | [✓](linked_list/find_duplicate_test.go) |
 | Lru Cache | Implement the Least Recently Used (LRU) cache class LRUCache. The class should s... | [lru_cache.go](linked_list/lru_cache.go) | [✓](linked_list/lru_cache_test.go) |
@@ -172,6 +175,7 @@ A collection of LeetCode problems solved in Go with comprehensive test coverage.
 | 3Sum | Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]]... | [3Sum.go](two_pointers/3Sum.go) | [✓](two_pointers/3Sum_test.go) |
 | Container With Most Water | You are given an integer array heights where heights[i] represents the height of... | [container_with_most_water.go](two_pointers/container_with_most_water.go) | [✓](two_pointers/container_with_most_water_test.go) |
 | Remove Element | Given an integer array nums and an integer val, remove all occurrences of val in... | [remove_element.go](two_pointers/remove_element.go) | [✓](two_pointers/remove_element_test.go) |
+| Sort Colors | You are given an array nums consisting of n elements where each element is an in... | [sort_colors.go](two_pointers/sort_colors.go) | [✓](two_pointers/sort_colors_test.go) |
 | Trapping Rain Water | You are given an array of non-negative integers height which represent an elevat... | [trapping_rain_water.go](two_pointers/trapping_rain_water.go) | [✓](two_pointers/trapping_rain_water_test.go) |
 | Two Integer Sum 2 | Given an array of integers numbers that is sorted in non-decreasing order. | [two_integer_sum_2.go](two_pointers/two_integer_sum_2.go) | [✓](two_pointers/two_integer_sum_2_test.go) |
 | Valid Palindrome | Given a string s, return true if it is a palindrome, otherwise return false. | [valid_palindrome.go](two_pointers/valid_palindrome.go) | [✓](two_pointers/valid_palindrome_test.go) |
